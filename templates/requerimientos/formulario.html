@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Requerimiento</title>
+</head>
+<body>
+    <h1>Nuevo Requerimiento</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="solicitante">Solicitante:</label>
+        <select name="solicitante" required>
+            {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}">{{ usuario }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="departamento">Departamento:</label>
+        <select name="departamento" required>
+            {% for depto in departamentos %}
+                <option value="{{ depto.id }}">{{ depto }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="prioridad">Prioridad:</label>
+        <select name="prioridad" required>
+            {% for clave, valor in prioridades %}
+                <option value="{{ clave }}">{{ valor }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Guardar Requerimiento</button>
+    </form>
+</body>
+</html>
