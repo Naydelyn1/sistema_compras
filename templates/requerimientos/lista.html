@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Requerimientos{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Listado de Requerimientos</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Solicitante</th>
+                <th>Departamento</th>
+                <th>Fecha</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for req in requerimientos %}
+            <tr>
+                <td>{{ req.id }}</td>
+                <td>{{ req.solicitante }}</td>
+                <td>{{ req.departamento }}</td>
+                <td>{{ req.fecha }}</td>
+                <td>{{ req.get_prioridad_display }}</td>
+                <td>{{ req.estado }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6">No hay requerimientos.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

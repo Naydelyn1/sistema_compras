@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'usuarios.Usuario'
 
 # Application definition
 
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-     'apps.usuarios',
+    'apps.usuarios',
     'apps.departamentos',
     'apps.proveedores',
     'apps.productos',
@@ -107,6 +108,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    
+    
 ]
 
 
