@@ -1,0 +1,7 @@
+<h1>Lista de Departamentos</h1>
+<ul>
+    {% for departamento in departamentos %}
+        <li>{{ departamento.nombre }} - {{ departamento.descripcion }}</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'crear_departamento' %}">Crear Nuevo Departamento</a>
