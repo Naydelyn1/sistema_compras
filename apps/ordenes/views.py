@@ -9,6 +9,7 @@ from apps.productos.models import Producto
 from django.urls import reverse
 from django.contrib import messages
 
+
 def lista_ordenes(request):
     ordenes = OrdenCompra.objects.all()
     return render(request, 'ordenes/lista.html', {'ordenes': ordenes})
@@ -42,48 +43,49 @@ def crear_orden(request):
 
 
 
-from django.contrib import messages
+
 
 def agregar_detalle_orden(request, orden_id):
     orden = get_object_or_404(OrdenCompra, pk=orden_id)
+    if orden.estado != 'borrador':
+        return redirect('detalle_orden', orden_id=orden.id)
+
+    productos = Producto.objects.all()
     if request.method == 'POST':
         producto_id = request.POST.get('producto')
         cantidad = int(request.POST.get('cantidad'))
         precio_unitario = float(request.POST.get('precio_unitario'))
-        subtotal = cantidad * precio_unitario
 
-        detalle = DetalleOrdenCompra(
+        producto = get_object_or_404(Producto, pk=producto_id)
+        subtotal = cantidad * precio_unitario  # ✅ Calcula el subtotal
+
+        # ✅ Guarda el detalle con el subtotal
+        DetalleOrdenCompra.objects.create(
             orden=orden,
-            producto_id=producto_id,
+            producto=producto,
             cantidad=cantidad,
             precio_unitario=precio_unitario,
-            subtotal=subtotal  # Calculado antes de guardar
+            subtotal=subtotal  # ✅ Asigna el subtotal calculado
         )
-        detalle.save()
-        return redirect('detalle_orden', orden.id)
 
+        return redirect('detalle_orden', orden_id=orden.id)
 
+    context = {
+        'orden': orden,
+        'productos': productos
+    }
+    return render(request, 'ordenes/agregar_detalle.html', context)
 
-    productos = Producto.objects.all()
-    return render(request, 'ordenes/agregar_detalle.html', {'orden': orden, 'productos': productos})
 
     
-
 def eliminar_orden(request, orden_id):
     orden = get_object_or_404(OrdenCompra, pk=orden_id)
+
     if request.method == 'POST':
         orden.delete()
-        messages.success(request, 'La orden ha sido eliminada correctamente.')
         return redirect('lista_ordenes')
-    return render(request, 'ordenes/confirmar_eliminacion.html', {'orden': orden})
 
-
-    
-def detalle_orden(request, orden_id):
-    orden = get_object_or_404(OrdenCompra, pk=orden_id)
-    detalles = orden.detalles.all()
-    total = sum([detalle.subtotal for detalle in detalles])
-    return render(request, 'ordenes/detalle.html', {'orden': orden, 'detalles': detalles, 'total': total})
+    return render(request, 'ordenes/confirmar_eliminacion_orden.html', {'orden': orden})
 
 def cambiar_estado_orden(request, orden_id, nuevo_estado):
     orden = get_object_or_404(OrdenCompra, pk=orden_id)
@@ -91,10 +93,26 @@ def cambiar_estado_orden(request, orden_id, nuevo_estado):
     orden.save()
     return redirect('detalle_orden', orden_id=orden.id)
 
-def eliminar_detalle_orden(request, orden_id, detalle_id):
+def eliminar_detalle_orden(request, detalle_id):
+    detalle = get_object_or_404(DetalleOrdenCompra, pk=detalle_id)
+    orden = detalle.orden
+    if orden.estado != 'borrador':
+        return redirect('detalle_orden', orden_id=orden.id)
+
+    if request.method == 'POST':
+        detalle.delete()
+        return redirect('detalle_orden', orden_id=orden.id)
+
+    return render(request, 'ordenes/confirmar_eliminacion_detalle.html', {'detalle': detalle})
+
+def detalle_orden(request, orden_id):
     orden = get_object_or_404(OrdenCompra, pk=orden_id)
-    detalle = get_object_or_404(DetalleOrdenCompra, pk=detalle_id, orden=orden)
-    detalle.delete()
-    return redirect('detalle_orden', orden_id=orden.id)
+    detalles = orden.detalles.all()
+    total = sum(detalle.cantidad * detalle.precio_unitario for detalle in detalles)
+    return render(request, 'ordenes/detalle.html', {
+        'orden': orden,
+        'detalles': detalles,
+        'total': total
+    })
 
 # Create your views here.

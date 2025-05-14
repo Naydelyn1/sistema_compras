@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-  <p>¿Deseas eliminar la orden <strong>{{ orden.codigo }}</strong>?</p>
+  <p>¿Deseas eliminar la orden de compra <strong>{{ orden.codigo }}</strong>?</p>
   <form method="post">
     {% csrf_token %}
-    <button type="submit">Sí, eliminar</button>
+    <button type="submit">Sí, eliminar orden</button>
     <a href="{% url 'lista_ordenes' %}">No, volver al listado</a>
   </form>
 {% endblock %}
-

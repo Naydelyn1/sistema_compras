@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+  <p>¿Deseas eliminar el detalle <strong>{{ detalle }}</strong> de la orden <strong>{{ orden.codigo }}</strong>?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar detalle</button>
+    <a href="{% url 'detalle_orden' orden.id %}">No, volver a la orden</a>
+  </form>
+{% endblock %}

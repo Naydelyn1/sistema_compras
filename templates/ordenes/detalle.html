@@ -9,9 +9,17 @@
   <ul>
     {% for detalle in detalles %}
       <li>
-        {{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }} 
+        {{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }}
         (Subtotal: S/. {{ detalle.subtotal|floatformat:2 }})
-        <a href="{% url 'eliminar_detalle_orden' orden.id detalle.id %}" onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</a>
+
+        {% if orden.estado == 'borrador' %}
+          <form method="post" action="{% url 'eliminar_detalle_orden' detalle.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+              Eliminar
+            </button>
+          </form>
+        {% endif %}
       </li>
     {% empty %}
       <li>No se han agregado productos aún.</li>
@@ -23,6 +31,14 @@
   <h3>Acciones:</h3>
   {% if orden.estado == 'borrador' %}
       <a href="{% url 'cambiar_estado_orden' orden.id 'emitida' %}">Emitir Orden</a>
+      <br><br>
+      <a href="{% url 'agregar_detalle_orden' orden.id %}">Agregar Detalle</a>
+      <br><br>
+      <form method="get" action="{% url 'eliminar_orden' orden.id %}" style="display:inline;">
+        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta orden?');">
+          Eliminar Orden
+        </button>
+      </form>
   {% elif orden.estado == 'emitida' %}
       <a href="{% url 'cambiar_estado_orden' orden.id 'recibida' %}">Marcar como Recibida</a>
   {% elif orden.estado == 'recibida' %}
@@ -32,7 +48,6 @@
   {% endif %}
 
   <br><br>
-  <a href="{% url 'agregar_detalle_orden' orden.id %}">Agregar Detalle</a> | 
   <a href="{% url 'lista_ordenes' %}">Volver al Listado</a> | 
   <a href="/">Volver al Menú Principal</a>
 {% endblock %}
