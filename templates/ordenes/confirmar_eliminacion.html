@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <p>¿Deseas eliminar la orden <strong>{{ orden.codigo }}</strong>?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'lista_ordenes' %}">No, volver al listado</a>
+  </form>
+{% endblock %}
+

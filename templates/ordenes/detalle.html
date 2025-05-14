@@ -8,8 +8,11 @@
   <h3>Detalles:</h3>
   <ul>
     {% for detalle in detalles %}
-      <li>{{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }} 
-          (Subtotal: S/. {{ detalle.subtotal|floatformat:2 }})</li>
+      <li>
+        {{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }} 
+        (Subtotal: S/. {{ detalle.subtotal|floatformat:2 }})
+        <a href="{% url 'eliminar_detalle_orden' orden.id detalle.id %}" onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</a>
+      </li>
     {% empty %}
       <li>No se han agregado productos aún.</li>
     {% endfor %}

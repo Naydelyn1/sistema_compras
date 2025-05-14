@@ -32,13 +32,11 @@ class DetalleOrdenCompra(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-
-    @property
-    def subtotal(self):
-        return self.cantidad * self.precio_unitario
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)  # ✅ debe ser un campo, no una propiedad
 
     def __str__(self):
-        return f'{self.cantidad} x {self.producto.nombre} en Orden {self.orden.id}'
+        return f'{self.cantidad} x {self.producto.nombre} en Orden {self.orden.codigo}'
+
 
     
     def calcular_total(self):

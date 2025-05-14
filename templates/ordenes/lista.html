@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
   <h2>Listado de Órdenes de Compra</h2>
-
   {% for orden in ordenes %}
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
       <p><strong>Código:</strong> {{ orden.codigo }}</p>
       <p><strong>Fecha:</strong> {{ orden.fecha_emision }}</p>
-
       <a href="{% url 'detalle_orden' orden.id %}">Ver Detalle</a>
+      |
+      <a href="{% url 'eliminar_orden' orden.id %}">Eliminar</a>
     </div>
   {% empty %}
     <p>No hay órdenes de compra registradas.</p>

@@ -6,6 +6,8 @@ from apps.proveedores.models import Proveedor
 from .models import OrdenCompra
 from apps.usuarios.models import Usuario
 from apps.productos.models import Producto
+from django.urls import reverse
+from django.contrib import messages
 
 def lista_ordenes(request):
     ordenes = OrdenCompra.objects.all()
@@ -40,28 +42,42 @@ def crear_orden(request):
 
 
 
+from django.contrib import messages
+
 def agregar_detalle_orden(request, orden_id):
     orden = get_object_or_404(OrdenCompra, pk=orden_id)
-    productos = Producto.objects.all()  # Obtener todos los productos
-
     if request.method == 'POST':
         producto_id = request.POST.get('producto')
-        cantidad = request.POST.get('cantidad')
-        precio_unitario = request.POST.get('precio_unitario')
-        producto = get_object_or_404(Producto, pk=producto_id)
+        cantidad = int(request.POST.get('cantidad'))
+        precio_unitario = float(request.POST.get('precio_unitario'))
+        subtotal = cantidad * precio_unitario
 
-        DetalleOrdenCompra.objects.create(
+        detalle = DetalleOrdenCompra(
             orden=orden,
-            producto=producto,
+            producto_id=producto_id,
             cantidad=cantidad,
-            precio_unitario=precio_unitario
+            precio_unitario=precio_unitario,
+            subtotal=subtotal  # Calculado antes de guardar
         )
-        return redirect('lista_ordenes')
+        detalle.save()
+        return redirect('detalle_orden', orden.id)
 
-    return render(request, 'ordenes/agregar_detalle.html', {
-        'orden': orden,
-        'productos': productos  # Pasar productos al contexto
-    })
+
+
+    productos = Producto.objects.all()
+    return render(request, 'ordenes/agregar_detalle.html', {'orden': orden, 'productos': productos})
+
+    
+
+def eliminar_orden(request, orden_id):
+    orden = get_object_or_404(OrdenCompra, pk=orden_id)
+    if request.method == 'POST':
+        orden.delete()
+        messages.success(request, 'La orden ha sido eliminada correctamente.')
+        return redirect('lista_ordenes')
+    return render(request, 'ordenes/confirmar_eliminacion.html', {'orden': orden})
+
+
     
 def detalle_orden(request, orden_id):
     orden = get_object_or_404(OrdenCompra, pk=orden_id)
@@ -73,6 +89,12 @@ def cambiar_estado_orden(request, orden_id, nuevo_estado):
     orden = get_object_or_404(OrdenCompra, pk=orden_id)
     orden.estado = nuevo_estado
     orden.save()
+    return redirect('detalle_orden', orden_id=orden.id)
+
+def eliminar_detalle_orden(request, orden_id, detalle_id):
+    orden = get_object_or_404(OrdenCompra, pk=orden_id)
+    detalle = get_object_or_404(DetalleOrdenCompra, pk=detalle_id, orden=orden)
+    detalle.delete()
     return redirect('detalle_orden', orden_id=orden.id)
 
 # Create your views here.
