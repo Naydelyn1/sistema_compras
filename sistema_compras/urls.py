@@ -23,6 +23,9 @@ urlpatterns = [
     path('usuarios/', include('apps.usuarios.urls')),
     path('departamentos/', include('apps.departamentos.urls')),
     path('requerimientos/', include('apps.requerimientos.urls')),
+    path('proveedores/', include('apps.proveedores.urls')),
+
+
     
 
 
