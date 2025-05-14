@@ -1,9 +1,13 @@
-<h2>Lista de Usuarios</h2>
-<ul>
-    {% for usuario in usuarios %}
-        <li>{{ usuario.username }} - {{ usuario.email }}</li>
-    {% empty %}
-        <li>No hay usuarios registrados.</li>
-    {% endfor %}
-</ul>
-<a href="{% url 'crear_usuario' %}">Crear Nuevo Usuario</a>
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Lista de Usuarios</h2>
+  <ul>
+      {% for usuario in usuarios %}
+          <li>{{ usuario.username }} - {{ usuario.email }}</li>
+      {% empty %}
+          <li>No hay usuarios registrados.</li>
+      {% endfor %}
+  </ul>
+  <a href="{% url 'crear_usuario' %}" class="btn btn-primary mt-3">Crear Nuevo Usuario</a>
+{% endblock %}

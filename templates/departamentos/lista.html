@@ -1,7 +1,13 @@
-<h1>Lista de Departamentos</h1>
-<ul>
-    {% for departamento in departamentos %}
-        <li>{{ departamento.nombre }} - {{ departamento.descripcion }}</li>
-    {% endfor %}
-</ul>
-<a href="{% url 'crear_departamento' %}">Crear Nuevo Departamento</a>
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Lista de Departamentos</h1>
+  <ul>
+      {% for departamento in departamentos %}
+          <li>{{ departamento.nombre }} - {{ departamento.descripcion }}</li>
+      {% empty %}
+          <li>No hay departamentos registrados.</li>
+      {% endfor %}
+  </ul>
+  <a href="{% url 'crear_departamento' %}" class="btn btn-primary mt-3">Crear Nuevo Departamento</a>
+{% endblock %}

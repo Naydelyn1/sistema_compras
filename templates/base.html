@@ -7,12 +7,16 @@
 <body>
     <header>
         <h1>Sistema de Gestión de Compras</h1>
-        <nav>
-            <a href="/usuarios/">Usuarios</a> |
-            <a href="/departamentos/">Departamentos</a> |
-            <a href="/proveedores/">Proveedores</a> |
-            <a href="/requerimientos/">Requerimientos</a>
+        <nav style="display: flex; gap: 20px; list-style: none; padding: 0;">
+            <a href="{% url 'lista_categorias' %}">Categorías</a>
+            <a href="{% url 'lista_productos' %}">Productos</a>
+            <a href="{% url 'lista_proveedores' %}">Proveedores</a>
+            <a href="{% url 'lista_requerimientos' %}">Requerimientos</a>
+            <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
+            <a href="{% url 'lista_departamentos' %}">Departamentos</a>
+            <a href="{% url 'lista_usuarios' %}">Usuarios</a>
         </nav>
+
         <hr>
     </header>
 

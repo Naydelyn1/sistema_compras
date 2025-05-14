@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Nueva Orden de Compra</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label for="requerimiento">Requerimiento:</label>
+    <select name="requerimiento">
+      {% for req in requerimientos %}
+        <option value="{{ req.id }}">{{ req }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label for="proveedor">Proveedor:</label>
+    <select name="proveedor">
+      {% for prov in proveedores %}
+        <option value="{{ prov.id }}">{{ prov }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Guardar Orden</button>
+  </form>
+{% endblock %}

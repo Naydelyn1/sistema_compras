@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Agregar Producto a la Orden #{{ orden.id }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label>Producto:</label>
+    <select name="producto" id="producto_select">
+      {% for producto in productos %}
+        <option value="{{ producto.id }}">{{ producto.nombre }}</option>
+      {% endfor %}
+    </select><br>
+
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" min="1"><br>
+
+    <label>Precio Unitario:</label>
+    <input type="number" step="0.01" name="precio_unitario" id="precio_unitario"><br><br>
+
+    <button type="submit">Agregar Producto</button>
+  </form>
+
+  <h3>Detalles actuales:</h3>
+  <ul>
+    {% for detalle in orden.detalles.all %}
+      <li>{{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }}</li>
+    {% empty %}
+      <li>No se han agregado productos aún.</li>
+    {% endfor %}
+  </ul>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const productoSelect = document.getElementById('producto_select');
+      const precioInput = document.getElementById('precio_unitario');
+
+      const precios = {
+        {% for producto in productos %}
+          "{{ producto.id }}": "{{ producto.precio_referencial }}",
+        {% endfor %}
+      };
+
+      productoSelect.addEventListener('change', function() {
+        const selectedProductoId = this.value;
+        precioInput.value = precios[selectedProductoId] || '';
+      });
+
+      // Preseleccionar el primer producto si existe
+      if (productoSelect.options.length > 0) {
+        productoSelect.dispatchEvent(new Event('change'));
+      }
+    });
+  </script>
+{% endblock %}

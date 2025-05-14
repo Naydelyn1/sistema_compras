@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Listado de Órdenes de Compra</h1>
+  {% for orden in ordenes %}
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+      <strong>Código:</strong> {{ orden.codigo }}<br>
+      <strong>Proveedor:</strong> {{ orden.proveedor.razon_social }}<br>
+      <strong>Fecha:</strong> {{ orden.fecha_emision }}<br>
+      <strong>Estado:</strong> {{ orden.estado }}<br>
+      
+      <h4>Detalles:</h4>
+      <ul>
+        {% for detalle in orden.detalles.all %}
+          <li>{{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }}</li>
+        {% empty %}
+          <li>No hay detalles registrados.</li>
+        {% endfor %}
+      </ul>
+
+      <a href="{% url 'agregar_detalle_orden' orden.id %}">Agregar Detalle</a>
+    </div>
+  {% empty %}
+    <p>No hay órdenes registradas.</p>
+  {% endfor %}
+{% endblock %}
