@@ -33,5 +33,13 @@ class DetalleOrdenCompra(models.Model):
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
+
     def __str__(self):
-        return f'{self.cantidad} x {self.producto.nombre} en Orden {self.orden.codigo}'
+        return f'{self.cantidad} x {self.producto.nombre} en Orden {self.orden.id}'
+
+    
+    def calcular_total(self):
+        return sum(detalle.subtotal for detalle in self.detalles.all())

@@ -62,6 +62,12 @@ def agregar_detalle_orden(request, orden_id):
         'orden': orden,
         'productos': productos  # Pasar productos al contexto
     })
+    
+def detalle_orden(request, orden_id):
+    orden = get_object_or_404(OrdenCompra, pk=orden_id)
+    detalles = orden.detalles.all()
+    total = sum([detalle.subtotal for detalle in detalles])
+    return render(request, 'ordenes/detalle.html', {'orden': orden, 'detalles': detalles, 'total': total})
 
 
 # Create your views here.

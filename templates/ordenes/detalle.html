@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Detalle de la Orden de Compra #{{ orden.codigo }}</h2>
+  <p><strong>Proveedor:</strong> {{ orden.proveedor.razon_social }} - RUC: {{ orden.proveedor.ruc }}</p>
+  <p><strong>Fecha de Emisión:</strong> {{ orden.fecha_emision }}</p>
+  <p><strong>Estado:</strong> {{ orden.estado }}</p>
+
+  <h3>Detalles:</h3>
+  <ul>
+    {% for detalle in detalles %}
+      <li>{{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }} 
+          (Subtotal: S/. {{ detalle.subtotal|floatformat:2 }})</li>
+    {% empty %}
+      <li>No se han agregado productos aún.</li>
+    {% endfor %}
+  </ul>
+
+  <p><strong>Total acumulado:</strong> S/. {{ total|floatformat:2 }}</p>
+
+  <a href="{% url 'agregar_detalle_orden' orden.id %}">Agregar Detalle</a> | 
+  <a href="{% url 'lista_ordenes' %}">Volver al Listado</a>
+{% endblock %}
