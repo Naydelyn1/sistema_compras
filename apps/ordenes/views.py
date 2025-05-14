@@ -69,5 +69,10 @@ def detalle_orden(request, orden_id):
     total = sum([detalle.subtotal for detalle in detalles])
     return render(request, 'ordenes/detalle.html', {'orden': orden, 'detalles': detalles, 'total': total})
 
+def cambiar_estado_orden(request, orden_id, nuevo_estado):
+    orden = get_object_or_404(OrdenCompra, pk=orden_id)
+    orden.estado = nuevo_estado
+    orden.save()
+    return redirect('detalle_orden', orden_id=orden.id)
 
 # Create your views here.

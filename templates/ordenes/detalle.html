@@ -17,6 +17,19 @@
 
   <p><strong>Total acumulado:</strong> S/. {{ total|floatformat:2 }}</p>
 
+  <h3>Acciones:</h3>
+  {% if orden.estado == 'borrador' %}
+      <a href="{% url 'cambiar_estado_orden' orden.id 'emitida' %}">Emitir Orden</a>
+  {% elif orden.estado == 'emitida' %}
+      <a href="{% url 'cambiar_estado_orden' orden.id 'recibida' %}">Marcar como Recibida</a>
+  {% elif orden.estado == 'recibida' %}
+      <a href="{% url 'cambiar_estado_orden' orden.id 'completada' %}">Completar Orden</a>
+  {% else %}
+      <p>La orden está completada.</p>
+  {% endif %}
+
+  <br><br>
   <a href="{% url 'agregar_detalle_orden' orden.id %}">Agregar Detalle</a> | 
-  <a href="{% url 'lista_ordenes' %}">Volver al Listado</a>
+  <a href="{% url 'lista_ordenes' %}">Volver al Listado</a> | 
+  <a href="/">Volver al Menú Principal</a>
 {% endblock %}
