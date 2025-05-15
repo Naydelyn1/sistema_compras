@@ -1,13 +1,30 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <h1>Lista de Departamentos</h1>
-  <ul>
-      {% for departamento in departamentos %}
-          <li>{{ departamento.nombre }} - {{ departamento.descripcion }}</li>
-      {% empty %}
-          <li>No hay departamentos registrados.</li>
-      {% endfor %}
-  </ul>
-  <a href="{% url 'crear_departamento' %}" class="btn btn-primary mt-3">Crear Nuevo Departamento</a>
+<h1>Lista de Departamentos</h1>
+<a href="{% url 'crear_departamento' %}">Crear Nuevo Departamento</a>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for departamento in departamentos %}
+        <tr>
+            <td>{{ departamento.nombre }}</td>
+            <td>{{ departamento.descripcion }}</td>
+            <td>
+                <a href="{% url 'editar_departamento' departamento.id %}">Editar</a> |
+                <a href="{% url 'eliminar_departamento' departamento.id %}">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No hay departamentos registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

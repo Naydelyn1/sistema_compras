@@ -1,30 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Nuevo Requerimiento</h1>
+  <h1>{% if requerimiento.id %}Editar{% else %}Nuevo{% endif %} Requerimiento</h1>
   <form method="post">
       {% csrf_token %}
+      
       <label for="solicitante">Solicitante:</label>
-      <select name="solicitante" required>
+      <select name="solicitante" class="form-control" required>
           {% for usuario in usuarios %}
-              <option value="{{ usuario.id }}">{{ usuario }}</option>
+              <option value="{{ usuario.id }}" {% if usuario.id == requerimiento.solicitante.id %}selected{% endif %}>{{ usuario }}</option>
           {% endfor %}
       </select><br><br>
 
       <label for="departamento">Departamento:</label>
-      <select name="departamento" required>
+      <select name="departamento" class="form-control" required>
           {% for depto in departamentos %}
-              <option value="{{ depto.id }}">{{ depto }}</option>
+              <option value="{{ depto.id }}" {% if depto.id == requerimiento.departamento.id %}selected{% endif %}>{{ depto }}</option>
           {% endfor %}
       </select><br><br>
 
       <label for="prioridad">Prioridad:</label>
-      <select name="prioridad" required>
+      <select name="prioridad" class="form-control" required>
           {% for clave, valor in prioridades %}
-              <option value="{{ clave }}">{{ valor }}</option>
+              <option value="{{ clave }}" {% if clave == requerimiento.prioridad %}selected{% endif %}>{{ valor }}</option>
           {% endfor %}
       </select><br><br>
 
-      <button type="submit">Guardar Requerimiento</button>
+      <button type="submit" class="btn btn-primary">Guardar Requerimiento</button>
   </form>
 {% endblock %}

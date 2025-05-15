@@ -3,19 +3,24 @@
 {% block content %}
   <h1>Agregar Detalle al Requerimiento #{{ requerimiento.id }}</h1>
 
+  <!-- Mostrar detalles del requerimiento -->
+  <p><strong>Solicitante:</strong> {{ requerimiento.solicitante }}</p>
+  <p><strong>Departamento:</strong> {{ requerimiento.departamento }}</p>
+  <p><strong>Prioridad:</strong> {{ requerimiento.get_prioridad_display }}</p>
+
   <form method="post">
       {% csrf_token %}
       <label>Producto:</label>
-      <select name="producto" required>
+      <select name="producto" class="form-control" required>
           {% for producto in productos %}
               <option value="{{ producto.id }}">{{ producto.nombre }}</option>
           {% endfor %}
       </select><br><br>
 
       <label>Cantidad:</label>
-      <input type="number" name="cantidad" min="1" required><br><br>
+      <input type="number" name="cantidad" class="form-control" min="1" required><br><br>
 
-      <button type="submit">Agregar Producto</button>
+      <button type="submit" class="btn btn-primary">Agregar Producto</button>
   </form>
 
   <hr>
@@ -26,6 +31,6 @@
     {% empty %}
         <li>No se han agregado productos aún.</li>
     {% endfor %}
-</ul>
+  </ul>
 
 {% endblock %}

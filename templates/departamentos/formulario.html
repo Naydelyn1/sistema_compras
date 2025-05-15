@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <h1>Nuevo Departamento</h1>
-  <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Guardar Departamento</button>
-  </form>
+<h1>{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Departamento</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar</button>
+    <a href="{% url 'lista_departamentos' %}">Cancelar</a>
+</form>
 {% endblock %}

@@ -1,10 +1,12 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h1>{% if form.instance.pk %}Editar Proveedor{% else %}Nuevo Proveedor{% endif %}</h1>
+<h2>{% if form.instance.pk %}Editar Producto{% else %}Nuevo Producto{% endif %}</h2>
+
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Guardar</button>
-    <a href="{% url 'lista_proveedores' %}">Cancelar</a>
+    <a href="{% url 'lista_productos' %}">Cancelar</a>
 </form>
 {% endblock %}

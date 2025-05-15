@@ -1,53 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>Detalle de la Orden de Compra #{{ orden.codigo }}</h2>
-  <p><strong>Proveedor:</strong> {{ orden.proveedor.razon_social }} - RUC: {{ orden.proveedor.ruc }}</p>
-  <p><strong>Fecha de Emisión:</strong> {{ orden.fecha_emision }}</p>
-  <p><strong>Estado:</strong> {{ orden.estado }}</p>
+<h2>Detalle de la Orden de Compra #{{ orden.codigo }}</h2>
 
-  <h3>Detalles:</h3>
-  <ul>
+<p><strong>Proveedor:</strong> {{ orden.proveedor.razon_social }} (RUC: {{ orden.proveedor.ruc }})</p>
+<p><strong>Fecha de Emisión:</strong> {{ orden.fecha_emision }}</p>
+<p><strong>Estado:</strong> {{ orden.estado }}</p>
+
+<h3>Productos en la Orden</h3>
+<ul>
     {% for detalle in detalles %}
-      <li>
-        {{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }}
+    <li>
+        {{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }} 
         (Subtotal: S/. {{ detalle.subtotal|floatformat:2 }})
-
         {% if orden.estado == 'borrador' %}
-          <form method="post" action="{% url 'eliminar_detalle_orden' detalle.id %}" style="display:inline;">
+        <form method="post" action="{% url 'eliminar_detalle_orden' detalle.id %}" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este producto?')">
-              Eliminar
-            </button>
-          </form>
+            <button type="submit" onclick="return confirm('¿Eliminar este producto de la orden?')">Eliminar</button>
+        </form>
         {% endif %}
-      </li>
+    </li>
     {% empty %}
-      <li>No se han agregado productos aún.</li>
+    <li>No hay productos agregados.</li>
     {% endfor %}
-  </ul>
+</ul>
 
-  <p><strong>Total acumulado:</strong> S/. {{ total|floatformat:2 }}</p>
+<p><strong>Total acumulado:</strong> S/. {{ total|floatformat:2 }}</p>
 
-  <h3>Acciones:</h3>
-  {% if orden.estado == 'borrador' %}
-      <a href="{% url 'cambiar_estado_orden' orden.id 'emitida' %}">Emitir Orden</a>
-      <br><br>
-      <a href="{% url 'agregar_detalle_orden' orden.id %}">Agregar Detalle</a>
-      <br><br>
-      <form method="get" action="{% url 'eliminar_orden' orden.id %}" style="display:inline;">
-        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta orden?');">
-          Eliminar Orden
-        </button>
-      </form>
-  {% elif orden.estado == 'emitida' %}
-      <a href="{% url 'cambiar_estado_orden' orden.id 'recibida' %}">Marcar como Recibida</a>
-  {% elif orden.estado == 'recibida' %}
-      <a href="{% url 'cambiar_estado_orden' orden.id 'completada' %}">Completar Orden</a>
-  {% else %}
-      <p>La orden está completada.</p>
-  {% endif %}
+<h3>Acciones</h3>
+{% if orden.estado == 'borrador' %}
+    <a href="{% url 'agregar_detalle_orden' orden.id %}">Agregar Producto</a><br>
+    <a href="{% url 'cambiar_estado_orden' orden.id 'emitida' %}">Emitir Orden</a>
+{% elif orden.estado == 'emitida' %}
+    <a href="{% url 'cambiar_estado_orden' orden.id 'recibida' %}">Marcar como Recibida</a>
+{% elif orden.estado == 'recibida' %}
+    <a href="{% url 'cambiar_estado_orden' orden.id 'completada' %}">Completar Orden</a>
+{% else %}
+    <p>La orden está completada.</p>
+{% endif %}
 
-  <br><br>
-  <a href="{% url 'lista_ordenes' %}">Volver al Listado</a> | 
-  <a href="/">Volver al Menú Principal</a>
+<br>
+<a href="{% url 'lista_ordenes' %}">Volver al listado</a>
 {% endblock %}
