@@ -1,9 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.models import User, Group
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
+from .forms import UsuarioForm, UsuarioCreationForm  # UsuarioCreationForm es tu versión personalizada de UserCreationForm
 
 User = get_user_model()
 
@@ -14,42 +13,40 @@ def lista_usuarios(request):
     return render(request, 'usuarios/lista.html', {'usuarios': usuarios})
 
 @login_required
-@permission_required('auth.add_user', raise_exception=True)
+@permission_required('usuarios.add_usuario', raise_exception=True)
 def crear_usuario(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UsuarioCreationForm(request.POST)
         if form.is_valid():
             usuario = form.save()
             messages.success(request, 'Usuario creado correctamente.')
             return redirect('lista_usuarios')
     else:
-        form = UserCreationForm()
+        form = UsuarioCreationForm()
     return render(request, 'usuarios/formulario.html', {'form': form})
 
 @login_required
-@permission_required('auth.change_user', raise_exception=True)
-def editar_usuario(request, user_id):
-    usuario = get_object_or_404(User, pk=user_id)
+@permission_required('usuarios.change_usuario', raise_exception=True)
+def editar_usuario(request, usuario_id):
+    usuario = get_object_or_404(User, pk=usuario_id)
     if request.method == 'POST':
-        form = UserChangeForm(request.POST, instance=usuario)
+        form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
+            # Guardamos el usuario, commit=True para que guarde y actualice grupos
             form.save()
-            messages.success(request, 'Usuario actualizado correctamente.')
+            messages.success(request, f'Usuario {usuario.username} actualizado correctamente.')
             return redirect('lista_usuarios')
     else:
-        form = UserChangeForm(instance=usuario)
-    return render(request, 'usuarios/formulario.html', {'form': form})
+        form = UsuarioForm(instance=usuario)
+    return render(request, 'usuarios/editar_usuario.html', {'form': form, 'usuario': usuario})
+
 
 @login_required
-@permission_required('auth.delete_user', raise_exception=True)
-def eliminar_usuario(request, user_id):
-    usuario = get_object_or_404(User, pk=user_id)
+@permission_required('usuarios.delete_usuario', raise_exception=True)
+def eliminar_usuario(request, usuario_id):
+    usuario = get_object_or_404(User, pk=usuario_id)
     if request.method == 'POST':
         usuario.delete()
         messages.success(request, 'Usuario eliminado correctamente.')
         return redirect('lista_usuarios')
     return render(request, 'usuarios/confirmar_eliminacion.html', {'usuario': usuario})
-
-
-
-# Create your views here.

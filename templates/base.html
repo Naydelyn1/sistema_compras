@@ -1,39 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Sistema de Compras</title>
+  <title>Sistema de Compras</title>
 </head>
 <body>
-    <header>
-        <h1>Sistema de Gestión de Compras</h1>
-        <nav style="display: flex; gap: 20px; list-style: none; padding: 0;">
-            <a href="{% url 'lista_categorias' %}">Categorías</a>
-            <a href="{% url 'lista_productos' %}">Productos</a>
-            <a href="{% url 'lista_proveedores' %}">Proveedores</a>
-            <a href="{% url 'lista_requerimientos' %}">Requerimientos</a>
-            <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
-            <a href="{% url 'lista_departamentos' %}">Departamentos</a>
-            <a href="{% url 'lista_usuarios' %}">Usuarios</a>
-        </nav>
-        <hr>
-    </header>
+  <header>
+    <h1>Sistema de Gestión de Compras</h1>
+    <nav>
+      <a href="{% url 'lista_categorias' %}">Categorías</a>
+      <a href="{% url 'lista_productos' %}">Productos</a>
+      <a href="{% url 'lista_proveedores' %}">Proveedores</a>
+      <a href="{% url 'lista_requerimientos' %}">Requerimientos</a>
+      <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
+      <a href="{% url 'lista_departamentos' %}">Departamentos</a>
+      <a href="{% url 'lista_usuarios' %}">Usuarios</a>
 
-    {% if messages %}
-        <ul style="list-style: none; padding: 0; color: green;">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+      {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit">Cerrar sesión ({{ user.username }})</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Iniciar sesión</a>
+      {% endif %}
+    </nav>
+    <hr>
+  </header>
 
-    {% block content %}
-    {% endblock %}
-    
-    <footer>
-        <hr>
-        <p>© 2025 Sistema de Compras</p>
-    </footer>
+  {% if messages %}
+    <ul style="color: green;">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <footer>
+    <hr>
+    <p>© 2025 Sistema de Compras</p>
+  </footer>
 </body>
 </html>
- 

@@ -31,8 +31,10 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 
 # Application definition
 
-LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'       # Después de iniciar sesión va al home
+LOGOUT_REDIRECT_URL = '/accounts/login/'  # Después de cerrar sesión va al login
+LOGIN_URL = '/accounts/login/'  # URL para login requerida para `login_required`
+
 
 
 INSTALLED_APPS = [
