@@ -3,11 +3,19 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.forms import UserCreationForm
 from .models import Usuario
 
-class UsuarioCreationForm(UserCreationForm):
+
+class UsuarioCreacionForm(UserCreationForm):
+    cargo = forms.CharField(required=False, label="Cargo")
+    groups = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Roles"
+    )
+    
     class Meta:
         model = Usuario
-        # Aquí defines los campos que quieres que se puedan llenar al crear usuario
-        fields = ('username', 'nombre', 'apellido', 'email', 'password1', 'password2', 'cargo')
+        fields = ('username', 'email', 'nombre', 'apellido', 'cargo', 'groups')
 
 
 class UsuarioForm(forms.ModelForm):
@@ -20,6 +28,6 @@ class UsuarioForm(forms.ModelForm):
     
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'nombre', 'apellido', 'is_active', 'groups']
+        fields = ['username', 'email', 'nombre', 'apellido', 'cargo', 'is_active', 'groups']
         
    

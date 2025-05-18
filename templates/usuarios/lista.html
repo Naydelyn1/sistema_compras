@@ -6,6 +6,8 @@
         <tr>
             <th>Username</th>
             <th>Email</th>
+            <th>Cargo</th>
+            <th>Roles</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -14,18 +16,23 @@
         <tr>
             <td>{{ usuario.username }}</td>
             <td>{{ usuario.email }}</td>
+            <td>{{ usuario.cargo }}</td>
             <td>
-                <a href="{% url 'editar_usuario' usuario.id %}">Editar</a>|
+                {% for grupo in usuario.groups.all %}
+                    {{ grupo.name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    Sin roles asignados
+                {% endfor %}
+            </td>
+            <td>
+                <a href="{% url 'editar_usuario' usuario.id %}">Editar</a> |
                 <a href="{% url 'eliminar_usuario' usuario.id %}">Eliminar</a>
             </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">No hay usuarios registrados.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 <br>
 <a href="{% url 'crear_usuario' %}">Crear Nuevo Usuario</a>
 {% endblock %}

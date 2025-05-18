@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from .forms import UsuarioForm, UsuarioCreationForm  # UsuarioCreationForm es tu versión personalizada de UserCreationForm
+from .forms import UsuarioForm, UsuarioCreacionForm  # UsuarioCreationForm es tu versión personalizada de UserCreationForm
 
 User = get_user_model()
 
@@ -16,14 +16,18 @@ def lista_usuarios(request):
 @permission_required('usuarios.add_usuario', raise_exception=True)
 def crear_usuario(request):
     if request.method == 'POST':
-        form = UsuarioCreationForm(request.POST)
+        form = UsuarioCreacionForm(request.POST)
         if form.is_valid():
-            usuario = form.save()
+            usuario = form.save(commit=False)
+            usuario.cargo = form.cleaned_data['cargo']
+            usuario.save()
+            form.save_m2m()  # para grupos (roles)
             messages.success(request, 'Usuario creado correctamente.')
             return redirect('lista_usuarios')
     else:
-        form = UsuarioCreationForm()
+        form = UsuarioCreacionForm()
     return render(request, 'usuarios/formulario.html', {'form': form})
+
 
 @login_required
 @permission_required('usuarios.change_usuario', raise_exception=True)
