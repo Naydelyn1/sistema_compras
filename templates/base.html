@@ -1,45 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sistema de Compras</title>
+    <meta charset="UTF-8">
+    <title>Sistema de Compras</title>
 </head>
 <body>
-  <header>
-    <h1>Sistema de Gestión de Compras</h1>
-    <nav>
-      <a href="{% url 'lista_categorias' %}">Categorías</a>
-      <a href="{% url 'lista_productos' %}">Productos</a>
-      <a href="{% url 'lista_proveedores' %}">Proveedores</a>
-      <a href="{% url 'lista_requerimientos' %}">Requerimientos</a>
-      <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
-      <a href="{% url 'lista_departamentos' %}">Departamentos</a>
-      <a href="{% url 'lista_usuarios' %}">Usuarios</a>
+    <header>
+        <h1>Sistema de Gestión de Compras</h1>
 
-      {% if user.is_authenticated %}
-        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-          {% csrf_token %}
-          <button type="submit">Cerrar sesión ({{ user.username }})</button>
-        </form>
-      {% else %}
-        <a href="{% url 'login' %}">Iniciar sesión</a>
-      {% endif %}
-    </nav>
-    <hr>
-  </header>
+        {% if user.is_authenticated %}
+            <p>Bienvenido, {{ user.username }}</p>
+            <nav style="display: flex; gap: 20px; list-style: none; padding: 0;">
+                
+                {# Enlace visible para todos los logueados #}
+                <a href="{% url 'home' %}">Inicio</a>
 
-  {% if messages %}
-    <ul style="color: green;">
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+                {# Menú solo para Administrador #}
+                {% if user.groups.all|length > 0 %}
+                    {% for group in user.groups.all %}
+                        {% if group.name == "administrador" %}
+                            <a href="{% url 'lista_categorias' %}">Categorías</a>
+                            <a href="{% url 'lista_productos' %}">Productos</a>
+                            <a href="{% url 'lista_proveedores' %}">Proveedores</a>
+                            <a href="{% url 'lista_requerimientos' %}">Requerimientos</a>
+                            <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
+                            <a href="{% url 'lista_departamentos' %}">Departamentos</a>
+                            <a href="{% url 'lista_usuarios' %}">Usuarios</a>
+                        {% endif %}
+                        {% if group.name == "solicitante" %}
+                            <a href="{% url 'lista_requerimientos' %}">Mis Requerimientos</a>
+                        {% endif %}
+                        {% if group.name == "aprobador" %}
+                            <a href="{% url 'lista_requerimientos' %}">Aprobar Requerimientos</a>
+                        {% endif %}
+                        {% if group.name == "comprador" %}
+                            <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
+                        {% endif %}
+                        {% if group.name == "usuario_estandar" %}
+                            <a href="{% url 'lista_requerimientos' %}">Consultar Requerimientos</a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                
+                {# Cierre de sesión #}
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Cerrar Sesión</button>
+                </form>
+            </nav>
+        {% else %}
+            <nav>
+                <a href="{% url 'login' %}">Iniciar Sesión</a>
+            </nav>
+        {% endif %}
 
-  {% block content %}{% endblock %}
+        <hr>
+    </header>
 
-  <footer>
-    <hr>
-    <p>© 2025 Sistema de Compras</p>
-  </footer>
+    {% if messages %}
+        <ul style="list-style: none; padding: 0; color: green;">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+    
+    <footer>
+        <hr>
+        <p>© 2025 Sistema de Compras</p>
+    </footer>
 </body>
 </html>
