@@ -6,7 +6,7 @@
         <tr>
             <th>Username</th>
             <th>Email</th>
-            <th>Cargo</th>
+            
             <th>Roles</th>
             <th>Acciones</th>
         </tr>
@@ -16,7 +16,7 @@
         <tr>
             <td>{{ usuario.username }}</td>
             <td>{{ usuario.email }}</td>
-            <td>{{ usuario.cargo }}</td>
+            
             <td>
                 {% for grupo in usuario.groups.all %}
                     {{ grupo.name }}{% if not forloop.last %}, {% endif %}

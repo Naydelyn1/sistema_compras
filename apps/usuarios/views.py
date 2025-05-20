@@ -18,10 +18,7 @@ def crear_usuario(request):
     if request.method == 'POST':
         form = UsuarioCreacionForm(request.POST)
         if form.is_valid():
-            usuario = form.save(commit=False)
-            usuario.cargo = form.cleaned_data['cargo']
-            usuario.save()
-            form.save_m2m()  # para grupos (roles)
+            form.save()
             messages.success(request, 'Usuario creado correctamente.')
             return redirect('lista_usuarios')
     else:
