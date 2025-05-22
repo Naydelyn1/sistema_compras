@@ -53,12 +53,12 @@ def crear_requerimiento(request):
                 cantidad=int(cant)
             )
 
-        return redirect('lista_requerimientos_solicitante')  # O la url que uses para lista solicitante
+        return redirect('lista')  # O la url que uses para lista solicitante
 
     categorias = Categoria.objects.all()
     prioridades = Requerimiento.PRIORIDAD_CHOICES
 
-    return render(request, 'requerimientos/formulario_solicitante.html', {
+    return render(request, 'requerimientos/formulario.html', {
         'categorias': categorias,
         'prioridades': prioridades,
         # No enviamos solicitantes ni departamentos para elegir,
