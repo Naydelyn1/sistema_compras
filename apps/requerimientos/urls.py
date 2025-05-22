@@ -7,4 +7,14 @@ urlpatterns = [
     path('<int:requerimiento_id>/editar/', views.editar_requerimiento, name='editar_requerimiento'),  # Editar requerimiento
     path('<int:requerimiento_id>/eliminar/', views.eliminar_requerimiento, name='eliminar_requerimiento'),  # Eliminar requerimiento
     path('<int:requerimiento_id>/agregar-detalle/', views.agregar_detalle_requerimiento, name='agregar_detalle_requerimiento'),  # Agregar detalle
+
+
+    path('solicitante/', views.lista_requerimientos_solicitante, name='lista_requerimientos_solicitante'),
+    path('solicitante/nuevo/', views.crear_requerimiento_solicitante, name='crear_requerimiento_solicitante'),
+    path('solicitante/<int:requerimiento_id>/eliminar/', views.eliminar_requerimiento_solicitante, name='eliminar_requerimiento_solicitante'),
+    path('solicitante/<int:requerimiento_id>/editar/', views.editar_requerimiento_solicitante, name='editar_requerimiento_solicitante'),
+    path('productos_por_categoria/<int:categoria_id>/', views.productos_por_categoria, name='productos_por_categoria'),
+    
+
+
 ]

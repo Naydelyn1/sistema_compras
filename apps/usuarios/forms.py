@@ -5,11 +5,15 @@ from .models import Usuario
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 import re
+from apps.departamentos.models import Departamento
+
 
 
 Usuario = get_user_model()
 
 class UsuarioCreacionForm(UserCreationForm):
+    departamento = forms.ModelChoiceField(queryset=Departamento.objects.all(), required=False)
+
     class Meta:
         model = Usuario
         fields = ['username', 'email', 'nombre', 'apellido', 'is_active', 'groups']
@@ -40,15 +44,13 @@ class UsuarioCreacionForm(UserCreationForm):
 
 
 class UsuarioForm(forms.ModelForm):
-    groups = forms.ModelMultipleChoiceField(
-        queryset=Group.objects.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        label="Roles"
-    )
-    
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'nombre', 'apellido', 'is_active', 'groups']
+        fields = ['username', 'email', 'first_name', 'last_name', 'groups', 'is_active',  'password']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['departamento'].required = False
+
         
    

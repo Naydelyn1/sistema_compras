@@ -20,9 +20,58 @@
 
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    
+    <p>{{ form.username.label_tag }} {{ form.username }}</p>
+    <p>{{ form.email.label_tag }} {{ form.email }}</p>
+    <p>{{ form.nombre.label_tag }} {{ form.nombre }}</p>
+    <p>{{ form.apellido.label_tag }} {{ form.apellido }}</p>
+    <p>{{ form.is_active.label_tag }} {{ form.is_active }}</p>
+    <p>{{ form.groups.label_tag }} {{ form.groups }}</p>
+
+    <p>{{ form.password1.label_tag }} {{ form.password1 }}</p>
+
+    <ul style="margin-left: 20px; font-size: 0.9em;">
+      <li>Su contraseña no puede asemejarse tanto a su otra información personal.</li>
+      <li>Su contraseña debe contener al menos 8 caracteres.</li>
+      <li>Su contraseña no puede ser una clave utilizada comúnmente.</li>
+      <li>Su contraseña no puede ser completamente numérica.</li>
+    </ul>
+
+    <p>{{ form.password2.label_tag }} {{ form.password2 }}</p>
+
+    <!-- Campo departamento oculto inicialmente -->
+    <div id="departamento_div" style="display:none;">
+      <label for="id_departamento">Departamento:</label>
+      <select name="departamento" id="id_departamento" class="form-control">
+        <option value="">Seleccione departamento</option>
+        {% for d in departamentos %}
+          <option value="{{ d.id }}">{{ d.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
     <button type="submit">Guardar Usuario</button>
   </form>
 
   <p><a href="{% url 'lista_usuarios' %}">Volver a la lista</a></p>
+
+  <script>
+    // Mostrar campo departamento sólo si se selecciona grupo "solicitante"
+    const gruposSelect = document.getElementById('id_groups');
+    const departamentoDiv = document.getElementById('departamento_div');
+
+    function toggleDepartamento() {
+      const selected = Array.from(gruposSelect.selectedOptions).map(opt => opt.text.toLowerCase());
+      if (selected.includes('solicitante')) {
+        departamentoDiv.style.display = 'block';
+      } else {
+        departamentoDiv.style.display = 'none';
+        document.getElementById('id_departamento').value = '';
+      }
+    }
+
+    gruposSelect.addEventListener('change', toggleDepartamento);
+    toggleDepartamento(); // Ejecutar al cargar
+  </script>
+
 {% endblock %}

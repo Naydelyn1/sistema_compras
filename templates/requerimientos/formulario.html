@@ -4,6 +4,10 @@
   <h1>{% if requerimiento.id %}Editar{% else %}Nuevo{% endif %} Requerimiento</h1>
   <form method="post">
       {% csrf_token %}
+
+      <label for="nombre">Nombre del Requerimiento:</label>
+        <input type="text" name="nombre" id="nombre" required>
+
       
       <label for="solicitante">Solicitante:</label>
       <select name="solicitante" class="form-control" required>

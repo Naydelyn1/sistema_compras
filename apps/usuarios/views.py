@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from .forms import UsuarioForm, UsuarioCreacionForm  # UsuarioCreationForm es tu versión personalizada de UserCreationForm
+from apps.departamentos.models import Departamento
 
 User = get_user_model()
 
@@ -12,19 +13,39 @@ def lista_usuarios(request):
     usuarios = User.objects.all()
     return render(request, 'usuarios/lista.html', {'usuarios': usuarios})
 
+
 @login_required
 @permission_required('usuarios.add_usuario', raise_exception=True)
 def crear_usuario(request):
+    departamentos = Departamento.objects.all()  # Traemos todos los departamentos
+
     if request.method == 'POST':
         form = UsuarioCreacionForm(request.POST)
         if form.is_valid():
-            form.save()
+            usuario = form.save(commit=False)
+
+            # Asignar departamento si se envió y es válido
+            departamento_id = request.POST.get('departamento')
+            if departamento_id:
+                try:
+                    departamento = departamentos.get(id=departamento_id)
+                    usuario.departamento = departamento
+                except Departamento.DoesNotExist:
+                    usuario.departamento = None
+
+            usuario.save()
+            # Importante: guardar M2M para los grupos
+            form.save_m2m()
+
             messages.success(request, 'Usuario creado correctamente.')
             return redirect('lista_usuarios')
     else:
         form = UsuarioCreacionForm()
-    return render(request, 'usuarios/formulario.html', {'form': form})
 
+    return render(request, 'usuarios/formulario.html', {
+        'form': form,
+        'departamentos': departamentos,
+    })
 
 @login_required
 @permission_required('usuarios.change_usuario', raise_exception=True)

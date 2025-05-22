@@ -2,6 +2,7 @@ from django.db import models
 from apps.usuarios.models import Usuario
 from apps.departamentos.models import Departamento
 from apps.productos.models import Producto
+from django import forms
 
 
 
@@ -12,14 +13,26 @@ class Requerimiento(models.Model):
         ('alta', 'Alta'),
     ]
 
+    ESTADO_CHOICES = [
+        ('sin_ejecutar', 'Sin Ejecutar'),
+        ('emitida', 'Emitida'),
+        ('recibida', 'Recibida'),
+        ('completa', 'Completa'),
+        ('pendiente', 'Pendiente'),  # Puedes mantener el que ya tenías si quieres
+    ]
+
+    nombre = models.CharField(max_length=150, null=False, blank=False)
+
     solicitante = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name='requerimientos')
     departamento = models.ForeignKey(Departamento, on_delete=models.PROTECT, related_name='requerimientos')
     fecha = models.DateField(auto_now_add=True)
     prioridad = models.CharField(max_length=10, choices=PRIORIDAD_CHOICES, default='media')
-    estado = models.CharField(max_length=50, default='pendiente')
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
+    activo = models.BooleanField(default=True) 
 
     def __str__(self):
-        return f'Requerimiento {self.id} - {self.solicitante}'
+        return f'Requerimiento {self.id} - {self.nombre}'
+
 
 
 class DetalleRequerimiento(models.Model):
@@ -43,5 +56,14 @@ class HistorialAprobacion(models.Model):
         return f'{self.requerimiento} - {self.accion} por {self.usuario}'
 
 
+class RequerimientoSolicitanteForm(forms.ModelForm):
+    class Meta:
+        model = Requerimiento
+        fields = ['prioridad']  # Solo el campo que puede elegir el solicitante
 
+    # Opcional: Si quieres mostrar prioridad con select personalizado
+    prioridad = forms.ChoiceField(
+        choices=Requerimiento.PRIORIDAD_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
 # Create your models here.

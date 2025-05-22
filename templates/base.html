@@ -11,11 +11,11 @@
         {% if user.is_authenticated %}
             <p>Bienvenido, {{ user.username }}</p>
             <nav style="display: flex; gap: 20px; list-style: none; padding: 0;">
-                
+
                 {# Enlace visible para todos los logueados #}
                 <a href="{% url 'home' %}">Inicio</a>
 
-                {# Menú solo para Administrador #}
+                {# Menú según grupo de usuario #}
                 {% if user.groups.all|length > 0 %}
                     {% for group in user.groups.all %}
                         {% if group.name == "administrador" %}
@@ -26,22 +26,18 @@
                             <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
                             <a href="{% url 'lista_departamentos' %}">Departamentos</a>
                             <a href="{% url 'lista_usuarios' %}">Usuarios</a>
-                        {% endif %}
-                        {% if group.name == "solicitante" %}
-                            <a href="{% url 'lista_requerimientos' %}">Mis Requerimientos</a>
-                        {% endif %}
-                        {% if group.name == "aprobador" %}
+                        {% elif group.name == "solicitante" %}
+                            <a href="{% url 'lista_requerimientos_solicitante' %}">Mis Requerimientos</a>
+                        {% elif group.name == "aprobador" %}
                             <a href="{% url 'lista_requerimientos' %}">Aprobar Requerimientos</a>
-                        {% endif %}
-                        {% if group.name == "comprador" %}
+                        {% elif group.name == "comprador" %}
                             <a href="{% url 'lista_ordenes' %}">Órdenes de Compra</a>
-                        {% endif %}
-                        {% if group.name == "usuario_estandar" %}
+                        {% elif group.name == "usuario_estandar" %}
                             <a href="{% url 'lista_requerimientos' %}">Consultar Requerimientos</a>
                         {% endif %}
                     {% endfor %}
                 {% endif %}
-                
+
                 {# Cierre de sesión #}
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">
                     {% csrf_token %}

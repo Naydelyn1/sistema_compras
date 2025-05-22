@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{% if modo == 'editar' %}Editar{% else %}Crear{% endif %} Requerimiento</h2>
+
+<form method="post" id="form_requerimiento">
+  {% csrf_token %}
+
+  <!-- Nombre del requerimiento -->
+  <div>
+    <label for="id_nombre">Nombre del Requerimiento:</label><br/>
+    <input type="text" id="id_nombre" name="nombre" required value="{{ form.nombre|default:'' }}" />
+  </div>
+
+  <!-- Prioridad -->
+  <div>
+    <label for="id_prioridad">Prioridad:</label><br/>
+    <select id="id_prioridad" name="prioridad" required>
+      <option value="baja" {% if form.prioridad == 'baja' %}selected{% endif %}>Baja</option>
+      <option value="media" {% if form.prioridad == 'media' or not form.prioridad %}selected{% endif %}>Media</option>
+      <option value="alta" {% if form.prioridad == 'alta' %}selected{% endif %}>Alta</option>
+    </select>
+  </div>
+
+  <!-- Inputs ocultos para solicitante y departamento -->
+  <input type="hidden" name="solicitante" value="{{ user.id }}">
+  {% if user.departamento %}
+  <input type="hidden" name="departamento" value="{{ user.departamento.id }}">
+  {% else %}
+  <input type="hidden" name="departamento" value="">
+  {% endif %}
+
+  <p><small>El departamento está asignado según tu perfil y no es editable.</small></p>
+
+  <hr>
+
+  <!-- Selección categoría -->
+  <div>
+    <label for="categoria_select">Categoría</label><br/>
+    <select id="categoria_select">
+      <option value="">Seleccione categoría</option>
+      {% for cat in categorias %}
+      <option value="{{ cat.id }}">{{ cat.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Selección producto -->
+  <div>
+    <label for="producto_select">Producto</label><br/>
+    <select id="producto_select">
+      <option value="">Seleccione producto</option>
+    </select>
+  </div>
+
+  <!-- Cantidad -->
+  <div>
+    <label for="cantidad_input">Cantidad</label><br/>
+    <input type="number" id="cantidad_input" min="1" value="1" />
+  </div>
+
+  <button type="button" id="agregar_producto">Agregar Producto</button>
+
+  <hr>
+
+  <!-- Tabla de productos agregados -->
+  <table id="detalles_table" border="1" style="margin-top:10px; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Quitar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Aquí se precargan filas si estamos editando -->
+    </tbody>
+  </table>
+
+  <!-- Inputs ocultos para productos y cantidades -->
+  <div id="productos_cantidades_inputs"></div>
+
+  <br/>
+  <button type="submit">Guardar Requerimiento</button>
+</form>
+
+<script>
+const categoriaSelect = document.getElementById('categoria_select');
+const productoSelect = document.getElementById('producto_select');
+const cantidadInput = document.getElementById('cantidad_input');
+const agregarBtn = document.getElementById('agregar_producto');
+const detallesTableBody = document.querySelector('#detalles_table tbody');
+const productosCantidadesInputs = document.getElementById('productos_cantidades_inputs');
+
+categoriaSelect.addEventListener('change', function() {
+  const categoriaId = this.value;
+  productoSelect.innerHTML = '<option value="">Seleccione producto</option>';
+  if (categoriaId) {
+    fetch(`/api/productos_por_categoria/${categoriaId}/`)
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(prod => {
+          const option = document.createElement('option');
+          option.value = prod.id;
+          option.textContent = prod.nombre;
+          productoSelect.appendChild(option);
+        });
+      });
+  }
+});
+
+agregarBtn.addEventListener('click', function() {
+  const prodId = productoSelect.value;
+  const prodText = productoSelect.options[productoSelect.selectedIndex]?.text || '';
+  const cantidad = cantidadInput.value;
+
+  if (!prodId) {
+    alert('Seleccione un producto');
+    return;
+  }
+  if (cantidad <= 0) {
+    alert('Cantidad inválida');
+    return;
+  }
+
+  // Evitar agregar productos duplicados
+  if ([...productosCantidadesInputs.querySelectorAll('input[name="productos[]"]')].some(i => i.value === prodId)) {
+    alert('El producto ya está agregado');
+    return;
+  }
+
+  // Añadir fila a tabla
+  agregarFilaProducto(prodId, prodText, cantidad);
+
+  // Limpiar selección y cantidad
+  productoSelect.value = '';
+  cantidadInput.value = 1;
+});
+
+// Función para agregar fila e inputs ocultos
+function agregarFilaProducto(prodId, prodText, cantidad) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${prodText}</td><td>${cantidad}</td><td><button type="button" class="quitar">X</button></td>`;
+  detallesTableBody.appendChild(tr);
+
+  const inputProd = document.createElement('input');
+  inputProd.type = 'hidden';
+  inputProd.name = 'productos[]';
+  inputProd.value = prodId;
+  productosCantidadesInputs.appendChild(inputProd);
+
+  const inputCant = document.createElement('input');
+  inputCant.type = 'hidden';
+  inputCant.name = 'cantidades[]';
+  inputCant.value = cantidad;
+  productosCantidadesInputs.appendChild(inputCant);
+
+  tr.querySelector('.quitar').addEventListener('click', () => {
+    const inputs = productosCantidadesInputs.querySelectorAll('input');
+    for (let i = 0; i < inputs.length; i += 2) {
+      if (inputs[i].value === prodId) {
+        productosCantidadesInputs.removeChild(inputs[i]);
+        productosCantidadesInputs.removeChild(inputs[i + 1]);
+        break;
+      }
+    }
+    detallesTableBody.removeChild(tr);
+  });
+}
+
+// Precargar productos en edición
+const detalleProductos = {{ detalle_productos|safe }} || [];
+
+detalleProductos.forEach(p => {
+  agregarFilaProducto(p.id, p.nombre, p.cantidad);
+});
+</script>
+{% endblock %}

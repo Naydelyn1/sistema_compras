@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Mis Requerimientos</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Departamento</th>
+            <th>Fecha</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for req in requerimientos %}
+        <tr>
+            <td>{{ req.id }}</td>
+            <td>{{ req.nombre }}</td>
+            <td>{{ req.departamento }}</td>
+            <td>{{ req.fecha }}</td>
+            <td>{{ req.get_prioridad_display }}</td>
+            <td>{{ req.estado }}</td>
+            <td>
+                <a href="{% url 'editar_requerimiento_solicitante' req.id %}">Editar</a>|
+                <a href="{% url 'eliminar_requerimiento_solicitante' req.id %}">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">No tiene requerimientos.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'crear_requerimiento'%}">Crear Nuevo Requerimiento</a>
+{% endblock %}
