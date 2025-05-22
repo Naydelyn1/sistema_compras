@@ -3,47 +3,171 @@
 {% block title %}{{ accion|title }} Requerimiento{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h4>{{ accion|title }} requerimiento #{{ requerimiento.id }}</h4>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title mb-4">¿Estás seguro que deseas {{ accion }} este requerimiento?</h5>
-            
-            <div class="mb-4">
-                <h6>Información del requerimiento:</h6>
-                <p><strong>Solicitante:</strong> {{ requerimiento.solicitante }}</p>
-                <p><strong>Departamento:</strong> {{ requerimiento.departamento }}</p>
-                <p><strong>Fecha:</strong> {{ requerimiento.fecha }}</p>
-                <p>
-                    <strong>Prioridad:</strong> 
-                    {% if requerimiento.prioridad == 'alta' %}
-                        <span class="badge bg-danger">Alta</span>
-                    {% elif requerimiento.prioridad == 'media' %}
-                        <span class="badge bg-warning">Media</span>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8 col-xl-6">
+            <!-- Header elegante -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="rounded-circle p-3 me-3 shadow-sm {% if accion == 'aprobar' %}bg-success{% else %}bg-danger{% endif %}">
+                    {% if accion == 'aprobar' %}
+                        <i class="bi bi-check-circle-fill text-white fs-3"></i>
                     {% else %}
-                        <span class="badge bg-info">Baja</span>
+                        <i class="bi bi-x-circle-fill text-white fs-3"></i>
                     {% endif %}
-                </p>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold text-dark">{{ accion|title }} Requerimiento</h2>
+                    <p class="text-muted mb-0">Confirma tu decisión sobre el requerimiento #{{ requerimiento.id }}</p>
+                </div>
             </div>
 
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="observacion" class="form-label">Observación</label>
-                    <textarea name="observacion" id="observacion" class="form-control" rows="3" placeholder="Ingrese una observación (opcional)"></textarea>
+            <!-- Card principal con mejor diseño -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header border-0 py-4 {% if accion == 'aprobar' %}bg-success{% else %}bg-danger{% endif %}">
+                    <div class="d-flex align-items-center text-white">
+                        {% if accion == 'aprobar' %}
+                            <i class="bi bi-shield-check fs-4 me-3"></i>
+                        {% else %}
+                            <i class="bi bi-shield-x fs-4 me-3"></i>
+                        {% endif %}
+                        <h5 class="mb-0 fw-semibold">Confirmar {{ accion|title }}</h5>
+                    </div>
                 </div>
-                
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{% url 'ver_detalle_requerimiento' requerimiento.id %}" class="btn btn-secondary">Cancelar</a>
-                    {% if accion == 'aprobar' %}
-                        <button type="submit" class="btn btn-success">Confirmar aprobación</button>
-                    {% else %}
-                        <button type="submit" class="btn btn-danger">Confirmar rechazo</button>
-                    {% endif %}
+
+                <div class="card-body p-4">
+                    <!-- Pregunta de confirmación -->
+                    <div class="text-center mb-4 py-3">
+                        <div class="{% if accion == 'aprobar' %}bg-success{% else %}bg-danger{% endif %} bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center p-4">
+                            {% if accion == 'aprobar' %}
+                                <i class="bi bi-question-circle display-6 text-success"></i>
+                            {% else %}
+                                <i class="bi bi-question-circle display-6 text-danger"></i>
+                            {% endif %}
+                        </div>
+                        <h4 class="fw-bold text-dark mb-2">¿Estás seguro?</h4>
+                        <p class="text-muted mb-0">Esta acción {% if accion == 'aprobar' %}aprobará{% else %}rechazará{% endif %} definitivamente este requerimiento</p>
+                    </div>
+
+                    <!-- Información del requerimiento -->
+                    <div class="bg-light rounded-3 p-4 mb-4">
+                        <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
+                            <i class="bi bi-info-circle me-2 text-primary"></i>
+                            Información del Requerimiento
+                        </h6>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="bi bi-person-fill text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Solicitante</small>
+                                        <span class="fw-semibold text-dark">{{ requerimiento.solicitante }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="bi bi-building text-info"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Departamento</small>
+                                        <span class="fw-semibold text-dark">{{ requerimiento.departamento }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-secondary bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="bi bi-calendar3 text-secondary"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Fecha de solicitud</small>
+                                        <span class="fw-semibold text-dark">{{ requerimiento.fecha|date:"d/m/Y" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Prioridad</small>
+                                        {% if requerimiento.prioridad == 'alta' %}
+                                            <span class="badge bg-danger bg-gradient px-3 py-2 rounded-pill">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>Alta
+                                            </span>
+                                        {% elif requerimiento.prioridad == 'media' %}
+                                            <span class="badge bg-warning bg-gradient px-3 py-2 rounded-pill text-dark">
+                                                <i class="bi bi-dash-circle-fill me-1"></i>Media
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success bg-gradient px-3 py-2 rounded-pill">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Baja
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="observacion" class="form-label fw-semibold text-dark d-flex align-items-center">
+                                <i class="bi bi-chat-left-text me-2 text-muted"></i>
+                                Observación
+                            </label>
+                            <textarea name="observacion" 
+                                      id="observacion" 
+                                      class="form-control border-0 shadow-sm rounded-3 bg-light" 
+                                      rows="4" 
+                                      placeholder="Ingrese una observación que justifique su decisión (opcional)"></textarea>
+                            <small class="form-text text-muted mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Esta observación será visible en el historial del requerimiento
+                            </small>
+                        </div>
+                        
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a href="{% url 'ver_detalle_requerimiento' requerimiento.id %}" 
+                               class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                            </a>
+                            
+                            {% if accion == 'aprobar' %}
+                                <button type="submit" class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow-sm">
+                                    <i class="bi bi-check-lg me-2"></i>Confirmar Aprobación
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-danger btn-lg px-5 py-2 rounded-pill shadow-sm">
+                                    <i class="bi bi-x-lg me-2"></i>Confirmar Rechazo
+                                </button>
+                            {% endif %}
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+
+            <!-- Advertencia adicional -->
+            <div class="alert {% if accion == 'aprobar' %}alert-success{% else %}alert-danger{% endif %} border-0 rounded-3 mt-4 shadow-sm" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                    <div>
+                        <strong>¡Importante!</strong>
+                        Una vez confirmada, esta acción no se puede deshacer. El requerimiento cambiará su estado de forma permanente.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
