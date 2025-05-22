@@ -2,16 +2,182 @@
 {% load static %}
 
 {% block content %}
-<h1>Editar Usuario: {{ usuario.username }}</h1>
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-person-gear me-2"></i>
+                    Editar Usuario: {{ usuario.username }}
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <!-- Mostrar errores generales del formulario -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger border-0 mb-4">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Error:</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <table>
-        {{ form.as_table }}
-    </table>
-    <button type="submit">Guardar Cambios</button>
-</form>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Información personal -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-person-badge me-2"></i>Información Personal
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i>{{ form.username.label }}
+                            </label>
+                            <input type="text" name="username" class="form-control form-control-lg" 
+                                   id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}">
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.username.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>{{ form.email.label }}
+                            </label>
+                            <input type="email" name="email" class="form-control form-control-lg" 
+                                   id="{{ form.email.id_for_label }}" value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.email.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person-badge me-1"></i>Nombre
+                            </label>
+                            <input type="text" name="first_name" class="form-control form-control-lg" 
+                                   id="{{ form.first_name.id_for_label }}" value="{{ form.first_name.value|default:'' }}">
+                            {% if form.first_name.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.first_name.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person-badge me-1"></i>Apellido
+                            </label>
+                            <input type="text" name="last_name" class="form-control form-control-lg" 
+                                   id="{{ form.last_name.id_for_label }}" value="{{ form.last_name.value|default:'' }}">
+                            {% if form.last_name.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.last_name.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
-<p><a href="{% url 'lista_usuarios' %}">Volver a la lista</a></p>
+                    <!-- Configuración de cuenta -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-gear me-2"></i>Roles y Permisos
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="{{ form.groups.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-people me-1"></i>{{ form.groups.label }}
+                            </label>
+                            <select name="groups" class="form-select form-select-lg" id="{{ form.groups.id_for_label }}" multiple>
+                                {% for choice in form.groups.field.queryset %}
+                                    <option value="{{ choice.id }}" 
+                                            {% if choice in form.groups.value %}selected{% endif %}>
+                                        {{ choice.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Mantén presionado Ctrl (o Cmd en Mac) para seleccionar múltiples roles</small>
+                            {% if form.groups.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.groups.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Departamento -->
+                    {% if form.departamento %}
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-building me-2"></i>Asignación de Departamento
+                            </h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.departamento.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-building me-1"></i>Departamento
+                            </label>
+                            <select name="departamento" class="form-select form-select-lg" id="{{ form.departamento.id_for_label }}">
+                                <option value="">Seleccione un departamento</option>
+                                {% for choice in form.departamento.field.queryset %}
+                                    <option value="{{ choice.id }}" 
+                                            {% if choice == form.departamento.value %}selected{% endif %}>
+                                        {{ choice.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.departamento.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.departamento.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Botones de acción -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary btn-lg me-md-2">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-lg me-2"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light text-muted">
+                <small>
+                    <i class="bi bi-info-circle me-1"></i>
+                    Los cambios se aplicarán inmediatamente después de guardar
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

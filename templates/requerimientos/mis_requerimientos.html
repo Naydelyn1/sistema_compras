@@ -1,36 +1,498 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Mis Requerimientos</h2>
-<table border="1">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Departamento</th>
-            <th>Fecha</th>
-            <th>Prioridad</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for req in requerimientos %}
-        <tr>
-            <td>{{ req.id }}</td>
-            <td>{{ req.nombre }}</td>
-            <td>{{ req.departamento }}</td>
-            <td>{{ req.fecha }}</td>
-            <td>{{ req.get_prioridad_display }}</td>
-            <td>{{ req.estado }}</td>
-            <td>
-                <a href="{% url 'editar_requerimiento_solicitante' req.id %}">Editar</a>|
-                <a href="{% url 'eliminar_requerimiento_solicitante' req.id %}">Eliminar</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="7">No tiene requerimientos.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'crear_requerimiento'%}">Crear Nuevo Requerimiento</a>
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h3 mb-0">
+                <i class="bi bi-person-lines-fill text-primary me-2"></i>
+                Mis Requerimientos
+            </h2>
+            <a href="{% url 'crear_requerimiento' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Nuevo Requerimiento
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Tarjetas de resumen -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary text-center">
+            <div class="card-body">
+                <i class="bi bi-clipboard-check display-4 text-primary"></i>
+                <h5 class="card-title mt-2">Total</h5>
+                <h3 class="text-primary">{{ requerimientos|length }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning text-center">
+            <div class="card-body">
+                <i class="bi bi-hourglass-split display-4 text-warning"></i>
+                <h5 class="card-title mt-2">Pendientes</h5>
+                <h3 class="text-warning" id="pendientes-count">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success text-center">
+            <div class="card-body">
+                <i class="bi bi-check-circle display-4 text-success"></i>
+                <h5 class="card-title mt-2">Aprobados</h5>
+                <h3 class="text-success" id="aprobados-count">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-danger text-center">
+            <div class="card-body">
+                <i class="bi bi-flag display-4 text-danger"></i>
+                <h5 class="card-title mt-2">Alta Prioridad</h5>
+                <h3 class="text-danger" id="alta-prioridad-count">0</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Buscar por nombre</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Buscar requerimiento..." id="search-input">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="estado-filter">
+                            <option value="">Todos</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="aprobado">Aprobado</option>
+                            <option value="rechazado">Rechazado</option>
+                            <option value="en_proceso">En Proceso</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Prioridad</label>
+                        <select class="form-select" id="prioridad-filter">
+                            <option value="">Todas</option>
+                            <option value="alta">Alta</option>
+                            <option value="media">Media</option>
+                            <option value="baja">Baja</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Ordenar por</label>
+                        <select class="form-select" id="sort-select">
+                            <option value="fecha-desc">Fecha (Más reciente)</option>
+                            <option value="fecha-asc">Fecha (Más antigua)</option>
+                            <option value="nombre-asc">Nombre (A-Z)</option>
+                            <option value="nombre-desc">Nombre (Z-A)</option>
+                            <option value="prioridad">Prioridad</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-secondary w-100" id="clear-filters">
+                            <i class="bi bi-x-lg me-1"></i>Limpiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de requerimientos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-table me-2"></i>Lista de Requerimientos
+                    <span class="badge bg-secondary ms-2" id="total-count">{{ requerimientos|length }}</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if requerimientos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0" id="requerimientos-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th><i class="bi bi-hash me-1"></i>ID</th>
+                                    <th><i class="bi bi-card-heading me-1"></i>Nombre</th>
+                                    <th><i class="bi bi-building me-1"></i>Departamento</th>
+                                    <th><i class="bi bi-calendar me-1"></i>Fecha</th>
+                                    <th><i class="bi bi-flag me-1"></i>Prioridad</th>
+                                    <th><i class="bi bi-info-circle me-1"></i>Estado</th>
+                                    <th width="150"><i class="bi bi-gear me-1"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in requerimientos %}
+                                <tr data-estado="{{ req.estado }}" data-prioridad="{{ req.prioridad }}" data-fecha="{{ req.fecha|date:'Y-m-d' }}" data-nombre="{{ req.nombre }}">
+                                    <td>
+                                        <span class="badge bg-light text-dark">#{{ req.id }}</span>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ req.nombre }}</strong>
+                                            {% if req.descripcion %}
+                                                <br><small class="text-muted">{{ req.descripcion|truncatechars:50 }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            <i class="bi bi-building me-1"></i>{{ req.departamento }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="text-muted">
+                                            <i class="bi bi-calendar3 me-1"></i>
+                                            <small>{{ req.fecha|date:"d/m/Y" }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if req.prioridad == 'alta' %}bg-danger{% endif %}
+                                            {% if req.prioridad == 'media' %}bg-warning text-dark{% endif %}
+                                            {% if req.prioridad == 'baja' %}bg-success{% endif %}">
+                                            {% if req.prioridad == 'alta' %}🔴{% endif %}
+                                            {% if req.prioridad == 'media' %}🟡{% endif %}
+                                            {% if req.prioridad == 'baja' %}🟢{% endif %}
+                                            {{ req.get_prioridad_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if req.estado == 'aprobado' %}bg-success{% endif %}
+                                            {% if req.estado == 'rechazado' %}bg-danger{% endif %}
+                                            {% if req.estado == 'en_proceso' %}bg-warning text-dark{% endif %}
+                                            {% if req.estado == 'pendiente' %}bg-secondary{% endif %}">
+                                            {% if req.estado == 'aprobado' %}<i class="bi bi-check-circle me-1"></i>{% endif %}
+                                            {% if req.estado == 'rechazado' %}<i class="bi bi-x-circle me-1"></i>{% endif %}
+                                            {% if req.estado == 'en_proceso' %}<i class="bi bi-hourglass-split me-1"></i>{% endif %}
+                                            {% if req.estado == 'pendiente' %}<i class="bi bi-clock me-1"></i>{% endif %}
+                                            {{ req.estado|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            {% if req.estado == 'pendiente' or req.estado == 'rechazado' %}
+                                                <a href="{% url 'editar_requerimiento_solicitante' req.id %}" 
+                                                   class="btn btn-outline-primary" 
+                                                   title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            {% endif %}
+                                            
+                                            {% if req.estado == 'pendiente' %}
+                                                <a href="{% url 'eliminar_requerimiento_solicitante' req.id %}" 
+                                                   class="btn btn-outline-danger" 
+                                                   title="Eliminar"
+                                                   onclick="return confirm('¿Está seguro que desea eliminar este requerimiento?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            {% endif %}
+                                            
+                                            <button type="button" 
+                                                    class="btn btn-outline-info" 
+                                                    title="Ver detalles"
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#detalleModal{{ req.id }}">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-clipboard-x display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">No tienes requerimientos</h4>
+                        <p class="text-muted">Aún no has creado ningún requerimiento.</p>
+                        <a href="{% url 'crear_requerimiento' %}" class="btn btn-primary mt-2">
+                            <i class="bi bi-plus-lg me-1"></i>Crear Mi Primer Requerimiento
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modales de detalle para cada requerimiento -->
+{% for req in requerimientos %}
+<div class="modal fade" id="detalleModal{{ req.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-info-circle me-2"></i>Detalle del Requerimiento #{{ req.id }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-card-heading me-2"></i>Información General</h6>
+                        <p><strong>Nombre:</strong> {{ req.nombre }}</p>
+                        <p><strong>Departamento:</strong> {{ req.departamento }}</p>
+                        <p><strong>Fecha:</strong> {{ req.fecha|date:"d/m/Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-flag me-2"></i>Clasificación</h6>
+                        <p><strong>Prioridad:</strong> 
+                            <span class="badge 
+                                {% if req.prioridad == 'alta' %}bg-danger{% endif %}
+                                {% if req.prioridad == 'media' %}bg-warning text-dark{% endif %}
+                                {% if req.prioridad == 'baja' %}bg-success{% endif %}">
+                                {{ req.get_prioridad_display }}
+                            </span>
+                        </p>
+                        <p><strong>Estado:</strong> 
+                            <span class="badge 
+                                {% if req.estado == 'aprobado' %}bg-success{% endif %}
+                                {% if req.estado == 'rechazado' %}bg-danger{% endif %}
+                                {% if req.estado == 'en_proceso' %}bg-warning text-dark{% endif %}
+                                {% if req.estado == 'pendiente' %}bg-secondary{% endif %}">
+                                {{ req.estado|title }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                
+                {% if req.descripcion %}
+                <div class="mt-3">
+                    <h6><i class="bi bi-text-paragraph me-2"></i>Descripción</h6>
+                    <p class="text-muted">{{ req.descripcion }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Aquí puedes agregar más detalles como productos solicitados, etc. -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                {% if req.estado == 'pendiente' or req.estado == 'rechazado' %}
+                    <a href="{% url 'editar_requerimiento_solicitante' req.id %}" class="btn btn-primary">
+                        <i class="bi bi-pencil me-1"></i>Editar
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const estadoFilter = document.getElementById('estado-filter');
+    const prioridadFilter = document.getElementById('prioridad-filter');
+    const sortSelect = document.getElementById('sort-select');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    const table = document.getElementById('requerimientos-table');
+    const totalCount = document.getElementById('total-count');
+    
+    // Función para filtrar y ordenar la tabla
+    function filterAndSortTable() {
+        if (!table) return;
+        
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const searchTerm = searchInput.value.toLowerCase();
+        const estadoValue = estadoFilter.value.toLowerCase();
+        const prioridadValue = prioridadFilter.value.toLowerCase();
+        const sortValue = sortSelect.value;
+        
+        // Filtrar filas
+        let visibleRows = rows.filter(row => {
+            const nombre = row.getAttribute('data-nombre').toLowerCase();
+            const estado = row.getAttribute('data-estado').toLowerCase();
+            const prioridad = row.getAttribute('data-prioridad').toLowerCase();
+            
+            const matchesSearch = !searchTerm || nombre.includes(searchTerm);
+            const matchesEstado = !estadoValue || estado.includes(estadoValue);
+            const matchesPrioridad = !prioridadValue || prioridad.includes(prioridadValue);
+            
+            return matchesSearch && matchesEstado && matchesPrioridad;
+        });
+        
+        // Ordenar filas
+        visibleRows.sort((a, b) => {
+            switch(sortValue) {
+                case 'fecha-desc':
+                    return new Date(b.getAttribute('data-fecha')) - new Date(a.getAttribute('data-fecha'));
+                case 'fecha-asc':
+                    return new Date(a.getAttribute('data-fecha')) - new Date(b.getAttribute('data-fecha'));
+                case 'nombre-asc':
+                    return a.getAttribute('data-nombre').localeCompare(b.getAttribute('data-nombre'));
+                case 'nombre-desc':
+                    return b.getAttribute('data-nombre').localeCompare(a.getAttribute('data-nombre'));
+                case 'prioridad':
+                    const prioridadOrder = { 'alta': 3, 'media': 2, 'baja': 1 };
+                    return prioridadOrder[b.getAttribute('data-prioridad')] - prioridadOrder[a.getAttribute('data-prioridad')];
+                default:
+                    return 0;
+            }
+        });
+        
+        // Ocultar todas las filas
+        rows.forEach(row => row.style.display = 'none');
+        
+        // Mostrar filas filtradas en orden
+        visibleRows.forEach(row => {
+            row.style.display = '';
+            tbody.appendChild(row); // Reordena la fila
+        });
+        
+        // Actualizar contador
+        if (totalCount) {
+            totalCount.textContent = visibleRows.length;
+        }
+        
+        // Actualizar estadísticas
+        updateStats(visibleRows);
+    }
+    
+    // Función para actualizar estadísticas
+    function updateStats(visibleRows = null) {
+        const rows = visibleRows || (table ? Array.from(table.querySelectorAll('tbody tr')).filter(row => row.style.display !== 'none') : []);
+        
+        let pendientes = 0, aprobados = 0, altaPrioridad = 0;
+        
+        rows.forEach(row => {
+            const estado = row.getAttribute('data-estado');
+            const prioridad = row.getAttribute('data-prioridad');
+            
+            if (estado === 'pendiente') pendientes++;
+            if (estado === 'aprobado') aprobados++;
+            if (prioridad === 'alta') altaPrioridad++;
+        });
+        
+        const pendientesCount = document.getElementById('pendientes-count');
+        const aprobadosCount = document.getElementById('aprobados-count');
+        const altaPrioridadCount = document.getElementById('alta-prioridad-count');
+        
+        if (pendientesCount) pendientesCount.textContent = pendientes;
+        if (aprobadosCount) aprobadosCount.textContent = aprobados;
+        if (altaPrioridadCount) altaPrioridadCount.textContent = altaPrioridad;
+    }
+    
+    // Event listeners
+    if (searchInput) searchInput.addEventListener('input', filterAndSortTable);
+    if (estadoFilter) estadoFilter.addEventListener('change', filterAndSortTable);
+    if (prioridadFilter) prioridadFilter.addEventListener('change', filterAndSortTable);
+    if (sortSelect) sortSelect.addEventListener('change', filterAndSortTable);
+    
+    // Limpiar filtros
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            if (searchInput) searchInput.value = '';
+            if (estadoFilter) estadoFilter.value = '';
+            if (prioridadFilter) prioridadFilter.value = '';
+            if (sortSelect) sortSelect.value = 'fecha-desc';
+            filterAndSortTable();
+        });
+    }
+    
+    // Inicializar estadísticas
+    updateStats();
+    
+    // Animación para las tarjetas de estadísticas
+    function animateCounters() {
+        const counters = document.querySelectorAll('[id$="-count"]');
+        counters.forEach(counter => {
+            const target = parseInt(counter.textContent);
+            let current = 0;
+            const increment = target / 20;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    counter.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current);
+                }
+            }, 50);
+        });
+    }
+    
+    // Ejecutar animación después de un breve delay
+    setTimeout(animateCounters, 500);
+    
+    // Añadir tooltips a los botones de acción
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Mejorar la experiencia de usuario con efectos hover
+    const tableRows = document.querySelectorAll('#requerimientos-table tbody tr');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.01)';
+            this.style.transition = 'all 0.2s ease';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+});
+
+// Función para exportar datos (opcional)
+function exportToCSV() {
+    const table = document.getElementById('requerimientos-table');
+    if (!table) return;
+    
+    let csv = 'ID,Nombre,Departamento,Fecha,Prioridad,Estado\n';
+    
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        if (row.style.display !== 'none') {
+            const cells = row.querySelectorAll('td');
+            const rowData = [
+                cells[0].textContent.trim(),
+                cells[1].textContent.trim(),
+                cells[2].textContent.trim(),
+                cells[3].textContent.trim(),
+                cells[4].textContent.trim(),
+                cells[5].textContent.trim()
+            ];
+            csv += rowData.map(field => `"${field}"`).join(',') + '\n';
+        }
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `mis_requerimientos_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+</script>
+
+<!-- Botón flotante para exportar (opcional) -->
+{% if requerimientos %}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+    <button type="button" class="btn btn-success rounded-circle p-3" onclick="exportToCSV()" title="Exportar a CSV">
+        <i class="bi bi-download"></i>
+    </button>
+</div>
+{% endif %}
+
 {% endblock %}

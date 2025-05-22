@@ -1,35 +1,155 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>{% if requerimiento.id %}Editar{% else %}Nuevo{% endif %} Requerimiento</h1>
-  <form method="post">
-      {% csrf_token %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-{% if requerimiento.id %}pencil-square{% else %}plus-circle{% endif %} me-2"></i>
+                        {% if requerimiento.id %}Editar{% else %}Nuevo{% endif %} Requerimiento
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="requerimiento-form">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>Información Básica
+                                </h5>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="nombre" class="form-label">
+                                    <i class="bi bi-card-heading me-1"></i>Nombre del Requerimiento
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       name="nombre" 
+                                       id="nombre" 
+                                       class="form-control" 
+                                       placeholder="Ingrese el nombre del requerimiento"
+                                       value="{{ requerimiento.nombre|default:'' }}"
+                                       required>
+                                <div class="form-text">Ingrese un nombre descriptivo para identificar el requerimiento.</div>
+                            </div>
+                        </div>
 
-      <label for="nombre">Nombre del Requerimiento:</label>
-        <input type="text" name="nombre" id="nombre" required>
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="bi bi-people me-2"></i>Asignación
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="solicitante" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Solicitante
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="solicitante" id="solicitante" class="form-select" required>
+                                    <option value="">Seleccione un solicitante...</option>
+                                    {% for usuario in usuarios %}
+                                        <option value="{{ usuario.id }}" 
+                                                {% if usuario.id == requerimiento.solicitante.id %}selected{% endif %}>
+                                            {{ usuario.first_name }} {{ usuario.last_name }} ({{ usuario.username }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
-      
-      <label for="solicitante">Solicitante:</label>
-      <select name="solicitante" class="form-control" required>
-          {% for usuario in usuarios %}
-              <option value="{{ usuario.id }}" {% if usuario.id == requerimiento.solicitante.id %}selected{% endif %}>{{ usuario }}</option>
-          {% endfor %}
-      </select><br><br>
+                            <div class="col-md-6 mb-3">
+                                <label for="departamento" class="form-label">
+                                    <i class="bi bi-building me-1"></i>Departamento
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="departamento" id="departamento" class="form-select" required>
+                                    <option value="">Seleccione un departamento...</option>
+                                    {% for depto in departamentos %}
+                                        <option value="{{ depto.id }}" 
+                                                {% if depto.id == requerimiento.departamento.id %}selected{% endif %}>
+                                            {{ depto.nombre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
 
-      <label for="departamento">Departamento:</label>
-      <select name="departamento" class="form-control" required>
-          {% for depto in departamentos %}
-              <option value="{{ depto.id }}" {% if depto.id == requerimiento.departamento.id %}selected{% endif %}>{{ depto }}</option>
-          {% endfor %}
-      </select><br><br>
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="bi bi-flag me-2"></i>Prioridad
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="prioridad" class="form-label">
+                                    <i class="bi bi-flag me-1"></i>Nivel de Prioridad
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="prioridad" id="prioridad" class="form-select" required>
+                                    <option value="">Seleccione la prioridad...</option>
+                                    {% for clave, valor in prioridades %}
+                                        <option value="{{ clave }}" 
+                                                {% if clave == requerimiento.prioridad %}selected{% endif %}>
+                                            {{ valor }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    Seleccione la prioridad del requerimiento:
+                                    <span class="badge bg-success">Baja</span>
+                                    <span class="badge bg-warning text-dark">Media</span>
+                                    <span class="badge bg-danger">Alta</span>
+                                </div>
+                            </div>
+                        </div>
 
-      <label for="prioridad">Prioridad:</label>
-      <select name="prioridad" class="form-control" required>
-          {% for clave, valor in prioridades %}
-              <option value="{{ clave }}" {% if clave == requerimiento.prioridad %}selected{% endif %}>{{ valor }}</option>
-          {% endfor %}
-      </select><br><br>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_requerimientos' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Guardar Requerimiento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-      <button type="submit" class="btn btn-primary">Guardar Requerimiento</button>
-  </form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar validación visual
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input[required], select[required]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.value.trim() === '') {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+    });
+    
+    // Cambiar color del select de prioridad según la selección
+    const prioridadSelect = document.getElementById('prioridad');
+    prioridadSelect.addEventListener('change', function() {
+        this.className = 'form-select';
+        if (this.value === 'alta') {
+            this.classList.add('border-danger');
+        } else if (this.value === 'media') {
+            this.classList.add('border-warning');
+        } else if (this.value === 'baja') {
+            this.classList.add('border-success');
+        }
+    });
+});
+</script>
+
 {% endblock %}
