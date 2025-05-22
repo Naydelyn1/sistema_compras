@@ -172,7 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(data => {
                         if (data.departamento_id) {
                             selectDepartamento.value = data.departamento_id;
-                            selectDepartamento.disabled = true;
+                            selectDepartamento.setAttribute("readonly", "readonly");
+                            selectDepartamento.classList.add("bg-light"); // opcional: visualmente más claro
+
                         } else {
                             selectDepartamento.disabled = false;
                             selectDepartamento.value = '';
