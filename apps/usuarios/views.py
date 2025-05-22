@@ -10,8 +10,17 @@ User = get_user_model()
 @login_required
 @permission_required('usuarios.view_usuario', raise_exception=True)
 def lista_usuarios(request):
-    usuarios = User.objects.all()
+    # Solo mostrar usuarios activos
+    usuarios = User.objects.filter(is_active=True)
     return render(request, 'usuarios/lista.html', {'usuarios': usuarios})
+
+
+@login_required
+@permission_required('usuarios.view_usuario', raise_exception=True)
+def lista_usuarios_inactivos(request):
+    """Vista para ver solo usuarios inactivos"""
+    usuarios = User.objects.filter(is_active=False).order_by('username')
+    return render(request, 'usuarios/lista_inactivos.html', {'usuarios': usuarios})
 
 
 @login_required
@@ -68,7 +77,15 @@ def editar_usuario(request, usuario_id):
 def eliminar_usuario(request, usuario_id):
     usuario = get_object_or_404(User, pk=usuario_id)
     if request.method == 'POST':
-        usuario.delete()
-        messages.success(request, 'Usuario eliminado correctamente.')
+        # En lugar de eliminar, cambiar el estado is_active
+        if usuario.is_active:
+            usuario.is_active = False
+            messages.success(request, f'Usuario {usuario.username} desactivado correctamente.')
+        else:
+            usuario.is_active = True
+            messages.success(request, f'Usuario {usuario.username} activado correctamente.')
+        
+        usuario.save()
         return redirect('lista_usuarios')
+    
     return render(request, 'usuarios/confirmar_eliminacion.html', {'usuario': usuario})

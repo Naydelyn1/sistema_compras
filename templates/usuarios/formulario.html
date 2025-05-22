@@ -1,77 +1,262 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Nuevo Usuario</h1>
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-person-plus-fill me-2"></i>
+                    Crear Nuevo Usuario
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                
+                <!-- Mostrar errores del formulario -->
+                {% if form.errors %}
+                    <div class="alert alert-danger border-0 mb-4">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Por favor, corrige los siguientes errores:
+                        </h6>
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
 
-  {% if form.errors %}
-    <div style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 15px;">
-      <ul>
-        {% for field in form %}
-          {% for error in field.errors %}
-            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-          {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-          <li>{{ error }}</li>
-        {% endfor %}
-      </ul>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Información básica -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-success border-bottom pb-2 mb-3">
+                                <i class="bi bi-person-badge me-2"></i>Información Básica
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i>{{ form.username.label }}
+                            </label>
+                            <input type="text" name="username" class="form-control form-control-lg" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}">
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.username.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>{{ form.email.label }}
+                            </label>
+                            <input type="email" name="email" class="form-control form-control-lg" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.email.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person-badge me-1"></i>{{ form.nombre.label }}
+                            </label>
+                            <input type="text" name="nombre" class="form-control form-control-lg" id="{{ form.nombre.id_for_label }}" value="{{ form.nombre.value|default:'' }}">
+                            {% if form.nombre.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.nombre.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.apellido.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person-badge me-1"></i>{{ form.apellido.label }}
+                            </label>
+                            <input type="text" name="apellido" class="form-control form-control-lg" id="{{ form.apellido.id_for_label }}" value="{{ form.apellido.value|default:'' }}">
+                            {% if form.apellido.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.apellido.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Configuración de cuenta -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-success border-bottom pb-2 mb-3">
+                                <i class="bi bi-gear me-2"></i>Configuración de Cuenta
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input type="checkbox" name="is_active" class="form-check-input" id="{{ form.is_active.id_for_label }}" {% if form.is_active.value %}checked{% endif %}>
+                                <label class="form-check-label fw-semibold" for="{{ form.is_active.id_for_label }}">
+                                    <i class="bi bi-toggle-on me-1"></i>{{ form.is_active.label }}
+                                </label>
+                            </div>
+                            <small class="text-muted">Activar o desactivar la cuenta del usuario</small>
+                            {% if form.is_active.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.is_active.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.groups.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-people me-1"></i>{{ form.groups.label }}
+                            </label>
+                            <select name="groups" class="form-select form-select-lg" id="{{ form.groups.id_for_label }}" multiple>
+                                {% for choice in form.groups.field.queryset %}
+                                    <option value="{{ choice.id }}">{{ choice.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Selecciona los roles del usuario</small>
+                            {% if form.groups.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.groups.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Campo departamento (oculto inicialmente) -->
+                    <div id="departamento_div" class="row mb-4 d-none">
+                        <div class="col-12">
+                            <h5 class="text-success border-bottom pb-2 mb-3">
+                                <i class="bi bi-building me-2"></i>Asignación de Departamento
+                            </h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_departamento" class="form-label fw-semibold">
+                                <i class="bi bi-building me-1"></i>Departamento
+                            </label>
+                            <select name="departamento" id="id_departamento" class="form-select form-select-lg">
+                                <option value="">Seleccione un departamento</option>
+                                {% for d in departamentos %}
+                                    <option value="{{ d.id }}">{{ d.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Requerido para usuarios solicitantes</small>
+                        </div>
+                    </div>
+
+                    <!-- Configuración de contraseña -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-success border-bottom pb-2 mb-3">
+                                <i class="bi bi-key me-2"></i>Configuración de Contraseña
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>{{ form.password1.label }}
+                            </label>
+                            <input type="password" name="password1" class="form-control form-control-lg" id="{{ form.password1.id_for_label }}">
+                            {% if form.password1.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.password1.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-lock-fill me-1"></i>{{ form.password2.label }}
+                            </label>
+                            <input type="password" name="password2" class="form-control form-control-lg" id="{{ form.password2.id_for_label }}">
+                            {% if form.password2.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.password2.errors %}
+                                        <small><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Requisitos de contraseña -->
+                        <div class="col-12">
+                            <div class="alert alert-info border-0">
+                                <h6 class="alert-heading">
+                                    <i class="bi bi-info-circle-fill me-2"></i>Requisitos de contraseña:
+                                </h6>
+                                <ul class="mb-0 small">
+                                    <li><i class="bi bi-check2 me-1 text-success"></i>Su contraseña no puede asemejarse tanto a su otra información personal.</li>
+                                    <li><i class="bi bi-check2 me-1 text-success"></i>Su contraseña debe contener al menos 8 caracteres.</li>
+                                    <li><i class="bi bi-check2 me-1 text-success"></i>Su contraseña no puede ser una clave utilizada comúnmente.</li>
+                                    <li><i class="bi bi-check2 me-1 text-success"></i>Su contraseña no puede ser completamente numérica.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary btn-lg me-md-2">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>Crear Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light text-muted">
+                <small>
+                    <i class="bi bi-shield-check me-1"></i>
+                    La información del usuario será guardada de forma segura
+                </small>
+            </div>
+        </div>
     </div>
-  {% endif %}
+</div>
 
-  <form method="post">
-    {% csrf_token %}
-    
-    <p>{{ form.username.label_tag }} {{ form.username }}</p>
-    <p>{{ form.email.label_tag }} {{ form.email }}</p>
-    <p>{{ form.nombre.label_tag }} {{ form.nombre }}</p>
-    <p>{{ form.apellido.label_tag }} {{ form.apellido }}</p>
-    <p>{{ form.is_active.label_tag }} {{ form.is_active }}</p>
-    <p>{{ form.groups.label_tag }} {{ form.groups }}</p>
-
-    <p>{{ form.password1.label_tag }} {{ form.password1 }}</p>
-
-    <ul style="margin-left: 20px; font-size: 0.9em;">
-      <li>Su contraseña no puede asemejarse tanto a su otra información personal.</li>
-      <li>Su contraseña debe contener al menos 8 caracteres.</li>
-      <li>Su contraseña no puede ser una clave utilizada comúnmente.</li>
-      <li>Su contraseña no puede ser completamente numérica.</li>
-    </ul>
-
-    <p>{{ form.password2.label_tag }} {{ form.password2 }}</p>
-
-    <!-- Campo departamento oculto inicialmente -->
-    <div id="departamento_div" style="display:none;">
-      <label for="id_departamento">Departamento:</label>
-      <select name="departamento" id="id_departamento" class="form-control">
-        <option value="">Seleccione departamento</option>
-        {% for d in departamentos %}
-          <option value="{{ d.id }}">{{ d.nombre }}</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <button type="submit">Guardar Usuario</button>
-  </form>
-
-  <p><a href="{% url 'lista_usuarios' %}">Volver a la lista</a></p>
-
-  <script>
+<script>
     // Mostrar campo departamento sólo si se selecciona grupo "solicitante"
     const gruposSelect = document.getElementById('id_groups');
     const departamentoDiv = document.getElementById('departamento_div');
 
     function toggleDepartamento() {
-      const selected = Array.from(gruposSelect.selectedOptions).map(opt => opt.text.toLowerCase());
-      if (selected.includes('solicitante')) {
-        departamentoDiv.style.display = 'block';
-      } else {
-        departamentoDiv.style.display = 'none';
-        document.getElementById('id_departamento').value = '';
-      }
+        const selected = Array.from(gruposSelect.selectedOptions).map(opt => opt.text.toLowerCase());
+        if (selected.includes('solicitante')) {
+            departamentoDiv.classList.remove('d-none');
+        } else {
+            departamentoDiv.classList.add('d-none');
+            document.getElementById('id_departamento').value = '';
+        }
     }
 
-    gruposSelect.addEventListener('change', toggleDepartamento);
-    toggleDepartamento(); // Ejecutar al cargar
-  </script>
-
+    if (gruposSelect) {
+        gruposSelect.addEventListener('change', toggleDepartamento);
+        toggleDepartamento(); // Ejecutar al cargar
+    }
+</script>
 {% endblock %}

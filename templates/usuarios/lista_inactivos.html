@@ -6,15 +6,14 @@
         <!-- Header de la página -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="text-primary mb-1">
-                    <i class="bi bi-people-fill me-2"></i>Gestión de Usuarios
+                <h2 class="text-danger mb-1">
+                    <i class="bi bi-person-x-fill me-2"></i>Usuarios Inactivos
                 </h2>
-                <p class="text-muted mb-0">Administra los usuarios del sistema de compras</p>
+                <p class="text-muted mb-0">Usuarios desactivados del sistema de compras</p>
             </div>
             <div>
-                <!-- Botón para ver inactivos -->
-                <a href="{% url 'lista_usuarios_inactivos' %}" class="btn btn-outline-secondary me-2">
-                    <i class="bi bi-eye-slash me-2"></i>Ver Inactivos
+                <a href="{% url 'lista_usuarios' %}" class="btn btn-outline-success me-2">
+                    <i class="bi bi-eye me-2"></i>Ver Activos
                 </a>
                 <a href="{% url 'crear_usuario' %}" class="btn btn-success btn-lg shadow-sm">
                     <i class="bi bi-person-plus-fill me-2"></i>Nuevo Usuario
@@ -25,15 +24,15 @@
         <!-- Estadísticas rápidas -->
         <div class="row mb-4">
             <div class="col-md-3 col-6">
-                <div class="card bg-primary text-white shadow-sm">
+                <div class="card bg-danger text-white shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
-                                <i class="bi bi-people fs-1"></i>
+                                <i class="bi bi-person-x fs-1"></i>
                             </div>
                             <div class="flex-grow-1 ms-3">
                                 <div class="fw-bold fs-4">{{ usuarios|length }}</div>
-                                <div class="small">Usuarios Activos</div>
+                                <div class="small">Usuarios Inactivos</div>
                             </div>
                         </div>
                     </div>
@@ -41,12 +40,12 @@
             </div>
         </div>
 
-        <!-- Tabla de usuarios -->
+        <!-- Tabla de usuarios inactivos -->
         <div class="card shadow-lg border-0">
-            <div class="card-header bg-light">
+            <div class="card-header bg-danger text-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-table me-2"></i>Lista de Usuarios Activos
+                        <i class="bi bi-table me-2"></i>Lista de Usuarios Inactivos
                     </h5>
                     <div class="input-group" style="width: 300px;">
                         <input type="text" class="form-control" placeholder="Buscar usuario..." id="searchInput">
@@ -81,10 +80,10 @@
                             </thead>
                             <tbody>
                                 {% for usuario in usuarios %}
-                                <tr>
+                                <tr class="table-secondary opacity-75">
                                     <td class="py-3">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
                                                 <i class="bi bi-person text-white"></i>
                                             </div>
                                             <div>
@@ -139,21 +138,17 @@
                                         {% endfor %}
                                     </td>
                                     <td class="py-3">
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-check-circle me-1"></i>Activo
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle me-1"></i>Inactivo
                                         </span>
                                     </td>
                                     <td class="py-3 text-center">
                                         <div class="btn-group" role="group">
-                                            <a href="{% url 'editar_usuario' usuario.id %}" 
-                                               class="btn btn-outline-primary btn-sm" 
-                                               title="Editar usuario">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
+                                            <!-- Solo botón para REACTIVAR usuario -->
                                             <a href="{% url 'eliminar_usuario' usuario.id %}" 
-                                               class="btn btn-outline-warning btn-sm" 
-                                               title="Desactivar usuario">
-                                                <i class="bi bi-person-dash"></i>
+                                            class="btn btn-outline-success btn-sm" 
+                                            title="Reactivar usuario">
+                                                <i class="bi bi-person-check"></i> Reactivar
                                             </a>
                                         </div>
                                     </td>
@@ -166,12 +161,12 @@
                     <!-- Estado vacío -->
                     <div class="text-center py-5">
                         <div class="mb-4">
-                            <i class="bi bi-people display-1 text-muted"></i>
+                            <i class="bi bi-check-circle display-1 text-success"></i>
                         </div>
-                        <h4 class="text-muted mb-3">No hay usuarios activos</h4>
-                        <p class="text-muted mb-4">Comienza creando tu primer usuario del sistema</p>
-                        <a href="{% url 'crear_usuario' %}" class="btn btn-success btn-lg">
-                            <i class="bi bi-person-plus-fill me-2"></i>Crear Primer Usuario
+                        <h4 class="text-success mb-3">¡Excelente! No hay usuarios inactivos</h4>
+                        <p class="text-muted mb-4">Todos los usuarios están activos en el sistema</p>
+                        <a href="{% url 'lista_usuarios' %}" class="btn btn-success btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Volver a usuarios activos
                         </a>
                     </div>
                 {% endif %}
@@ -180,13 +175,30 @@
             <div class="card-footer bg-light text-muted">
                 <small>
                     <i class="bi bi-info-circle me-1"></i>
-                    Mostrando {{ usuarios|length }} usuario{{ usuarios|length|pluralize }} activo{{ usuarios|length|pluralize }}
+                    Mostrando {{ usuarios|length }} usuario{{ usuarios|length|pluralize }} inactivo{{ usuarios|length|pluralize }}
                 </small>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<!-- Alerta informativa -->
+{% if usuarios %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info border-0">
+            <h6 class="alert-heading">
+                <i class="bi bi-info-circle-fill me-2"></i>¿Cómo reactivar un usuario?
+            </h6>
+            <p class="mb-0">
+                Para reactivar un usuario inactivo, haz clic en el botón <i class="bi bi-person-check text-success"></i> 
+                en la columna de acciones. El usuario volverá a estar disponible inmediatamente.
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- Script para búsqueda en tiempo real -->
 <script>

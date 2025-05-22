@@ -1,9 +1,76 @@
 {% extends "base.html" %}
+
 {% block content %}
-<p>¿Estás seguro que deseas eliminar al usuario <strong>{{ usuario.username }}</strong>?</p>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Sí, eliminar</button>
-    <a href="{% url 'lista_usuarios' %}">No, volver</a>
-</form>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-warning text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Confirmar Desactivación
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info border-0 mb-4">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>Información:</strong> El usuario será desactivado pero no eliminado de la base de datos.
+                </div>
+                
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-dash display-1 text-warning mb-3"></i>
+                    <h5>¿Estás seguro que deseas desactivar al usuario?</h5>
+                    <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-primary mb-2">
+                            <i class="bi bi-person-circle me-2"></i>Usuario a desactivar:
+                        </h6>
+                        <span class="badge bg-primary fs-6 px-3 py-2">
+                            {{ usuario.username }}
+                        </span>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                Estado actual: 
+                                {% if usuario.is_active %}
+                                    <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactivo</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        {% if usuario.is_active %}
+                            <button type="submit" class="btn btn-warning btn-lg me-md-2">
+                                <i class="bi bi-person-dash me-2"></i>
+                                Sí, desactivar usuario
+                            </button>
+                        {% else %}
+                            <button type="submit" class="btn btn-success btn-lg me-md-2">
+                                <i class="bi bi-person-check me-2"></i>
+                                Sí, activar usuario
+                            </button>
+                        {% endif %}
+                    </form>
+                    <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        No, volver atrás
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer bg-light text-muted text-center">
+                <small>
+                    <i class="bi bi-shield-check me-1"></i>
+                    {% if usuario.is_active %}
+                        El usuario será desactivado y no podrá acceder al sistema
+                    {% else %}
+                        El usuario será reactivado y podrá acceder al sistema
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

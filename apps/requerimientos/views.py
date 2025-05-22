@@ -127,11 +127,16 @@ def lista_requerimientos_solicitante(request):
     requerimientos = Requerimiento.objects.filter(solicitante=usuario, activo=True).order_by('-fecha')
     return render(request, 'requerimientos/mis_requerimientos.html', {'requerimientos': requerimientos})
 
-#categoria para ser llamada en crear requerimiento
+# API para obtener productos por categoría
 def productos_por_categoria(request, categoria_id):
-    productos = Producto.objects.filter(categoria_id=categoria_id, activo=True)
-    data = [{'id': p.id, 'nombre': p.nombre} for p in productos]
-    return JsonResponse(data, safe=False)
+    try:
+        productos = Producto.objects.filter(categoria_id=categoria_id, activo=True)
+        data = [{'id': p.id, 'nombre': p.nombre} for p in productos]
+        print(f"Productos encontrados para categoría {categoria_id}: {len(data)}")  # Debug
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        print(f"Error en productos_por_categoria: {e}")  # Debug
+        return JsonResponse({'error': 'Error al obtener productos'}, status=500)
 
 
 @login_required
@@ -144,7 +149,7 @@ def crear_requerimiento_solicitante(request):
         if not solicitante.departamento:
             # manejar el error o redirigir con mensaje
             messages.error(request, "No tiene un departamento asignado. Contacte con el administrador.")
-            return redirect('alguna_url')
+            return redirect('lista_requerimientos_solicitante')
 
         departamento = solicitante.departamento
 
@@ -174,9 +179,14 @@ def crear_requerimiento_solicitante(request):
     return render(request, 'requerimientos/formulario_solicitante.html', {'categorias': categorias})
 
 @login_required
-@permission_required('requerimientos.change_requerimiento', raise_exception=True)
 def editar_requerimiento_solicitante(request, requerimiento_id):
+    # Obtener el requerimiento y verificar que pertenece al usuario actual
     requerimiento = get_object_or_404(Requerimiento, id=requerimiento_id, solicitante=request.user)
+    
+    # Verificar que el requerimiento se puede editar (solo pendientes o rechazados)
+    if requerimiento.estado not in ['pendiente', 'rechazado']:
+        messages.error(request, "No puede editar un requerimiento que ya ha sido procesado.")
+        return redirect('lista_requerimientos_solicitante')
 
     if request.method == 'POST':
         # Guardar cambios al requerimiento
@@ -202,35 +212,39 @@ def editar_requerimiento_solicitante(request, requerimiento_id):
 
     else:
         # Preparar detalles para pre-cargar en el JS del template
-            detalle_productos = []
-    for detalle in requerimiento.detalles.all():
-        detalle_productos.append({
-            'id': detalle.producto.id,
-            'nombre': detalle.producto.nombre,
-            'cantidad': detalle.cantidad
-        })
+        detalle_productos = []
+        for detalle in requerimiento.detalles.all():
+            detalle_productos.append({
+                'id': detalle.producto.id,
+                'nombre': detalle.producto.nombre,
+                'cantidad': detalle.cantidad
+            })
 
         categorias = Categoria.objects.filter(activo=True)
         prioridades = Requerimiento.PRIORIDAD_CHOICES
 
-    context = {
+        context = {
             'categorias': categorias,
             'prioridades': prioridades,
             'form': requerimiento,
             'detalle_productos': detalle_productos,
             'modo': 'editar',
-    }
-    return render(request, 'requerimientos/formulario_solicitante.html', context)
-
-
-
+        }
+        return render(request, 'requerimientos/formulario_solicitante.html', context)
 
 
 @login_required
 def eliminar_requerimiento_solicitante(request, requerimiento_id):
     requerimiento = get_object_or_404(Requerimiento, pk=requerimiento_id, solicitante=request.user)
+    
+    # Verificar que el requerimiento se puede eliminar (solo pendientes)
+    if requerimiento.estado != 'pendiente':
+        messages.error(request, "Solo puede eliminar requerimientos pendientes.")
+        return redirect('lista_requerimientos_solicitante')
+        
     if request.method == 'POST':
         requerimiento.activo = False
         requerimiento.save()
+        messages.success(request, "Requerimiento eliminado correctamente.")
         return redirect('lista_requerimientos_solicitante')
     return render(request, 'requerimientos/confirmar_eliminacion.html', {'requerimiento': requerimiento})

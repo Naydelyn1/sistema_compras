@@ -1,39 +1,305 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Listado de Requerimientos</h1>
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-clipboard-check text-primary me-2"></i>
+                Listado de Requerimientos
+            </h1>
+            <a href="{% url 'crear_requerimiento' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Nuevo Requerimiento
+            </a>
+        </div>
+    </div>
+</div>
 
-<table border="1">
-    <tr>
-        <th>ID</th>
-        <th>Solicitante</th>
-        <th>Departamento</th>
-        <th>Fecha</th>
-        <th>Prioridad</th>
-        <th>Estado</th>
-        <th>Acciones</th> <!-- Agregar columna de acciones -->
-    </tr>
-    {% for requerimiento in requerimientos %}
-        <tr>
-            <td>{{ requerimiento.id }}</td>
-            <td>{{ requerimiento.nombre }}</td>
-            <td>{{ requerimiento.solicitante }}</td>
-            <td>{{ requerimiento.departamento }}</td>
-            <td>{{ requerimiento.fecha }}</td>
-            <td>{{ requerimiento.get_prioridad_display }}</td>
-            <td>{{ requerimiento.estado }}</td>
-            <td>
-                <a href="{% url 'editar_requerimiento' requerimiento.id %}">Editar</a> | 
-                <a href="{% url 'eliminar_requerimiento' requerimiento.id %}">Eliminar</a> | 
-                <a href="{% url 'agregar_detalle_requerimiento' requerimiento.id %}">Agregar Detalle</a>
-            </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="7">No hay requerimientos.</td>
-        </tr>
-    {% endfor %}
-</table>
+<!-- Filtros y búsqueda (opcional - puedes implementar después) -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Buscar</label>
+                        <input type="text" class="form-control" placeholder="Buscar por nombre o solicitante..." id="search-input">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Prioridad</label>
+                        <select class="form-select" id="prioridad-filter">
+                            <option value="">Todas</option>
+                            <option value="alta">Alta</option>
+                            <option value="media">Media</option>
+                            <option value="baja">Baja</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Departamento</label>
+                        <select class="form-select" id="departamento-filter">
+                            <option value="">Todos</option>
+                            <!-- Aquí puedes agregar los departamentos dinámicamente -->
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-secondary w-100" id="clear-filters">
+                            <i class="bi bi-x-lg me-1"></i>Limpiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<a href="{% url 'crear_requerimiento' %}">Crear Nuevo Requerimiento</a>
+<!-- Tabla de requerimientos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-table me-2"></i>Requerimientos
+                    <span class="badge bg-secondary ms-2" id="total-count">{{ requerimientos|length }}</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if requerimientos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0" id="requerimientos-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th><i class="bi bi-hash me-1"></i>ID</th>
+                                    <th><i class="bi bi-card-heading me-1"></i>Nombre</th>
+                                    <th><i class="bi bi-person me-1"></i>Solicitante</th>
+                                    <th><i class="bi bi-building me-1"></i>Departamento</th>
+                                    <th><i class="bi bi-calendar me-1"></i>Fecha</th>
+                                    <th><i class="bi bi-flag me-1"></i>Prioridad</th>
+                                    <th><i class="bi bi-info-circle me-1"></i>Estado</th>
+                                    <th width="200"><i class="bi bi-gear me-1"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for requerimiento in requerimientos %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-light text-dark">#{{ requerimiento.id }}</span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ requerimiento.nombre }}</strong>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-person-circle me-2 text-muted"></i>
+                                            {{ requerimiento.solicitante }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ requerimiento.departamento }}</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar3 me-1"></i>
+                                            {{ requerimiento.fecha|date:"d/m/Y" }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if requerimiento.prioridad == 'alta' %}bg-danger
+                                            {% elif requerimiento.prioridad == 'media' %}bg-warning
+                                            {% else %}bg-success{% endif %}">
+                                            {{ requerimiento.get_prioridad_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if requerimiento.estado == 'aprobado' %}bg-success
+                                            {% elif requerimiento.estado == 'rechazado' %}bg-danger
+                                            {% elif requerimiento.estado == 'en_proceso' %}bg-warning
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ requerimiento.estado|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'editar_requerimiento' requerimiento.id %}" 
+                                               class="btn btn-outline-primary" 
+                                               title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'agregar_detalle_requerimiento' requerimiento.id %}" 
+                                               class="btn btn-outline-success" 
+                                               title="Agregar Detalle">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </a>
+                                            <a href="{% url 'eliminar_requerimiento' requerimiento.id %}" 
+                                               class="btn btn-outline-danger" 
+                                               title="Eliminar"
+                                               onclick="return confirm('¿Está seguro que desea eliminar este requerimiento?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">No hay requerimientos</h4>
+                        <p class="text-muted">No se han encontrado requerimientos en el sistema.</p>
+                        <a href="{% url 'crear_requerimiento' %}" class="btn btn-primary mt-2">
+                            <i class="bi bi-plus-lg me-1"></i>Crear Primer Requerimiento
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 
-{% endblock %}
+<!-- Estadísticas rápidas (opcional) -->
+{% if requerimientos %}
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-check display-4 text-primary"></i>
+                <h5 class="card-title mt-2">Total</h5>
+                <h3 class="text-primary">{{ requerimientos|length }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-clock display-4 text-warning"></i>
+                <h5 class="card-title mt-2">Pendientes</h5>
+                <h3 class="text-warning" id="pendientes-count">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle display-4 text-success"></i>
+                <h5 class="card-title mt-2">Aprobados</h5>
+                <h3 class="text-success" id="aprobados-count">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <i class="bi bi-flag display-4 text-danger"></i>
+                <h5 class="card-title mt-2">Alta Prioridad</h5>
+                <h3 class="text-danger" id="alta-prioridad-count">0</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const estadoFilter = document.getElementById('estado-filter');
+    const prioridadFilter = document.getElementById('prioridad-filter');
+    const departamentoFilter = document.getElementById('departamento-filter');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    const table = document.getElementById('requerimientos-table');
+    const totalCount = document.getElementById('total-count');
+    
+    // Función para filtrar la tabla
+    function filterTable() {
+        if (!table) return;
+        
+        const rows = table.querySelectorAll('tbody tr');
+        const searchTerm = searchInput.value.toLowerCase();
+        const estadoValue = estadoFilter.value.toLowerCase();
+        const prioridadValue = prioridadFilter.value.toLowerCase();
+        const departamentoValue = departamentoFilter.value.toLowerCase();
+        
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const nombre = row.cells[1].textContent.toLowerCase();
+            const solicitante = row.cells[2].textContent.toLowerCase();
+            const departamento = row.cells[3].textContent.toLowerCase();
+            const prioridad = row.cells[5].textContent.toLowerCase();
+            const estado = row.cells[6].textContent.toLowerCase();
+            
+            const matchesSearch = !searchTerm || nombre.includes(searchTerm) || solicitante.includes(searchTerm);
+            const matchesEstado = !estadoValue || estado.includes(estadoValue);
+            const matchesPrioridad = !prioridadValue || prioridad.includes(prioridadValue);
+            const matchesDepartamento = !departamentoValue || departamento.includes(departamentoValue);
+            
+            if (matchesSearch && matchesEstado && matchesPrioridad && matchesDepartamento) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        if (totalCount) {
+            totalCount.textContent = visibleCount;
+        }
+    }
+    
+    // Event listeners para filtros
+    if (searchInput) searchInput.addEventListener('input', filterTable);
+    if (estadoFilter) estadoFilter.addEventListener('change', filterTable);
+    if (prioridadFilter) prioridadFilter.addEventListener('change', filterTable);
+    if (departamentoFilter) departamentoFilter.addEventListener('change', filterTable);
+    
+    // Limpiar filtros
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            if (searchInput) searchInput.value = '';
+            if (estadoFilter) estadoFilter.value = '';
+            if (prioridadFilter) prioridadFilter.value = '';
+            if (departamentoFilter) departamentoFilter.value = '';
+            filterTable();
+        });
+    }
+    
+    // Calcular estadísticas
+    function updateStats() {
+        if (!table) return;
+        
+        const rows = table.querySelectorAll('tbody tr');
+        let pendientes = 0, aprobados = 0, altaPrioridad = 0;
+        
+        rows.forEach(row => {
+            const estado = row.cells[6].textContent.toLowerCase();
+            const prioridad = row.cells[5].textContent.toLowerCase();
+            
+            if (estado.includes('pendiente')) pendientes++;
+            if (estado.includes('aprobado')) aprobados++;
+            if (prioridad.includes('alta')) altaPrioridad++;
+        });
+        
+        const pendientesCount = document.getElementById('pendientes-count');
+        const aprobadosCount = document.getElementById('aprobados-count');
+        const altaPrioridadCount = document.getElementById('alta-prioridad-count');
+        
+        if (pendientesCount) pendientesCount.textContent = pendientes;
+        if (aprobadosCount) aprobadosCount.textContent = aprobados;
+        if (altaPrioridadCount) altaPrioridadCount.textContent = altaPrioridad;
+    }
+    
+    updateStats();
+});
+</script>
+
+{% endblock %}form-label">Estado</label>
+                        <select class="form-select" id="estado-filter">
+                            <option value="">Todos</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="aprobado">Aprobado</option>
+                            <option value="rechazado">Rechazado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="

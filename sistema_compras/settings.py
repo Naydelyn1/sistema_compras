@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     
     'apps.usuarios',
     'apps.departamentos',
@@ -91,7 +92,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bd_compras',
         'USER': 'admin_compras',
-        'PASSWORD': 'Mon76810474',
+        'PASSWORD': '71749437',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
