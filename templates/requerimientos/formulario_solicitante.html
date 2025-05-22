@@ -423,7 +423,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Precargar productos en modo edición
-    const detalleProductos = {{ detalle_productos|safe }} || [];
+    const detalleProductos = {{ detalle_productos|default:"[]"|safe }};
+
     
     if (detalleProductos.length > 0) {
         detalleProductos.forEach(p => {

@@ -129,14 +129,10 @@ def lista_requerimientos_solicitante(request):
 
 # API para obtener productos por categoría
 def productos_por_categoria(request, categoria_id):
-    try:
-        productos = Producto.objects.filter(categoria_id=categoria_id, activo=True)
-        data = [{'id': p.id, 'nombre': p.nombre} for p in productos]
-        print(f"Productos encontrados para categoría {categoria_id}: {len(data)}")  # Debug
-        return JsonResponse(data, safe=False)
-    except Exception as e:
-        print(f"Error en productos_por_categoria: {e}")  # Debug
-        return JsonResponse({'error': 'Error al obtener productos'}, status=500)
+    productos = Producto.objects.filter(categoria_id=categoria_id, activo=True)
+    data = [{'id': p.id, 'nombre': p.nombre} for p in productos]
+    return JsonResponse(data, safe=False)
+
 
 
 @login_required
