@@ -10,6 +10,10 @@ from apps.productos.models import Categoria, Producto
 from django.http import JsonResponse
 from django.contrib import messages
 from django.utils import timezone
+from django import forms
+from django.contrib.auth.models import Group
+
+
 
 
 
@@ -28,12 +32,12 @@ def crear_requerimiento(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         prioridad = request.POST.get('prioridad')
+        solicitante_id = request.POST.get('solicitante')
+        departamento_id = request.POST.get('departamento')
 
-        # Solicitante y departamento se asignan desde usuario logueado
-        solicitante = request.user
-        departamento = solicitante.departamento
+        solicitante = get_object_or_404(Usuario, pk=solicitante_id)
+        departamento = get_object_or_404(Departamento, pk=departamento_id)
 
-        # Crear el requerimiento
         requerimiento = Requerimiento.objects.create(
             nombre=nombre,
             solicitante=solicitante,
@@ -42,7 +46,6 @@ def crear_requerimiento(request):
             estado='pendiente'
         )
 
-        # Procesar productos y cantidades
         productos_ids = request.POST.getlist('productos[]')
         cantidades = request.POST.getlist('cantidades[]')
 
@@ -54,17 +57,38 @@ def crear_requerimiento(request):
                 cantidad=int(cant)
             )
 
-        return redirect('lista_requerimientos_solicitante')  # O la url que uses para lista solicitante
+        return redirect('lista_requerimientos')
 
+    usuarios = Usuario.objects.filter(groups__name='solicitante', is_active=True)
+    print("Usuarios disponibles:", usuarios)
+    departamentos = Departamento.objects.filter(activo=True)
     categorias = Categoria.objects.all()
     prioridades = Requerimiento.PRIORIDAD_CHOICES
 
+    print("Usuarios cargados como solicitantes:", usuarios)
     return render(request, 'requerimientos/formulario.html', {
+        'requerimiento': None,  # Indica que es nuevo
+        'usuarios': usuarios,
+        'departamentos': departamentos,
         'categorias': categorias,
-        'prioridades': prioridades,
-        # No enviamos solicitantes ni departamentos para elegir,
-        # ya que se asignan automáticamente
+        'prioridades': prioridades
     })
+
+    
+    #requerimiento creado desde admin
+    from django import forms
+from .models import Requerimiento, Usuario, Departamento
+
+class RequerimientoAdminForm(forms.ModelForm):
+    class Meta:
+        model = Requerimiento
+        fields = ['nombre', 'prioridad', 'solicitante', 'departamento']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['solicitante'].queryset = Usuario.objects.filter(rol__nombre='Solicitante', is_active=True)
+        self.fields['departamento'].queryset = Departamento.objects.filter(activo=True)
+
 
 # --- Agregar Detalle al Requerimiento ---
 @login_required
@@ -110,15 +134,45 @@ def eliminar_requerimiento(request, requerimiento_id):
 @permission_required('requerimientos.change_requerimiento', raise_exception=True)
 def editar_requerimiento(request, requerimiento_id):
     requerimiento = get_object_or_404(Requerimiento, pk=requerimiento_id)
-    if request.method == 'POST':
-        form = DetalleRequerimientoForm(request.POST, instance=requerimiento)
-        if form.is_valid():
-            form.save()
-            return redirect('lista_requerimientos_solicitante')  # Redirige a la lista de requerimientos
-    else:
-        form = DetalleRequerimientoForm(instance=requerimiento)
 
-    return render(request, 'requerimientos/formulario.html', {'form': form})
+    if request.method == 'POST':
+        requerimiento.nombre = request.POST.get('nombre')
+        requerimiento.prioridad = request.POST.get('prioridad')
+        solicitante_id = request.POST.get('solicitante')
+        departamento_id = request.POST.get('departamento')
+
+        requerimiento.solicitante = get_object_or_404(Usuario, pk=solicitante_id)
+        requerimiento.departamento = get_object_or_404(Departamento, pk=departamento_id)
+        requerimiento.save()
+
+        requerimiento.detalles.all().delete()
+
+        productos_ids = request.POST.getlist('productos[]')
+        cantidades = request.POST.getlist('cantidades[]')
+
+        for prod_id, cant in zip(productos_ids, cantidades):
+            producto = Producto.objects.get(id=prod_id)
+            DetalleRequerimiento.objects.create(
+                requerimiento=requerimiento,
+                producto=producto,
+                cantidad=int(cant)
+            )
+
+        messages.success(request, "Requerimiento actualizado correctamente.")
+        return redirect('lista_requerimientos')
+
+    usuarios = Usuario.objects.filter(groups__name='solicitante', is_active=True)
+    departamentos = Departamento.objects.filter(activo=True)
+    categorias = Categoria.objects.all()
+    prioridades = Requerimiento.PRIORIDAD_CHOICES
+
+    return render(request, 'requerimientos/formulario.html', {
+        'requerimiento': requerimiento,
+        'usuarios': usuarios,
+        'departamentos': departamentos,
+        'categorias': categorias,
+        'prioridades': prioridades
+    })
 
 
 #solicitante

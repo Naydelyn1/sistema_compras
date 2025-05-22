@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from .forms import UsuarioForm, UsuarioCreacionForm  # UsuarioCreationForm es tu versión personalizada de UserCreationForm
 from apps.departamentos.models import Departamento
+from .models import Usuario
+from django.http import JsonResponse
 
 User = get_user_model()
 
@@ -89,3 +91,14 @@ def eliminar_usuario(request, usuario_id):
         return redirect('lista_usuarios')
     
     return render(request, 'usuarios/confirmar_eliminacion.html', {'usuario': usuario})
+
+@login_required
+def obtener_departamento_por_solicitante(request, usuario_id):
+    try:
+        usuario = Usuario.objects.get(pk=usuario_id)
+        if usuario.departamento:
+            return JsonResponse({'departamento_id': usuario.departamento.id, 'departamento_nombre': usuario.departamento.nombre})
+        else:
+            return JsonResponse({'departamento_id': None, 'departamento_nombre': 'No asignado'})
+    except Usuario.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)

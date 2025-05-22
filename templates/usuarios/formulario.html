@@ -239,22 +239,38 @@
     </div>
 </div>
 
+<!-- Scripts al final -->
 <script>
-    // Mostrar campo departamento sólo si se selecciona grupo "solicitante"
+    // Mostrar campo departamento si se selecciona grupo "solicitante"
     const gruposSelect = document.getElementById('id_groups');
     const departamentoDiv = document.getElementById('departamento_div');
+    const departamentoSelect = document.getElementById('id_departamento');
+    const usernameInput = document.getElementById('id_username');
 
     function toggleDepartamento() {
         const selected = Array.from(gruposSelect.selectedOptions).map(opt => opt.text.toLowerCase());
         if (selected.includes('solicitante')) {
             departamentoDiv.classList.remove('d-none');
+
+            const usuarioId = usernameInput.value;
+            if (usuarioId) {
+                fetch(`/usuarios/api/departamento-por-solicitante/${usuarioId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.departamento_id) {
+                            departamentoSelect.value = data.departamento_id;
+                            departamentoSelect.disabled = true;
+                        }
+                    });
+            }
         } else {
             departamentoDiv.classList.add('d-none');
-            document.getElementById('id_departamento').value = '';
+            departamentoSelect.disabled = false;
+            departamentoSelect.value = '';
         }
     }
 
-    if (gruposSelect) {
+    if (gruposSelect && departamentoSelect) {
         gruposSelect.addEventListener('change', toggleDepartamento);
         toggleDepartamento(); // Ejecutar al cargar
     }
