@@ -67,3 +67,22 @@ class RequerimientoSolicitanteForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 # Create your models here.
+# Agregar este modelo al final de tu models.py si no lo tienes
+
+class HistorialAprobacion(models.Model):
+    requerimiento = models.ForeignKey(Requerimiento, on_delete=models.CASCADE)
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.CASCADE)
+    accion = models.CharField(max_length=20, choices=[
+        ('aprobado', 'Aprobado'),
+        ('rechazado', 'Rechazado'),
+    ])
+    observacion = models.TextField(blank=True, null=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Historial de Aprobación'
+        verbose_name_plural = 'Historial de Aprobaciones'
+        ordering = ['-fecha']
+    
+    def __str__(self):
+        return f"Requerimiento #{self.requerimiento.id} - {self.accion} - {self.usuario}"
