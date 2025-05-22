@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del Requerimiento{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalle del Requerimiento #{{ requerimiento.id }}</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Información del Requerimiento</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Nombre:</strong> {{ requerimiento.nombre }}</p>
+                    <p><strong>Solicitante:</strong> {{ requerimiento.solicitante }}</p>
+                    <p><strong>Departamento:</strong> {{ requerimiento.departamento }}</p>
+                    <p><strong>Fecha de solicitud:</strong> {{ requerimiento.fecha }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        <strong>Prioridad:</strong> 
+                        {% if requerimiento.prioridad == 'alta' %}
+                            <span class="badge bg-danger">Alta</span>
+                        {% elif requerimiento.prioridad == 'media' %}
+                            <span class="badge bg-warning">Media</span>
+                        {% else %}
+                            <span class="badge bg-info">Baja</span>
+                        {% endif %}
+                    </p>
+                    <p>
+                        <strong>Estado:</strong> 
+                        {% if requerimiento.estado == 'pendiente' %}
+                            <span class="badge bg-secondary">Pendiente</span>
+                        {% elif requerimiento.estado == 'aprobado' %}
+                            <span class="badge bg-success">Aprobado</span>
+                        {% elif requerimiento.estado == 'rechazado' %}
+                            <span class="badge bg-danger">Rechazado</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Productos Solicitados</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in detalles %}
+                        <tr>
+                            <td>{{ detalle.producto.nombre }}</td>
+                            <td>{{ detalle.cantidad }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center">No hay productos en este requerimiento.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if historial %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Historial de Aprobaciones</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                            <th>Acción</th>
+                            <th>Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entrada in historial %}
+                        <tr>
+                            <td>{{ entrada.fecha }}</td>
+                            <td>{{ entrada.usuario }}</td>
+                            <td>
+                                {% if entrada.accion == 'aprobado' %}
+                                    <span class="badge bg-success">Aprobado</span>
+                                {% elif entrada.accion == 'rechazado' %}
+                                    <span class="badge bg-danger">Rechazado</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ entrada.accion }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ entrada.observacion }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="mt-3">
+        <a href="{% url 'lista_requerimientos_aprobador' %}" class="btn btn-secondary">Volver a la lista</a>
+        
+        {% if requerimiento.estado == 'pendiente' %}
+        <div class="btn-group float-end" role="group">
+            <a href="{% url 'aprobar_requerimiento' requerimiento.id %}" class="btn btn-success">Aprobar</a>
+            <a href="{% url 'rechazar_requerimiento' requerimiento.id %}" class="btn btn-danger">Rechazar</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

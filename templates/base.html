@@ -69,12 +69,12 @@
                                 {% elif group.name == "solicitante" %}
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'lista_requerimientos_solicitante' %}">
-                                            <i class="bi bi-clipboard-plus me-1"></i>Mis Requerimientos
+                                            <i class="bi bi-clipboard-plus me-1"></i>Requerimientos
                                         </a>
                                     </li>
                                 {% elif group.name == "aprobador" %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{% url 'lista_requerimientos' %}">
+                                        <a class="nav-link" href="{% url 'lista_requerimientos_aprobador' %}">
                                             <i class="bi bi-check-circle me-1"></i>Aprobar Requerimientos
                                         </a>
                                     </li>

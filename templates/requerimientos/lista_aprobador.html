@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">
+                            <i class="bi bi-check-circle me-2"></i>Requerimientos Pendientes de Aprobación
+                        </h4>
+                        <span class="badge bg-light text-primary fs-6">
+                            {{ requerimientos.count }} requerimiento{{ requerimientos.count|pluralize }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if requerimientos %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Solicitante</th>
+                                        <th>Departamento</th>
+                                        <th>Prioridad</th>
+                                        <th>Fecha</th>
+                                        <th width="200" class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for req in requerimientos %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-secondary">#{{ req.id }}</span>
+                                        </td>
+                                        <td>
+                                            <strong>{{ req.nombre }}</strong>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-person-circle text-muted me-2"></i>
+                                                {{ req.solicitante.get_full_name|default:req.solicitante.username }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-building text-muted me-2"></i>
+                                                {{ req.departamento.nombre }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if req.prioridad == 'alta' %}
+                                                <span class="badge bg-danger">🔴 Alta</span>
+                                            {% elif req.prioridad == 'media' %}
+                                                <span class="badge bg-warning text-dark">🟡 Media</span>
+                                            {% else %}
+                                                <span class="badge bg-success">🟢 Baja</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar3 me-1"></i>
+                                                {{ req.fecha|date:"d/m/Y H:i" }}
+                                            </small>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'ver_detalle_requerimiento' req.id %}" 
+                                                   class="btn btn-outline-info btn-sm" 
+                                                   title="Ver detalles">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{% url 'editar_requerimiento_solicitante' req.id %}" 
+                                                   class="btn btn-outline-warning btn-sm" 
+                                                   title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{% url 'aprobar_requerimiento' req.id %}" 
+                                                   class="btn btn-outline-success btn-sm" 
+                                                   title="Aprobar">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </a>
+                                                <a href="{% url 'rechazar_requerimiento' req.id %}" 
+                                                   class="btn btn-outline-danger btn-sm" 
+                                                   title="Rechazar">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+    <div class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <h5 class="text-muted mt-3">No hay requerimientos pendientes</h5>
+                            <p class="text-muted">Todos los requerimientos han sido procesados.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-group .btn {
+    margin: 0 1px;
+}
+
+.table td {
+    vertical-align: middle;
+}
+</style>
+{% endblock %}

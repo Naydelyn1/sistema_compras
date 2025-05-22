@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ accion|title }} Requerimiento{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4>{{ accion|title }} requerimiento #{{ requerimiento.id }}</h4>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title mb-4">¿Estás seguro que deseas {{ accion }} este requerimiento?</h5>
+            
+            <div class="mb-4">
+                <h6>Información del requerimiento:</h6>
+                <p><strong>Solicitante:</strong> {{ requerimiento.solicitante }}</p>
+                <p><strong>Departamento:</strong> {{ requerimiento.departamento }}</p>
+                <p><strong>Fecha:</strong> {{ requerimiento.fecha }}</p>
+                <p>
+                    <strong>Prioridad:</strong> 
+                    {% if requerimiento.prioridad == 'alta' %}
+                        <span class="badge bg-danger">Alta</span>
+                    {% elif requerimiento.prioridad == 'media' %}
+                        <span class="badge bg-warning">Media</span>
+                    {% else %}
+                        <span class="badge bg-info">Baja</span>
+                    {% endif %}
+                </p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="observacion" class="form-label">Observación</label>
+                    <textarea name="observacion" id="observacion" class="form-control" rows="3" placeholder="Ingrese una observación (opcional)"></textarea>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'ver_detalle_requerimiento' requerimiento.id %}" class="btn btn-secondary">Cancelar</a>
+                    {% if accion == 'aprobar' %}
+                        <button type="submit" class="btn btn-success">Confirmar aprobación</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-danger">Confirmar rechazo</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
