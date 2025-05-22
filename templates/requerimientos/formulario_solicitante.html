@@ -422,10 +422,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 4000);
     }
 
-    // Precargar productos en modo edición
-    const detalleProductos = {{ detalle_productos|default:"[]"|safe }};
+    // Precargar productos en modo edición - CORREGIDO
+    let detalleProductos = [];
+    try {
+        // Usando textContent o innerHTML en lugar de safe filter
+        const detalleElement = document.querySelector('#detalle-productos-data');
+        if (detalleElement) {
+            detalleProductos = JSON.parse(detalleElement.textContent || '[]');
+        }
+    } catch (e) {
+        console.log('No hay productos precargados o error al parsear:', e);
+        detalleProductos = [];
+    }
 
-    
     if (detalleProductos.length > 0) {
         detalleProductos.forEach(p => {
             agregarFilaProducto(p.id, p.nombre, p.cantidad);
@@ -472,6 +481,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-
+<!-- Script tag oculto para datos de productos (para modo edición) -->
+<script id="detalle-productos-data" type="application/json">
+{{ detalle_productos|default:"[]"|safe }}
+</script>
 
 {% endblock %}

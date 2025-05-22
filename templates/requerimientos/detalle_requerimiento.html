@@ -3,126 +3,294 @@
 {% block title %}Detalle del Requerimiento{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Detalle del Requerimiento #{{ requerimiento.id }}</h2>
-    
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Información del Requerimiento</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Nombre:</strong> {{ requerimiento.nombre }}</p>
-                    <p><strong>Solicitante:</strong> {{ requerimiento.solicitante }}</p>
-                    <p><strong>Departamento:</strong> {{ requerimiento.departamento }}</p>
-                    <p><strong>Fecha de solicitud:</strong> {{ requerimiento.fecha }}</p>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <!-- Header elegante -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle p-3 me-3 shadow">
+                        <i class="bi bi-file-text-fill text-white fs-3"></i>
+                    </div>
+                    <div>
+                        <h2 class="mb-1 fw-bold text-dark">Detalle del Requerimiento</h2>
+                        <p class="text-muted mb-0">Información completa del requerimiento #{{ requerimiento.id }}</p>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <p>
-                        <strong>Prioridad:</strong> 
-                        {% if requerimiento.prioridad == 'alta' %}
-                            <span class="badge bg-danger">Alta</span>
-                        {% elif requerimiento.prioridad == 'media' %}
-                            <span class="badge bg-warning">Media</span>
-                        {% else %}
-                            <span class="badge bg-info">Baja</span>
-                        {% endif %}
-                    </p>
-                    <p>
-                        <strong>Estado:</strong> 
-                        {% if requerimiento.estado == 'pendiente' %}
-                            <span class="badge bg-secondary">Pendiente</span>
-                        {% elif requerimiento.estado == 'aprobado' %}
-                            <span class="badge bg-success">Aprobado</span>
-                        {% elif requerimiento.estado == 'rechazado' %}
-                            <span class="badge bg-danger">Rechazado</span>
-                        {% endif %}
-                    </p>
+                <div>
+                    {% if requerimiento.estado == 'pendiente' %}
+                        <span class="badge bg-warning fs-6 px-3 py-2 rounded-pill shadow-sm">
+                            <i class="bi bi-clock me-1"></i>Pendiente
+                        </span>
+                    {% elif requerimiento.estado == 'aprobado' %}
+                        <span class="badge bg-success fs-6 px-3 py-2 rounded-pill shadow-sm">
+                            <i class="bi bi-check-circle me-1"></i>Aprobado
+                        </span>
+                    {% elif requerimiento.estado == 'rechazado' %}
+                        <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow-sm">
+                            <i class="bi bi-x-circle me-1"></i>Rechazado
+                        </span>
+                    {% endif %}
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Productos Solicitados</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for detalle in detalles %}
-                        <tr>
-                            <td>{{ detalle.producto.nombre }}</td>
-                            <td>{{ detalle.cantidad }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2" class="text-center">No hay productos en este requerimiento.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <!-- Información del requerimiento -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-primary border-0 py-4">
+                    <div class="d-flex align-items-center text-white">
+                        <i class="bi bi-info-circle fs-4 me-3"></i>
+                        <h5 class="mb-0 fw-semibold">Información del Requerimiento</h5>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="bi bi-file-text text-primary fs-5"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Nombre del requerimiento</small>
+                                    <span class="fw-bold text-dark fs-5">{{ requerimiento.nombre }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="bi bi-person-fill text-success fs-5"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Solicitante</small>
+                                    <span class="fw-semibold text-dark">{{ requerimiento.solicitante }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="bi bi-building text-info fs-5"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Departamento</small>
+                                    <span class="fw-semibold text-dark">{{ requerimiento.departamento }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-secondary bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="bi bi-calendar3 text-secondary fs-5"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Fecha de solicitud</small>
+                                    <span class="fw-semibold text-dark">{{ requerimiento.fecha|date:"d/m/Y" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="bi bi-exclamation-triangle text-warning fs-5"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Prioridad</small>
+                                    {% if requerimiento.prioridad == 'alta' %}
+                                        <span class="badge bg-danger bg-gradient px-3 py-2 rounded-pill fs-6">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>Alta
+                                        </span>
+                                    {% elif requerimiento.prioridad == 'media' %}
+                                        <span class="badge bg-warning bg-gradient px-3 py-2 rounded-pill fs-6 text-dark">
+                                            <i class="bi bi-dash-circle-fill me-1"></i>Media
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-success bg-gradient px-3 py-2 rounded-pill fs-6">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Baja
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <div class="bg-dark bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="bi bi-flag text-dark fs-5"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Estado actual</small>
+                                    {% if requerimiento.estado == 'pendiente' %}
+                                        <span class="badge bg-warning bg-gradient px-3 py-2 rounded-pill fs-6">
+                                            <i class="bi bi-clock-fill me-1"></i>Pendiente
+                                        </span>
+                                    {% elif requerimiento.estado == 'aprobado' %}
+                                        <span class="badge bg-success bg-gradient px-3 py-2 rounded-pill fs-6">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Aprobado
+                                        </span>
+                                    {% elif requerimiento.estado == 'rechazado' %}
+                                        <span class="badge bg-danger bg-gradient px-3 py-2 rounded-pill fs-6">
+                                            <i class="bi bi-x-circle-fill me-1"></i>Rechazado
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos solicitados -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-info border-0 py-4">
+                    <div class="d-flex align-items-center text-white">
+                        <i class="bi bi-box-seam fs-4 me-3"></i>
+                        <h5 class="mb-0 fw-semibold">Productos Solicitados</h5>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if detalles %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="bg-light border-0">
+                                    <tr class="text-uppercase text-muted small fw-bold">
+                                        <th class="border-0 px-4 py-3">
+                                            <i class="bi bi-box me-1"></i>Producto
+                                        </th>
+                                        <th class="border-0 px-4 py-3 text-center">
+                                            <i class="bi bi-123 me-1"></i>Cantidad
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detalle in detalles %}
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-box-fill text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-semibold text-dark">{{ detalle.producto.nombre }}</div>
+                                                    <small class="text-muted">Producto solicitado</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-4 text-center">
+                                            <span class="badge bg-secondary bg-opacity-75 px-3 py-2 rounded-pill fw-normal fs-6">
+                                                {{ detalle.cantidad }} unidades
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 my-4">
+                            <div class="bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-inbox display-6 text-muted"></i>
+                            </div>
+                            <h5 class="text-muted mb-2">No hay productos</h5>
+                            <p class="text-muted">No se han agregado productos a este requerimiento.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Historial de aprobaciones -->
+            {% if historial %}
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-secondary border-0 py-4">
+                    <div class="d-flex align-items-center text-white">
+                        <i class="bi bi-clock-history fs-4 me-3"></i>
+                        <h5 class="mb-0 fw-semibold">Historial de Aprobaciones</h5>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="bg-light border-0">
+                                <tr class="text-uppercase text-muted small fw-bold">
+                                    <th class="border-0 px-4 py-3">
+                                        <i class="bi bi-calendar me-1"></i>Fecha
+                                    </th>
+                                    <th class="border-0 px-4 py-3">
+                                        <i class="bi bi-person me-1"></i>Usuario
+                                    </th>
+                                    <th class="border-0 px-4 py-3">
+                                        <i class="bi bi-gear me-1"></i>Acción
+                                    </th>
+                                    <th class="border-0 px-4 py-3">
+                                        <i class="bi bi-chat-left-text me-1"></i>Observación
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entrada in historial %}
+                                <tr class="border-bottom">
+                                    <td class="px-4 py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-calendar3 text-info"></i>
+                                            </div>
+                                            <span class="fw-medium text-dark">{{ entrada.fecha|date:"d/m/Y" }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-person-fill text-primary"></i>
+                                            </div>
+                                            <span class="fw-medium text-dark">{{ entrada.usuario }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        {% if entrada.accion == 'aprobado' %}
+                                            <span class="badge bg-success bg-gradient px-3 py-2 rounded-pill">
+                                                <i class="bi bi-check-lg me-1"></i>Aprobado
+                                            </span>
+                                        {% elif entrada.accion == 'rechazado' %}
+                                            <span class="badge bg-danger bg-gradient px-3 py-2 rounded-pill">
+                                                <i class="bi bi-x-lg me-1"></i>Rechazado
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary bg-gradient px-3 py-2 rounded-pill">
+                                                {{ entrada.accion }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        {% if entrada.observacion %}
+                                            <span class="text-dark">{{ entrada.observacion }}</span>
+                                        {% else %}
+                                            <span class="text-muted fst-italic">Sin observaciones</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'lista_requerimientos_aprobador' %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+                    <i class="bi bi-arrow-left me-2"></i>Volver a la lista
+                </a>
+                
+                {% if requerimiento.estado == 'pendiente' %}
+                <div class="btn-group shadow-sm" role="group">
+                    <a href="{% url 'aprobar_requerimiento' requerimiento.id %}" 
+                       class="btn btn-success btn-lg px-4 py-2 rounded-start-pill">
+                        <i class="bi bi-check-lg me-2"></i>Aprobar
+                    </a>
+                    <a href="{% url 'rechazar_requerimiento' requerimiento.id %}" 
+                       class="btn btn-danger btn-lg px-4 py-2 rounded-end-pill">
+                        <i class="bi bi-x-lg me-2"></i>Rechazar
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
-    </div>
-
-    {% if historial %}
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Historial de Aprobaciones</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Usuario</th>
-                            <th>Acción</th>
-                            <th>Observación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for entrada in historial %}
-                        <tr>
-                            <td>{{ entrada.fecha }}</td>
-                            <td>{{ entrada.usuario }}</td>
-                            <td>
-                                {% if entrada.accion == 'aprobado' %}
-                                    <span class="badge bg-success">Aprobado</span>
-                                {% elif entrada.accion == 'rechazado' %}
-                                    <span class="badge bg-danger">Rechazado</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">{{ entrada.accion }}</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ entrada.observacion }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="mt-3">
-        <a href="{% url 'lista_requerimientos_aprobador' %}" class="btn btn-secondary">Volver a la lista</a>
-        
-        {% if requerimiento.estado == 'pendiente' %}
-        <div class="btn-group float-end" role="group">
-            <a href="{% url 'aprobar_requerimiento' requerimiento.id %}" class="btn btn-success">Aprobar</a>
-            <a href="{% url 'rechazar_requerimiento' requerimiento.id %}" class="btn btn-danger">Rechazar</a>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

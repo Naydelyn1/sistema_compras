@@ -1,92 +1,137 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="card-title mb-0">
-                            <i class="bi bi-check-circle me-2"></i>Requerimientos Pendientes de Aprobación
-                        </h4>
-                        <span class="badge bg-light text-primary fs-6">
-                            {{ requerimientos.count }} requerimiento{{ requerimientos.count|pluralize }}
-                        </span>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+            <!-- Header elegante -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-primary rounded-circle p-3 me-3 shadow">
+                    <i class="bi bi-check-circle-fill text-white fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold text-dark">Requerimientos Pendientes</h2>
+                    <p class="text-muted mb-0">Gestiona las solicitudes que requieren tu aprobación</p>
+                </div>
+                <div class="ms-auto">
+                    <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-files me-1"></i>
+                        {{ requerimientos.count }} pendiente{{ requerimientos.count|pluralize }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card principal con mejor diseño -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient border-0 py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="d-flex align-items-center text-white">
+                        <i class="bi bi-clipboard-check fs-4 me-3"></i>
+                        <h5 class="mb-0 fw-semibold">Lista de Requerimientos</h5>
                     </div>
                 </div>
+
                 <div class="card-body p-0">
                     {% if requerimientos %}
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Solicitante</th>
-                                        <th>Departamento</th>
-                                        <th>Prioridad</th>
-                                        <th>Fecha</th>
-                                        <th width="200" class="text-center">Acciones</th>
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="bg-light border-0">
+                                    <tr class="text-uppercase text-muted small fw-bold">
+                                        <th class="border-0 px-4 py-3">
+                                            <i class="bi bi-hash me-1"></i>ID
+                                        </th>
+                                        <th class="border-0 px-4 py-3">
+                                            <i class="bi bi-file-text me-1"></i>Nombre
+                                        </th>
+                                        <th class="border-0 px-4 py-3">
+                                            <i class="bi bi-person me-1"></i>Solicitante
+                                        </th>
+                                        <th class="border-0 px-4 py-3">
+                                            <i class="bi bi-building me-1"></i>Departamento
+                                        </th>
+                                        <th class="border-0 px-4 py-3">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>Prioridad
+                                        </th>
+                                        <th class="border-0 px-4 py-3">
+                                            <i class="bi bi-calendar me-1"></i>Fecha
+                                        </th>
+                                        <th class="border-0 px-4 py-3 text-center" width="200">
+                                            <i class="bi bi-gear me-1"></i>Acciones
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for req in requerimientos %}
-                                    <tr>
-                                        <td>
-                                            <span class="badge bg-secondary">#{{ req.id }}</span>
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-4">
+                                            <span class="badge bg-secondary bg-opacity-75 px-3 py-2 rounded-pill fw-normal">
+                                                #{{ req.id }}
+                                            </span>
                                         </td>
-                                        <td>
-                                            <strong>{{ req.nombre }}</strong>
+                                        <td class="px-4 py-4">
+                                            <div class="fw-semibold text-dark mb-1">{{ req.nombre }}</div>
+                                            <small class="text-muted">Solicitud de compra</small>
                                         </td>
-                                        <td>
+                                        <td class="px-4 py-4">
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-person-circle text-muted me-2"></i>
-                                                {{ req.solicitante.get_full_name|default:req.solicitante.username }}
+                                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-person-fill text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-medium text-dark">
+                                                        {{ req.solicitante.get_full_name|default:req.solicitante.username }}
+                                                    </div>
+                                                    <small class="text-muted">@{{ req.solicitante.username }}</small>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td class="px-4 py-4">
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-building text-muted me-2"></i>
-                                                {{ req.departamento.nombre }}
+                                                <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-building text-info"></i>
+                                                </div>
+                                                <span class="fw-medium text-dark">{{ req.departamento.nombre }}</span>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td class="px-4 py-4">
                                             {% if req.prioridad == 'alta' %}
-                                                <span class="badge bg-danger">🔴 Alta</span>
+                                                <span class="badge bg-danger bg-gradient px-3 py-2 rounded-pill shadow-sm">
+                                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>Alta
+                                                </span>
                                             {% elif req.prioridad == 'media' %}
-                                                <span class="badge bg-warning text-dark">🟡 Media</span>
+                                                <span class="badge bg-warning bg-gradient px-3 py-2 rounded-pill shadow-sm text-dark">
+                                                    <i class="bi bi-dash-circle-fill me-1"></i>Media
+                                                </span>
                                             {% else %}
-                                                <span class="badge bg-success">🟢 Baja</span>
+                                                <span class="badge bg-success bg-gradient px-3 py-2 rounded-pill shadow-sm">
+                                                    <i class="bi bi-check-circle-fill me-1"></i>Baja
+                                                </span>
                                             {% endif %}
                                         </td>
-                                        <td>
-                                            <small class="text-muted">
-                                                <i class="bi bi-calendar3 me-1"></i>
-                                                {{ req.fecha|date:"d/m/Y H:i" }}
-                                            </small>
+                                        <td class="px-4 py-4">
+                                            <div class="text-muted">
+                                                <i class="bi bi-calendar3 me-2"></i>
+                                                <span class="fw-medium">{{ req.fecha|date:"d/m/Y" }}</span>
+                                            </div>
                                         </td>
-                                        <td class="text-center">
-                                            <div class="btn-group" role="group">
+                                        <td class="px-4 py-4 text-center">
+                                            <div class="btn-group shadow-sm" role="group">
                                                 <a href="{% url 'ver_detalle_requerimiento' req.id %}" 
-                                                   class="btn btn-outline-info btn-sm" 
-                                                   title="Ver detalles">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                                <a href="{% url 'editar_requerimiento_solicitante' req.id %}" 
-                                                   class="btn btn-outline-warning btn-sm" 
-                                                   title="Editar">
-                                                    <i class="bi bi-pencil"></i>
+                                                   class="btn btn-outline-primary btn-sm px-3 py-2 rounded-start-pill" 
+                                                   title="Ver detalles"
+                                                   data-bs-toggle="tooltip">
+                                                    <i class="bi bi-eye me-1"></i>Ver
                                                 </a>
                                                 <a href="{% url 'aprobar_requerimiento' req.id %}" 
-                                                   class="btn btn-outline-success btn-sm" 
-                                                   title="Aprobar">
-                                                    <i class="bi bi-check-lg"></i>
+                                                   class="btn btn-success btn-sm px-3 py-2" 
+                                                   title="Aprobar requerimiento"
+                                                   data-bs-toggle="tooltip">
+                                                    <i class="bi bi-check-lg me-1"></i>Aprobar
                                                 </a>
                                                 <a href="{% url 'rechazar_requerimiento' req.id %}" 
-                                                   class="btn btn-outline-danger btn-sm" 
-                                                   title="Rechazar">
-                                                    <i class="bi bi-x-lg"></i>
+                                                   class="btn btn-danger btn-sm px-3 py-2 rounded-end-pill" 
+                                                   title="Rechazar requerimiento"
+                                                   data-bs-toggle="tooltip">
+                                                    <i class="bi bi-x-lg me-1"></i>Rechazar
                                                 </a>
                                             </div>
                                         </td>
@@ -96,10 +141,15 @@
                             </table>
                         </div>
                     {% else %}
-    <div class="text-center py-5">
-                            <i class="bi bi-inbox display-1 text-muted"></i>
-                            <h5 class="text-muted mt-3">No hay requerimientos pendientes</h5>
-                            <p class="text-muted">Todos los requerimientos han sido procesados.</p>
+                        <div class="text-center py-5 my-5">
+                            <div class="bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                <i class="bi bi-inbox display-4 text-muted"></i>
+                            </div>
+                            <h4 class="text-muted mb-3 fw-semibold">No hay requerimientos pendientes</h4>
+                            <p class="text-muted mb-4">Todos los requerimientos han sido procesados exitosamente.</p>
+                            <div class="badge bg-success bg-opacity-10 text-success px-4 py-2 rounded-pill">
+                                <i class="bi bi-check-circle me-2"></i>¡Todo al día!
+                            </div>
                         </div>
                     {% endif %}
                 </div>
@@ -108,13 +158,11 @@
     </div>
 </div>
 
-<style>
-.btn-group .btn {
-    margin: 0 1px;
-}
-
-.table td {
-    vertical-align: middle;
-}
-</style>
+<script>
+// Inicializar tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+</script>
 {% endblock %}
