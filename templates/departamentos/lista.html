@@ -82,17 +82,23 @@
                                             </a>
                                             
                                             {% if departamento.activo %}
-                                                <a href="{% url 'toggle_departamento' departamento.id %}" 
-                                                   class="btn btn-outline-warning btn-sm rounded-pill me-1"
-                                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Desactivar departamento">
+                                                <button type="button" 
+                                                        class="btn btn-outline-warning btn-sm rounded-pill me-1 toggle-btn"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Desactivar departamento"
+                                                        data-id="{{ departamento.id }}"
+                                                        data-nombre="{{ departamento.nombre }}"
+                                                        data-accion="desactivar">
                                                     <i class="bi bi-toggle-off me-1"></i>Desactivar
-                                                </a>
+                                                </button>
                                             {% else %}
-                                                <a href="{% url 'toggle_departamento' departamento.id %}" 
-                                                   class="btn btn-outline-success btn-sm rounded-pill me-1"
-                                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Activar departamento">
+                                                <button type="button" 
+                                                        class="btn btn-outline-success btn-sm rounded-pill me-1 toggle-btn"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Activar departamento"
+                                                        data-id="{{ departamento.id }}"
+                                                        data-nombre="{{ departamento.nombre }}"
+                                                        data-accion="activar">
                                                     <i class="bi bi-toggle-on me-1"></i>Activar
-                                                </a>
+                                                </button>
                                             {% endif %}
                                             
                                             <a href="{% url 'eliminar_departamento' departamento.id %}" 
@@ -124,12 +130,117 @@
     </div>
 </div>
 
-<!-- Script para inicializar tooltips -->
+<!-- Modal de confirmación para toggle -->
+<div class="modal fade" id="toggleModal" tabindex="-1" aria-labelledby="toggleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0" id="modalHeader">
+                <h5 class="modal-title fw-bold" id="toggleModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Confirmar Acción
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-toggle-off fs-1 text-warning" id="modalIcon"></i>
+                </div>
+                <h6 class="mb-3" id="modalQuestion">¿Estás seguro?</h6>
+                <p class="text-muted mb-0" id="modalMessage">
+                    Esta acción cambiará el estado del departamento.
+                </p>
+                <div class="alert alert-warning border-0 rounded-3 mt-3" id="modalWarning">
+                    <small class="mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <span id="warningText">Esta acción se puede revertir posteriormente.</span>
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn rounded-pill px-4" id="confirmToggleBtn">
+                    <i class="bi bi-check-circle me-1"></i>
+                    <span id="confirmText">Confirmar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para tooltips y modal -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Elementos del modal
+    const toggleModal = new bootstrap.Modal(document.getElementById('toggleModal'));
+    const modalHeader = document.getElementById('modalHeader');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalQuestion = document.getElementById('modalQuestion');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalWarning = document.getElementById('modalWarning');
+    const warningText = document.getElementById('warningText');
+    const confirmBtn = document.getElementById('confirmToggleBtn');
+    const confirmText = document.getElementById('confirmText');
+    
+    let currentUrl = '';
+    let currentAction = '';
+    let currentNombre = '';
+
+    // Manejar clicks en botones de toggle
+    document.querySelectorAll('.toggle-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const departamentoId = this.getAttribute('data-id');
+            const nombre = this.getAttribute('data-nombre');
+            const accion = this.getAttribute('data-accion');
+            
+            currentUrl = `{% url 'toggle_departamento' 0 %}`.replace('0', departamentoId);
+            currentAction = accion;
+            currentNombre = nombre;
+            
+            // Configurar el modal según la acción
+            if (accion === 'desactivar') {
+                modalHeader.className = 'modal-header border-0 bg-warning bg-opacity-10';
+                modalIcon.className = 'bi bi-toggle-off fs-1 text-warning';
+                modalQuestion.textContent = '¿Estás seguro que quieres desactivar este departamento?';
+                modalMessage.innerHTML = `El departamento <strong class="text-warning">"${nombre}"</strong> será desactivado y no aparecerá en las listas activas.`;
+                modalWarning.className = 'alert alert-warning border-0 rounded-3 mt-3';
+                warningText.textContent = 'El departamento se ocultará pero conservará toda su información. Puedes reactivarlo cuando desees.';
+                confirmBtn.className = 'btn btn-warning rounded-pill px-4';
+                confirmText.textContent = 'Sí, Desactivar';
+            } else {
+                modalHeader.className = 'modal-header border-0 bg-success bg-opacity-10';
+                modalIcon.className = 'bi bi-toggle-on fs-1 text-success';
+                modalQuestion.textContent = '¿Estás seguro que quieres activar este departamento?';
+                modalMessage.innerHTML = `El departamento <strong class="text-success">"${nombre}"</strong> será activado y volverá a aparecer en las listas.`;
+                modalWarning.className = 'alert alert-success border-0 rounded-3 mt-3';
+                warningText.textContent = 'El departamento estará disponible para ser usado en el sistema.';
+                confirmBtn.className = 'btn btn-success rounded-pill px-4';
+                confirmText.textContent = 'Sí, Activar';
+            }
+            
+            toggleModal.show();
+        });
+    });
+
+    // Manejar confirmación
+    confirmBtn.addEventListener('click', function() {
+        if (currentUrl) {
+            window.location.href = currentUrl;
+        }
+    });
+
+    // Limpiar variables cuando se cierre el modal
+    document.getElementById('toggleModal').addEventListener('hidden.bs.modal', function() {
+        currentUrl = '';
+        currentAction = '';
+        currentNombre = '';
     });
 });
 </script>
