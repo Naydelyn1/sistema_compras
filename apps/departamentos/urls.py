@@ -6,4 +6,5 @@ urlpatterns = [
     path('nuevo/', views.crear_departamento, name='crear_departamento'),
     path('editar/<int:departamento_id>/', views.editar_departamento, name='editar_departamento'),
     path('eliminar/<int:departamento_id>/', views.eliminar_departamento, name='eliminar_departamento'),
+    path('toggle/<int:departamento_id>/', views.toggle_departamento, name='toggle_departamento'),
 ]
