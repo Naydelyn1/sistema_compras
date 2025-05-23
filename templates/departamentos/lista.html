@@ -35,6 +35,9 @@
                                         <i class="bi bi-text-paragraph me-1"></i>Descripción
                                     </th>
                                     <th class="px-4 py-3 fw-semibold text-secondary text-center">
+                                        <i class="bi bi-toggle-on me-1"></i>Estado
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-secondary text-center">
                                         <i class="bi bi-gear me-1"></i>Acciones
                                     </th>
                                 </tr>
@@ -60,12 +63,38 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-center">
+                                        {% if departamento.activo %}
+                                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                                <i class="bi bi-check-circle me-1"></i>Activo
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                                <i class="bi bi-x-circle me-1"></i>Inactivo
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
                                         <div class="btn-group" role="group">
                                             <a href="{% url 'editar_departamento' departamento.id %}" 
                                                class="btn btn-outline-primary btn-sm rounded-pill me-1"
                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Editar departamento">
                                                 <i class="bi bi-pencil me-1"></i>Editar
                                             </a>
+                                            
+                                            {% if departamento.activo %}
+                                                <a href="{% url 'toggle_departamento' departamento.id %}" 
+                                                   class="btn btn-outline-warning btn-sm rounded-pill me-1"
+                                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Desactivar departamento">
+                                                    <i class="bi bi-toggle-off me-1"></i>Desactivar
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'toggle_departamento' departamento.id %}" 
+                                                   class="btn btn-outline-success btn-sm rounded-pill me-1"
+                                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Activar departamento">
+                                                    <i class="bi bi-toggle-on me-1"></i>Activar
+                                                </a>
+                                            {% endif %}
+                                            
                                             <a href="{% url 'eliminar_departamento' departamento.id %}" 
                                                class="btn btn-outline-danger btn-sm rounded-pill"
                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar departamento">
@@ -81,11 +110,11 @@
                 {% else %}
                     <div class="text-center py-5">
                         <div class="text-muted mb-3">
-                            <i class="bi bi-building fs-1"></i>
+                            <i class="bi bi-building fs-1 opacity-50"></i>
                         </div>
                         <h5 class="text-muted mb-2">No hay departamentos registrados</h5>
                         <p class="text-muted mb-3">Comienza creando tu primer departamento</p>
-                        <a href="{% url 'crear_departamento' %}" class="btn btn-info px-4 py-2 rounded-pill text-white">
+                        <a href="{% url 'crear_departamento' %}" class="btn btn-info px-4 py-2 rounded-pill text-white shadow-sm">
                             <i class="bi bi-plus-circle me-2"></i>Crear Primer Departamento
                         </a>
                     </div>
@@ -94,4 +123,14 @@
         </div>
     </div>
 </div>
+
+<!-- Script para inicializar tooltips -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
 {% endblock %}
