@@ -35,6 +35,7 @@ urlpatterns = [
  # Aquí incluimos las rutas API con prefijo 'api/'
     
     path('api/', include('apps.requerimientos.api_urls')),
+ 
     
     
     

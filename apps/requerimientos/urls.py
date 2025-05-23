@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path , include
+from django.contrib import admin
 from . import views
+
 
 urlpatterns = [
     path('', views.lista_requerimientos, name='lista_requerimientos'),  # Listar requerimientos
@@ -21,5 +23,10 @@ urlpatterns = [
     path('<int:requerimiento_id>/rechazar/', views.rechazar_requerimiento, name='rechazar_requerimiento'),
     
     # API para obtener productos por categoría
-    path('api/productos-por-categoria/<int:categoria_id>/', views.productos_por_categoria, name='productos_por_categoria'),
+   # path('api/productos-por-categoria/<int:categoria_id>/', views.productos_por_categoria, name='productos_por_categoria'),
+    #path('api/productos/<int:categoria_id>/', views.productos_por_categoria, name='productos_por_categoria'),
+    path('productos_por_categoria/<int:categoria_id>/', views.productos_por_categoria, name='productos_por_categoria'),
+    
+
+
 ]

@@ -17,6 +17,7 @@ from django.contrib.auth.models import Group
 
 
 
+
 # --- Lista de Requerimientos ---
 @login_required
 @permission_required('requerimientos.view_requerimiento', raise_exception=True)
@@ -189,7 +190,6 @@ def productos_por_categoria(request, categoria_id):
     return JsonResponse(data, safe=False)
 
 
-
 @login_required
 def crear_requerimiento_solicitante(request):
     if request.method == 'POST':
@@ -227,7 +227,11 @@ def crear_requerimiento_solicitante(request):
         return redirect('lista_requerimientos_solicitante')
 
     categorias = Categoria.objects.filter(activo=True)
-    return render(request, 'requerimientos/formulario_solicitante.html', {'categorias': categorias})
+    return render(request, 'requerimientos/formulario_solicitante.html', {
+    'categorias': categorias,
+    'detalle_productos': [],  # <- NECESARIO para evitar errores con JSON.parse
+    'modo': 'crear'           # <- NECESARIO para mostrar correctamente el título, etc.
+    })
 
 @login_required
 def editar_requerimiento_solicitante(request, requerimiento_id):
@@ -268,11 +272,14 @@ def editar_requerimiento_solicitante(request, requerimiento_id):
             detalle_productos.append({
                 'id': detalle.producto.id,
                 'nombre': detalle.producto.nombre,
-                'cantidad': detalle.cantidad
+                'cantidad': detalle.cantidad,
+                'categoria_id': detalle.producto.categoria.id
             })
 
         categorias = Categoria.objects.filter(activo=True)
         prioridades = Requerimiento.PRIORIDAD_CHOICES
+        usuarios = Usuario.objects.filter(groups__name='solicitante', is_active=True)
+        departamentos = Departamento.objects.filter(activo=True)
 
         context = {
             'categorias': categorias,
@@ -280,8 +287,11 @@ def editar_requerimiento_solicitante(request, requerimiento_id):
             'form': requerimiento,
             'detalle_productos': detalle_productos,
             'modo': 'editar',
+            'usuarios': usuarios,
+            'departamentos': departamentos,
         }
         return render(request, 'requerimientos/formulario_solicitante.html', context)
+
 
 
 @login_required

@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -15,51 +16,28 @@
                     <form method="post" id="form_requerimiento">
                         {% csrf_token %}
 
-                        <!-- Información básica del requerimiento -->
+                        <!-- Información básica -->
                         <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="text-primary border-bottom pb-2 mb-3">
-                                    <i class="bi bi-info-circle me-2"></i>Información Básica
-                                </h5>
-                            </div>
                             <div class="col-md-8 mb-3">
-                                <label for="id_nombre" class="form-label">
-                                    <i class="bi bi-card-heading me-1"></i>Nombre del Requerimiento <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" 
-                                       id="id_nombre" 
-                                       name="nombre" 
-                                       class="form-control form-control-lg" 
-                                       placeholder="Ingrese un nombre descriptivo para el requerimiento"
-                                       required 
-                                       value="{{ form.nombre|default:'' }}" />
-                                <div class="form-text">Ingrese un nombre claro que identifique el propósito del requerimiento.</div>
+                                <label for="id_nombre" class="form-label">Nombre del Requerimiento <span class="text-danger">*</span></label>
+                                <input type="text" id="id_nombre" name="nombre" class="form-control" required value="{{ form.nombre|default:'' }}">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="id_prioridad" class="form-label">
-                                    <i class="bi bi-flag me-1"></i>Prioridad <span class="text-danger">*</span>
-                                </label>
-                                <select id="id_prioridad" name="prioridad" class="form-select form-select-lg" required>
-                                    <option value="baja" {% if form.prioridad == 'baja' %}selected{% endif %}>
-                                        🟢 Baja
-                                    </option>
-                                    <option value="media" {% if form.prioridad == 'media' or not form.prioridad %}selected{% endif %}>
-                                        🟡 Media
-                                    </option>
-                                    <option value="alta" {% if form.prioridad == 'alta' %}selected{% endif %}>
-                                        🔴 Alta
-                                    </option>
+                                <label for="id_prioridad" class="form-label">Prioridad <span class="text-danger">*</span></label>
+                                <select id="id_prioridad" name="prioridad" class="form-select" required>
+                                    <option value="baja" {% if form.prioridad == 'baja' %}selected{% endif %}>🟢 Baja</option>
+                                    <option value="media" {% if form.prioridad == 'media' %}selected{% endif %}>🟡 Media</option>
+                                    <option value="alta" {% if form.prioridad == 'alta' %}selected{% endif %}>🔴 Alta</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Información del solicitante (solo lectura) -->
-                        <div class="row mb-4">
+                        <!-- Solicitante -->
+                        <div class="row mb-3">
                             <div class="col-12">
                                 <div class="alert alert-info">
-                                    <i class="bi bi-info-circle me-2"></i>
                                     <strong>Solicitante:</strong> {{ user.get_full_name|default:user.username }} |
-                                    <strong>Departamento:</strong> 
+                                    <strong>Departamento:</strong>
                                     {% if user.departamento %}
                                         {{ user.departamento.nombre }}
                                     {% else %}
@@ -69,118 +47,63 @@
                             </div>
                         </div>
 
-                        <!-- Inputs ocultos -->
                         <input type="hidden" name="solicitante" value="{{ user.id }}">
-                        {% if user.departamento %}
-                        <input type="hidden" name="departamento" value="{{ user.departamento.id }}">
-                        {% else %}
-                        <input type="hidden" name="departamento" value="">
-                        {% endif %}
+                        <input type="hidden" name="departamento" value="{{ user.departamento.id|default:'' }}">
 
-                        <!-- Selección de productos -->
+                        <!-- Productos -->
                         <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="text-primary border-bottom pb-2 mb-3">
-                                    <i class="bi bi-box me-2"></i>Productos Solicitados
-                                </h5>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="categoria_select" class="form-label">
-                                    <i class="bi bi-tags me-1"></i>Categoría
-                                </label>
+                            <div class="col-md-4">
+                                <label for="categoria_select">Categoría</label>
                                 <select id="categoria_select" class="form-select">
                                     <option value="">Seleccione una categoría</option>
                                     {% for cat in categorias %}
                                     <option value="{{ cat.id }}">{{ cat.nombre }}</option>
                                     {% endfor %}
                                 </select>
-                                <div class="form-text">Primero seleccione la categoría del producto.</div>
                             </div>
-                            <div class="col-md-5 mb-3">
-                                <label for="producto_select" class="form-label">
-                                    <i class="bi bi-box me-1"></i>Producto
-                                </label>
+                            <div class="col-md-5">
+                                <label for="producto_select">Producto</label>
                                 <select id="producto_select" class="form-select" disabled>
                                     <option value="">Primero seleccione una categoría</option>
                                 </select>
-                                <div class="form-text">Seleccione el producto específico.</div>
                             </div>
-                            <div class="col-md-2 mb-3">
-                                <label for="cantidad_input" class="form-label">
-                                    <i class="bi bi-123 me-1"></i>Cantidad
-                                </label>
-                                <input type="number" 
-                                       id="cantidad_input" 
-                                       class="form-control" 
-                                       min="1" 
-                                       value="1" 
-                                       placeholder="1" />
+                            <div class="col-md-2">
+                                <label for="cantidad_input">Cantidad</label>
+                                <input type="number" id="cantidad_input" class="form-control" min="1" value="1">
                             </div>
-                            <div class="col-md-1 mb-3 d-flex align-items-end">
-                                <button type="button" 
-                                        id="agregar_producto" 
-                                        class="btn btn-success w-100"
-                                        disabled>
-                                    <i class="bi bi-plus-lg"></i>
-                                </button>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" id="agregar_producto" class="btn btn-success w-100" disabled><i class="bi bi-plus-lg"></i></button>
                             </div>
                         </div>
 
-                        <!-- Tabla de productos agregados -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header bg-light">
-                                        <h6 class="card-title mb-0">
-                                            <i class="bi bi-list-check me-2"></i>Productos Agregados
-                                            <span class="badge bg-secondary ms-2" id="productos-count">0</span>
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table id="detalles_table" class="table table-hover mb-0">
-                                                <thead class="table-dark">
-                                                    <tr>
-                                                        <th><i class="bi bi-box me-1"></i>Producto</th>
-                                                        <th width="120"><i class="bi bi-123 me-1"></i>Cantidad</th>
-                                                        <th width="80" class="text-center">
-                                                            <i class="bi bi-gear me-1"></i>Acción
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr id="empty-row">
-                                                        <td colspan="3" class="text-center text-muted py-4">
-                                                            <i class="bi bi-inbox display-4"></i>
-                                                            <p class="mt-2 mb-0">No se han agregado productos aún</p>
-                                                            <small>Seleccione una categoría y producto para comenzar</small>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Tabla -->
+                        <div class="table-responsive mb-4">
+                            <table class="table" id="detalles_table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="empty-row">
+                                        <td colspan="3" class="text-center text-muted py-4">No se han agregado productos aún</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
 
-                        <!-- Inputs ocultos para productos y cantidades -->
+                        <!-- Inputs -->
                         <div id="productos_cantidades_inputs"></div>
 
-                        <!-- Botones de acción -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between">
-                                    <a href="{% if modo == 'editar' %}{% url 'lista_requerimientos_solicitante' %}{% else %}{% url 'lista_requerimientos_solicitante' %}{% endif %}" 
-                                       class="btn btn-outline-secondary btn-lg">
-                                        <i class="bi bi-arrow-left me-1"></i>Cancelar
-                                    </a>
-                                    <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" disabled>
-                                        <i class="bi bi-save me-1"></i>
-                                        {% if modo == 'editar' %}Actualizar{% else %}Guardar{% endif %} Requerimiento
-                                    </button>
-                                </div>
-                            </div>
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_requerimientos_solicitante' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Cancelar</a>
+                            <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
+                                <i class="bi bi-save me-1"></i>
+                                {% if modo == 'editar' %}Actualizar{% else %}Guardar{% endif %} Requerimiento
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -189,301 +112,111 @@
     </div>
 </div>
 
+<!-- Datos JSON seguros -->
+{{ detalle_productos|json_script:"detalle-productos-data" }}
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    const productosData = JSON.parse(document.getElementById("detalle-productos-data").textContent);
     const categoriaSelect = document.getElementById('categoria_select');
     const productoSelect = document.getElementById('producto_select');
     const cantidadInput = document.getElementById('cantidad_input');
     const agregarBtn = document.getElementById('agregar_producto');
-    const detallesTableBody = document.querySelector('#detalles_table tbody');
-    const productosCantidadesInputs = document.getElementById('productos_cantidades_inputs');
+    const tablaBody = document.querySelector('#detalles_table tbody');
     const emptyRow = document.getElementById('empty-row');
-    const productosCount = document.getElementById('productos-count');
+    const inputsDiv = document.getElementById('productos_cantidades_inputs');
     const submitBtn = document.getElementById('submit-btn');
 
     let productosAgregados = 0;
 
-    // Función para actualizar el estado de los botones
-    function updateButtons() {
-        const hasProducts = productosAgregados > 0;
-        const hasValidProduct = productoSelect.value !== '';
-        const hasValidQuantity = cantidadInput.value > 0;
-        
-        agregarBtn.disabled = !hasValidProduct || !hasValidQuantity;
-        submitBtn.disabled = !hasProducts;
-        
-        productosCount.textContent = productosAgregados;
-    }
+    function agregarProducto(id, nombre, cantidad) {
+        if (emptyRow) emptyRow.style.display = 'none';
+        productosAgregados++;
 
-    // Evento para cambio de categoría
-    categoriaSelect.addEventListener('change', function() {
-        const categoriaId = this.value;
-        productoSelect.innerHTML = '<option value="">Cargando productos...</option>';
-        productoSelect.disabled = true;
-        
-        if (categoriaId) {
-            // Usar la URL correcta definida en urls.py
-            fetch(`{% url 'productos_por_categoria' 0 %}`.replace('0', categoriaId))
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    productoSelect.innerHTML = '<option value="">Seleccione un producto</option>';
-                    if (data.length === 0) {
-                        productoSelect.innerHTML = '<option value="">No hay productos disponibles</option>';
-                    } else {
-                        data.forEach(prod => {
-                            const option = document.createElement('option');
-                            option.value = prod.id;
-                            option.textContent = prod.nombre;
-                            productoSelect.appendChild(option);
-                        });
-                    }
-                    productoSelect.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Error al cargar productos:', error);
-                    productoSelect.innerHTML = '<option value="">Error al cargar productos</option>';
-                    
-                    // Mostrar mensaje de error al usuario
-                    const toast = document.createElement('div');
-                    toast.className = 'alert alert-warning alert-dismissible fade show position-fixed';
-                    toast.style.top = '20px';
-                    toast.style.right = '20px';
-                    toast.style.zIndex = '9999';
-                    toast.innerHTML = `
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        Error al cargar productos. Por favor, inténtelo de nuevo.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    `;
-                    document.body.appendChild(toast);
-                    
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toast.parentNode.removeChild(toast);
-                        }
-                    }, 5000);
-                });
-        } else {
-            productoSelect.innerHTML = '<option value="">Primero seleccione una categoría</option>';
-            productoSelect.disabled = true;
-        }
-        updateButtons();
-    });
-
-    // Eventos para actualizar botones
-    productoSelect.addEventListener('change', updateButtons);
-    cantidadInput.addEventListener('input', updateButtons);
-
-    // Evento para agregar producto
-    agregarBtn.addEventListener('click', function() {
-        const prodId = productoSelect.value;
-        const prodText = productoSelect.options[productoSelect.selectedIndex]?.text || '';
-        const cantidad = parseInt(cantidadInput.value);
-
-        if (!prodId) {
-            showAlert('Por favor seleccione un producto', 'warning');
-            return;
-        }
-        if (cantidad <= 0) {
-            showAlert('La cantidad debe ser mayor a 0', 'warning');
-            return;
-        }
-
-        // Verificar si el producto ya está agregado
-        const existingInputs = productosCantidadesInputs.querySelectorAll('input[name="productos[]"]');
-        const productExists = Array.from(existingInputs).some(input => input.value === prodId);
-        
-        if (productExists) {
-            showAlert('Este producto ya ha sido agregado', 'warning');
-            return;
-        }
-
-        // Agregar fila a tabla
-        agregarFilaProducto(prodId, prodText, cantidad);
-
-        // Limpiar selección
-        productoSelect.value = '';
-        cantidadInput.value = 1;
-        updateButtons();
-        
-        showAlert('Producto agregado exitosamente', 'success');
-    });
-
-    // Función para agregar fila e inputs ocultos
-    function agregarFilaProducto(prodId, prodText, cantidad) {
-        // Ocultar fila vacía si existe
-        if (emptyRow) {
-            emptyRow.style.display = 'none';
-        }
-
-        const tr = document.createElement('tr');
-        tr.className = 'producto-row';
-        tr.setAttribute('data-producto-id', prodId);
-        tr.innerHTML = `
-            <td>
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-box text-primary me-2"></i>
-                    <strong>${prodText}</strong>
-                </div>
-            </td>
-            <td class="text-center">
-                <span class="badge bg-secondary fs-6">${cantidad}</span>
-            </td>
-            <td class="text-center">
-                <button type="button" class="btn btn-outline-danger btn-sm quitar" title="Quitar producto">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${nombre}</td>
+            <td><span class="badge bg-secondary">${cantidad}</span></td>
+            <td><button type="button" class="btn btn-danger btn-sm quitar"><i class="bi bi-trash"></i></button></td>
         `;
-        detallesTableBody.appendChild(tr);
+        tablaBody.appendChild(fila);
 
-        // Crear inputs ocultos
         const inputProd = document.createElement('input');
         inputProd.type = 'hidden';
         inputProd.name = 'productos[]';
-        inputProd.value = prodId;
-        inputProd.setAttribute('data-producto-id', prodId);
-        productosCantidadesInputs.appendChild(inputProd);
+        inputProd.value = id;
+        inputProd.dataset.productoId = id;
 
         const inputCant = document.createElement('input');
         inputCant.type = 'hidden';
         inputCant.name = 'cantidades[]';
         inputCant.value = cantidad;
-        inputCant.setAttribute('data-producto-id', prodId);
-        productosCantidadesInputs.appendChild(inputCant);
+        inputCant.dataset.productoId = id;
 
-        productosAgregados++;
-        updateButtons();
+        inputsDiv.appendChild(inputProd);
+        inputsDiv.appendChild(inputCant);
 
-        // Evento para quitar producto
-        tr.querySelector('.quitar').addEventListener('click', function() {
-            quitarProducto(prodId, tr);
-        });
-    }
-
-    // Función para quitar producto
-    function quitarProducto(prodId, row) {
-        // Confirmar eliminación
-        if (confirm('¿Está seguro que desea quitar este producto?')) {
-            // Eliminar inputs ocultos
-            const inputs = productosCantidadesInputs.querySelectorAll(`input[data-producto-id="${prodId}"]`);
-            inputs.forEach(input => input.remove());
-            
-            // Eliminar fila
-            row.remove();
-            
+        fila.querySelector('.quitar').onclick = function () {
+            fila.remove();
+            inputProd.remove();
+            inputCant.remove();
             productosAgregados--;
-            updateButtons();
-            
-            // Mostrar fila vacía si no hay productos
-            if (productosAgregados === 0 && emptyRow) {
-                emptyRow.style.display = '';
-            }
-            
-            showAlert('Producto eliminado', 'info');
-        }
+            if (productosAgregados === 0 && emptyRow) emptyRow.style.display = '';
+            actualizarBotonSubmit();
+        };
+
+        actualizarBotonSubmit();
     }
 
-    // Función para mostrar alertas
-    function showAlert(message, type = 'info') {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-        alertDiv.style.top = '20px';
-        alertDiv.style.right = '20px';
-        alertDiv.style.zIndex = '9999';
-        alertDiv.style.minWidth = '300px';
-        
-        let icon = 'bi-info-circle';
-        if (type === 'success') icon = 'bi-check-circle';
-        if (type === 'warning') icon = 'bi-exclamation-triangle';
-        if (type === 'danger') icon = 'bi-x-circle';
-        
-        alertDiv.innerHTML = `
-            <i class="bi ${icon} me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        document.body.appendChild(alertDiv);
-        
-        setTimeout(() => {
-            if (alertDiv.parentNode) {
-                alertDiv.classList.remove('show');
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.parentNode.removeChild(alertDiv);
-                    }
-                }, 150);
-            }
-        }, 4000);
+    function actualizarBotonSubmit() {
+        submitBtn.disabled = productosAgregados === 0;
     }
 
-    // Precargar productos en modo edición - CORREGIDO
-    let detalleProductos = [];
-    try {
-        // Usando textContent o innerHTML en lugar de safe filter
-        const detalleElement = document.querySelector('#detalle-productos-data');
-        if (detalleElement) {
-            detalleProductos = JSON.parse(detalleElement.textContent || '[]');
-        }
-    } catch (e) {
-        console.log('No hay productos precargados o error al parsear:', e);
-        detalleProductos = [];
-    }
+    // Precargar productos al editar
+    productosData.forEach(p => agregarProducto(p.id, p.nombre, p.cantidad));
 
-    if (detalleProductos.length > 0) {
-        detalleProductos.forEach(p => {
-            agregarFilaProducto(p.id, p.nombre, p.cantidad);
-        });
-    }
+    // Cargar productos según categoría
+    categoriaSelect.addEventListener('change', () => {
+        const categoriaId = categoriaSelect.value;
+        productoSelect.innerHTML = `<option value="">Cargando...</option>`;
+        productoSelect.disabled = true;
 
-    // Validación del formulario antes de enviar
-    document.getElementById('form_requerimiento').addEventListener('submit', function(e) {
-        if (productosAgregados === 0) {
-            e.preventDefault();
-            showAlert('Debe agregar al menos un producto al requerimiento', 'warning');
-            return false;
-        }
-        
-        // Mostrar indicador de carga
-        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Procesando...';
-        submitBtn.disabled = true;
+        fetch(`{% url 'productos_por_categoria' 0 %}`.replace('0', categoriaId))
+            .then(res => res.json())
+            .then(data => {
+                productoSelect.innerHTML = `<option value="">Seleccione un producto</option>`;
+                data.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = p.nombre;
+                    productoSelect.appendChild(option);
+                });
+                productoSelect.disabled = false;
+                updateAgregarBtn();
+            })
+            .catch(() => {
+                productoSelect.innerHTML = `<option value="">Error al cargar</option>`;
+            });
     });
 
-    // Mejorar UX con efectos visuales
-    cantidadInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            if (!agregarBtn.disabled) {
-                agregarBtn.click();
-            }
+    function updateAgregarBtn() {
+        agregarBtn.disabled = !(productoSelect.value && cantidadInput.value > 0);
+    }
+
+    [productoSelect, cantidadInput].forEach(e => e.addEventListener('input', updateAgregarBtn));
+
+    agregarBtn.addEventListener('click', () => {
+        const id = productoSelect.value;
+        const nombre = productoSelect.options[productoSelect.selectedIndex].text;
+        const cantidad = cantidadInput.value;
+        if (id && cantidad > 0) {
+            agregarProducto(id, nombre, cantidad);
+            productoSelect.value = '';
+            cantidadInput.value = 1;
+            agregarBtn.disabled = true;
         }
     });
-
-    // Cambio de color del select de prioridad
-    document.getElementById('id_prioridad').addEventListener('change', function() {
-        this.className = 'form-select form-select-lg';
-        if (this.value === 'alta') {
-            this.classList.add('border-danger');
-        } else if (this.value === 'media') {
-            this.classList.add('border-warning');
-        } else if (this.value === 'baja') {
-            this.classList.add('border-success');
-        }
-    });
-
-    // Inicializar
-    updateButtons();
 });
-</script>
-
-<!-- Script tag oculto para datos de productos (para modo edición) -->
-<script id="detalle-productos-data" type="application/json">
-{{ detalle_productos|default:"[]"|safe }}
 </script>
 
 {% endblock %}
