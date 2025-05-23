@@ -1,19 +1,85 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Lista de Categorías</h2>
+<div class="row">
+    <div class="col-12">
+        <!-- Header con título y botón -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-tags me-2 fs-2 text-primary"></i>
+                <h2 class="mb-0 fw-bold text-dark">Lista de Categorías</h2>
+            </div>
+            <a href="{% url 'crear_categoria' %}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i>Nueva Categoría
+            </a>
+        </div>
 
-<a href="{% url 'crear_categoria' %}">Nueva Categoría</a>
-
-<ul>
-    {% for categoria in categorias %}
-        <li>
-            {{ categoria.nombre }} - 
-            <a href="{% url 'editar_categoria' categoria.id %}">Editar</a> | 
-            <a href="{% url 'eliminar_categoria' categoria.id %}">Eliminar</a>
-        </li>
-    {% empty %}
-        <li>No hay categorías registradas.</li>
-    {% endfor %}
-</ul>
+        <!-- Card con tabla -->
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-light border-0 rounded-top-3">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-list-ul me-2 text-secondary"></i>
+                    <h5 class="mb-0 fw-semibold text-secondary">Categorías Registradas</h5>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if categorias %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4 py-3 fw-semibold text-secondary">
+                                        <i class="bi bi-tag me-1"></i>Nombre
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-secondary text-center">
+                                        <i class="bi bi-gear me-1"></i>Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for categoria in categorias %}
+                                <tr class="border-bottom">
+                                    <td class="px-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-tag text-primary"></i>
+                                            </div>
+                                            <span class="fw-medium">{{ categoria.nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'editar_categoria' categoria.id %}" 
+                                               class="btn btn-outline-primary btn-sm rounded-pill me-1"
+                                               data-bs-toggle="tooltip" data-bs-placement="top" title="Editar categoría">
+                                                <i class="bi bi-pencil me-1"></i>Editar
+                                            </a>
+                                            <a href="{% url 'eliminar_categoria' categoria.id %}" 
+                                               class="btn btn-outline-danger btn-sm rounded-pill"
+                                               data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar categoría">
+                                                <i class="bi bi-trash me-1"></i>Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="text-muted mb-3">
+                            <i class="bi bi-inbox fs-1"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">No hay categorías registradas</h5>
+                        <p class="text-muted mb-3">Comienza creando tu primera categoría</p>
+                        <a href="{% url 'crear_categoria' %}" class="btn btn-primary px-4 py-2 rounded-pill">
+                            <i class="bi bi-plus-circle me-2"></i>Crear Primera Categoría
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

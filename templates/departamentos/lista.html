@@ -1,30 +1,97 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h1>Lista de Departamentos</h1>
-<a href="{% url 'crear_departamento' %}">Crear Nuevo Departamento</a>
-<table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for departamento in departamentos %}
-        <tr>
-            <td>{{ departamento.nombre }}</td>
-            <td>{{ departamento.descripcion }}</td>
-            <td>
-                <a href="{% url 'editar_departamento' departamento.id %}">Editar</a> |
-                <a href="{% url 'eliminar_departamento' departamento.id %}">Eliminar</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">No hay departamentos registrados.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-12">
+        <!-- Header con título y botón -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-building me-2 fs-2 text-info"></i>
+                <h2 class="mb-0 fw-bold text-dark">Lista de Departamentos</h2>
+            </div>
+            <a href="{% url 'crear_departamento' %}" class="btn btn-info px-4 py-2 rounded-pill shadow-sm text-white">
+                <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Departamento
+            </a>
+        </div>
+
+        <!-- Card con tabla -->
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-light border-0 rounded-top-3">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-list-ul me-2 text-secondary"></i>
+                    <h5 class="mb-0 fw-semibold text-secondary">Departamentos Registrados</h5>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if departamentos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4 py-3 fw-semibold text-secondary">
+                                        <i class="bi bi-building me-1"></i>Nombre
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-secondary">
+                                        <i class="bi bi-text-paragraph me-1"></i>Descripción
+                                    </th>
+                                    <th class="px-4 py-3 fw-semibold text-secondary text-center">
+                                        <i class="bi bi-gear me-1"></i>Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for departamento in departamentos %}
+                                <tr class="border-bottom">
+                                    <td class="px-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-building text-info"></i>
+                                            </div>
+                                            <span class="fw-medium">{{ departamento.nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="text-muted">
+                                            {% if departamento.descripcion %}
+                                                {{ departamento.descripcion|truncatechars:60 }}
+                                            {% else %}
+                                                <em>Sin descripción</em>
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'editar_departamento' departamento.id %}" 
+                                               class="btn btn-outline-primary btn-sm rounded-pill me-1"
+                                               data-bs-toggle="tooltip" data-bs-placement="top" title="Editar departamento">
+                                                <i class="bi bi-pencil me-1"></i>Editar
+                                            </a>
+                                            <a href="{% url 'eliminar_departamento' departamento.id %}" 
+                                               class="btn btn-outline-danger btn-sm rounded-pill"
+                                               data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar departamento">
+                                                <i class="bi bi-trash me-1"></i>Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="text-muted mb-3">
+                            <i class="bi bi-building fs-1"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">No hay departamentos registrados</h5>
+                        <p class="text-muted mb-3">Comienza creando tu primer departamento</p>
+                        <a href="{% url 'crear_departamento' %}" class="btn btn-info px-4 py-2 rounded-pill text-white">
+                            <i class="bi bi-plus-circle me-2"></i>Crear Primer Departamento
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

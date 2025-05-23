@@ -1,27 +1,111 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Crear Nueva Orden de Compra</h1>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold text-primary mb-2">
+                    <i class="bi bi-plus-circle me-3"></i>Nueva Orden de Compra
+                </h1>
+                <p class="text-muted">Complete los datos para crear una nueva orden de compra</p>
+            </div>
 
-<form method="post">
-    {% csrf_token %}
+            <!-- Card principal del formulario -->
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary bg-opacity-5 border-0 py-4">
+                    <h5 class="card-title mb-0 text-primary fw-semibold">
+                        <i class="bi bi-form-text me-2"></i>Información de la Orden
+                    </h5>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <!-- Requerimiento -->
+                            <div class="col-md-6">
+                                <label for="requerimiento" class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-clipboard-check text-primary me-2"></i>Requerimiento
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="requerimiento" id="requerimiento" class="form-select form-select-lg border-2" required>
+                                    <option value="" disabled selected>Seleccione un requerimiento</option>
+                                    {% for req in requerimientos %}
+                                    <option value="{{ req.id }}">
+                                        <strong>#{{ req.id }}</strong> - {{ req.solicitante }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Seleccione el requerimiento que originará esta orden
+                                </div>
+                            </div>
 
-    <label for="requerimiento">Requerimiento:</label>
-    <select name="requerimiento" required>
-        {% for req in requerimientos %}
-        <option value="{{ req.id }}">{{ req.id }} - {{ req.solicitante }}</option>
-        {% endfor %}
-    </select><br><br>
+                            <!-- Proveedor -->
+                            <div class="col-md-6">
+                                <label for="proveedor" class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-building text-primary me-2"></i>Proveedor
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="proveedor" id="proveedor" class="form-select form-select-lg border-2" required>
+                                    <option value="" disabled selected>Seleccione un proveedor</option>
+                                    {% for prov in proveedores %}
+                                    <option value="{{ prov.id }}">{{ prov.razon_social }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Proveedor que suministrará los productos
+                                </div>
+                            </div>
+                        </div>
 
-    <label for="proveedor">Proveedor:</label>
-    <select name="proveedor" required>
-        {% for prov in proveedores %}
-        <option value="{{ prov.id }}">{{ prov.razon_social }}</option>
-        {% endfor %}
-    </select><br><br>
+                        <!-- Información adicional -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-lightbulb text-info me-3 mt-1 fs-5"></i>
+                                        <div>
+                                            <h6 class="alert-heading text-info mb-2">Información importante</h6>
+                                            <ul class="mb-0 text-info">
+                                                <li>La orden se creará en estado <strong>"Borrador"</strong></li>
+                                                <li>Podrá agregar productos después de crear la orden</li>
+                                                <li>Una vez completada, podrá emitir la orden al proveedor</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-    <button type="submit">Guardar Orden</button>
-</form>
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                            <a href="{% url 'lista_ordenes' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i>Volver al Listado
+                            </a>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-check-circle me-2"></i>Crear Orden
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-<br>
-<a href="{% url 'lista_ordenes' %}">Volver al listado</a>
+            <!-- Card de ayuda -->
+            <div class="card mt-4 border-0 bg-light bg-opacity-50">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-question-circle me-1"></i>
+                        ¿Necesitas ayuda? Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
