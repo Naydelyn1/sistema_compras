@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # URL para lista de órdenes (FALTABA ESTA)
+    path('lista/', views.lista_ordenes, name='lista_ordenes'),
+    
+    # URLs existentes
     path('', views.lista_requerimientos_aprobados, name='lista_requerimientos_aprobados'),
     path('requerimiento/<int:requerimiento_id>/detalle/', views.ver_detalle_requerimiento_comprador, name='ver_detalle_requerimiento_comprador'),
     path('requerimiento/<int:requerimiento_id>/asignar-proveedores/', views.asignar_proveedores, name='asignar_proveedores'),
