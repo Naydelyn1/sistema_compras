@@ -14,10 +14,6 @@ from django import forms
 from django.contrib.auth.models import Group
 
 
-
-
-
-
 # --- Lista de Requerimientos ---
 @login_required
 @permission_required('requerimientos.view_requerimiento', raise_exception=True)

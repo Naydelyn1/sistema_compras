@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>📋 Detalle del Requerimiento - {{ requerimiento.codigo }}</h2>
+
+<p><strong>Área Solicitante:</strong> {{ requerimiento.departamento.nombre }}</p>
+<p><strong>Solicitado por:</strong> {{ requerimiento.solicitante.get_full_name }}</p>
+<p><strong>Fecha de solicitud:</strong> {{ requerimiento.fecha|date:"d/m/Y" }}</p>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Categoría</th>
+            <th>Producto</th>
+            <th>Precio Referencial</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for detalle in detalles %}
+        <tr>
+            <td>{{ detalle.producto.categoria.nombre }}</td>
+            <td>{{ detalle.producto.nombre }}</td>
+            <td>${{ detalle.producto.precio_referencial }}</td>
+            <td>{{ detalle.cantidad }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary mt-3">Volver al listado</a>
+{% endblock %}
