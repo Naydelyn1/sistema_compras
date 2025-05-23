@@ -1,53 +1,255 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>Agregar Producto a la Orden #{{ orden.id }}</h2>
-  <form method="post">
-    {% csrf_token %}
-    <label>Producto:</label>
-    <select name="producto" id="producto_select">
-      {% for producto in productos %}
-        <option value="{{ producto.id }}">{{ producto.nombre }}</option>
-      {% endfor %}
-    </select><br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-12">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold text-primary mb-2">
+                    <i class="bi bi-plus-circle me-3"></i>Agregar Producto
+                </h1>
+                <p class="text-muted">Añadir producto a la Orden #{{ orden.codigo }}</p>
+            </div>
 
-    <label>Cantidad:</label>
-    <input type="number" name="cantidad" min="1"><br>
+            <div class="row g-4">
+                <!-- Formulario de agregar producto -->
+                <div class="col-lg-7">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-primary bg-opacity-5 border-0 py-4">
+                            <h5 class="card-title mb-0 text-primary fw-semibold">
+                                <i class="bi bi-box-seam me-2"></i>Datos del Producto
+                            </h5>
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            <form method="post">
+                                {% csrf_token %}
+                                
+                                <div class="row g-4">
+                                    <!-- Selector de producto -->
+                                    <div class="col-12">
+                                        <label for="producto_select" class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-box text-primary me-2"></i>Producto
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <select name="producto" id="producto_select" class="form-select form-select-lg border-2" required>
+                                            <option value="" disabled selected>Seleccione un producto</option>
+                                            {% for producto in productos %}
+                                            <option value="{{ producto.id }}">{{ producto.nombre }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            El precio se completará automáticamente
+                                        </div>
+                                    </div>
 
-    <label>Precio Unitario:</label>
-    <input type="number" step="0.01" name="precio_unitario" id="precio_unitario"><br><br>
+                                    <!-- Cantidad -->
+                                    <div class="col-md-6">
+                                        <label for="cantidad" class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-123 text-primary me-2"></i>Cantidad
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <input type="number" 
+                                                   name="cantidad" 
+                                                   id="cantidad"
+                                                   class="form-control border-2" 
+                                                   min="1" 
+                                                   placeholder="Ej: 10"
+                                                   required>
+                                            <span class="input-group-text bg-light border-2">unidades</span>
+                                        </div>
+                                    </div>
 
-    <button type="submit">Agregar Producto</button>
-  </form>
+                                    <!-- Precio unitario -->
+                                    <div class="col-md-6">
+                                        <label for="precio_unitario" class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-currency-dollar text-primary me-2"></i>Precio Unitario
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light border-2">S/.</span>
+                                            <input type="number" 
+                                                   name="precio_unitario" 
+                                                   id="precio_unitario"
+                                                   class="form-control border-2" 
+                                                   step="0.01" 
+                                                   placeholder="0.00"
+                                                   required>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-lightbulb me-1"></i>
+                                            Se completa automáticamente al seleccionar producto
+                                        </div>
+                                    </div>
+                                </div>
 
-  <h3>Detalles actuales:</h3>
-  <ul>
-    {% for detalle in orden.detalles.all %}
-      <li>{{ detalle.cantidad }} x {{ detalle.producto.nombre }} - S/. {{ detalle.precio_unitario }}</li>
-    {% empty %}
-      <li>No se han agregado productos aún.</li>
-    {% endfor %}
-  </ul>
+                                <!-- Información adicional -->
+                                <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3 mt-4">
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-info-circle text-info me-3 mt-1"></i>
+                                        <div>
+                                            <h6 class="alert-heading text-info mb-2">Importante</h6>
+                                            <p class="mb-0 text-info">
+                                                Verifique que la cantidad y el precio sean correctos antes de agregar el producto.
+                                                Podrá eliminar productos individuales desde el detalle de la orden.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
 
-  <script>
+                                <!-- Botones de acción -->
+                                <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                                    <a href="{% url 'detalle_orden' orden.id %}" class="btn btn-outline-secondary btn-lg">
+                                        <i class="bi bi-arrow-left me-2"></i>Volver a la Orden
+                                    </a>
+                                    
+                                    <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                        <i class="bi bi-plus-circle me-2"></i>Agregar Producto
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel lateral con detalles actuales -->
+                <div class="col-lg-5">
+                    <div class="card shadow-sm border-0 rounded-3 sticky-top" style="top: 2rem;">
+                        <div class="card-header bg-success bg-opacity-5 border-0 py-3">
+                            <h5 class="card-title mb-0 text-success fw-semibold">
+                                <i class="bi bi-list-check me-2"></i>Productos Actuales
+                            </h5>
+                        </div>
+                        
+                        <div class="card-body p-0">
+                            {% if orden.detalles.all %}
+                                <div class="list-group list-group-flush">
+                                    {% for detalle in orden.detalles.all %}
+                                    <div class="list-group-item border-0 py-3">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <i class="bi bi-box-seam text-primary me-2"></i>
+                                                    <h6 class="mb-0 fw-semibold">{{ detalle.producto.nombre }}</h6>
+                                                </div>
+                                                <div class="row text-sm">
+                                                    <div class="col-6">
+                                                        <small class="text-muted">Cantidad:</small><br>
+                                                        <span class="badge bg-light text-dark border">{{ detalle.cantidad }}</span>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-muted">Precio Unit:</small><br>
+                                                        <span class="text-secondary">S/. {{ detalle.precio_unitario|floatformat:2 }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="fw-bold text-primary">
+                                                    S/. {{ detalle.subtotal|floatformat:2 }}
+                                                </div>
+                                                <small class="text-muted">Subtotal</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="card-footer bg-light border-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-dark">Total Actual:</span>
+                                        <span class="h5 text-success fw-bold mb-0">
+                                            S/. {% widthratio orden.detalles.all|length 1 orden.detalles.all|length as total_productos %}
+                                            {% for detalle in orden.detalles.all %}
+                                                {% if forloop.first %}{{ detalle.subtotal|add:0|floatformat:2 }}{% endif %}
+                                            {% endfor %}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="bi bi-inbox text-muted mb-3" style="font-size: 2.5rem;"></i>
+                                    <h6 class="text-muted mb-2">Sin productos</h6>
+                                    <p class="text-muted mb-0 small">
+                                        Esta orden aún no tiene productos agregados.
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Card de información de la orden -->
+                    <div class="card mt-4 border-0 bg-light bg-opacity-50">
+                        <div class="card-body py-3">
+                            <div class="row align-items-center text-center">
+                                <div class="col-4">
+                                    <i class="bi bi-receipt text-primary fs-4"></i>
+                                    <div class="mt-1">
+                                        <small class="text-muted d-block">Orden</small>
+                                        <strong>#{{ orden.codigo }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <i class="bi bi-building text-primary fs-4"></i>
+                                    <div class="mt-1">
+                                        <small class="text-muted d-block">Proveedor</small>
+                                        <strong class="small">{{ orden.proveedor.razon_social|truncatechars:15 }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <i class="bi bi-circle-fill text-secondary fs-4"></i>
+                                    <div class="mt-1">
+                                        <small class="text-muted d-block">Estado</small>
+                                        <strong class="text-capitalize">{{ orden.estado }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
-      const productoSelect = document.getElementById('producto_select');
-      const precioInput = document.getElementById('precio_unitario');
+        const productoSelect = document.getElementById('producto_select');
+        const precioInput = document.getElementById('precio_unitario');
+        const cantidadInput = document.getElementById('cantidad');
 
-      const precios = {
-        {% for producto in productos %}
-          "{{ producto.id }}": "{{ producto.precio_referencial }}",
-        {% endfor %}
-      };
+        const precios = {
+            {% for producto in productos %}
+                "{{ producto.id }}": "{{ producto.precio_referencial }}",
+            {% endfor %}
+        };
 
-      productoSelect.addEventListener('change', function() {
-        const selectedProductoId = this.value;
-        precioInput.value = precios[selectedProductoId] || '';
-      });
+        productoSelect.addEventListener('change', function() {
+            const selectedProductoId = this.value;
+            precioInput.value = precios[selectedProductoId] || '';
+            
+            // Agregar efecto visual
+            if (precios[selectedProductoId]) {
+                precioInput.classList.add('border-success');
+                setTimeout(() => {
+                    precioInput.classList.remove('border-success');
+                }, 1000);
+            }
+        });
 
-      // Preseleccionar el primer producto si existe
-      if (productoSelect.options.length > 0) {
-        productoSelect.dispatchEvent(new Event('change'));
-      }
+        // Preseleccionar el primer producto si existe
+        if (productoSelect.options.length > 1) {
+            productoSelect.selectedIndex = 1;
+            productoSelect.dispatchEvent(new Event('change'));
+        }
+
+        // Focus en cantidad después de seleccionar producto
+        productoSelect.addEventListener('change', function() {
+            setTimeout(() => {
+                cantidadInput.focus();
+            }, 100);
+        });
     });
-  </script>
+</script>
 {% endblock %}

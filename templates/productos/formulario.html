@@ -1,12 +1,105 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{% if form.instance.pk %}Editar Producto{% else %}Nuevo Producto{% endif %}</h2>
+<div class="container-fluid bg-light min-vh-100 py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-8">
+                <!-- Header mejorado con gradiente -->
+                <div class="text-center mb-5">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-{% if form.instance.pk %}pencil-square{% else %}plus-circle{% endif %} fs-1 text-primary"></i>
+                    </div>
+                    <h1 class="display-6 fw-bold text-dark mb-2">
+                        {% if form.instance.pk %}Editar Producto{% else %}Nuevo Producto{% endif %}
+                    </h1>
+                    <p class="text-muted mb-4">
+                        {% if form.instance.pk %}Actualiza la información del producto{% else %}Agrega un nuevo producto al inventario{% endif %}
+                    </p>
+                    
+                    <!-- Breadcrumb moderno -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center bg-white rounded-pill shadow-sm px-4 py-2 d-inline-flex">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'lista_productos' %}" class="text-decoration-none text-primary fw-medium">
+                                    <i class="bi bi-house me-1"></i>Productos
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active fw-medium">
+                                {% if form.instance.pk %}Editar{% else %}Nuevo{% endif %}
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar</button>
-    <a href="{% url 'lista_productos' %}">Cancelar</a>
-</form>
+                <!-- Formulario mejorado -->
+                <div class="card border-0 shadow-lg">
+                    <!-- Header del card con gradiente sutil -->
+                    <div class="card-header bg-white border-0 text-center py-4">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h4 class="mb-0 text-dark">
+                                    <i class="bi bi-info-circle text-primary me-2"></i>
+                                    Información del Producto
+                                </h4>
+                                <p class="text-muted small mb-0 mt-1">Completa todos los campos requeridos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Contenedor de campos con mejor espaciado -->
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    {{ form.as_p }}
+                                </div>
+                            </div>
+                            
+                            <!-- Línea divisora elegante -->
+                            <hr class="my-5 border-0" style="height: 2px; background: linear-gradient(90deg, transparent, #dee2e6, transparent);">
+                            
+                            <!-- Botones de acción mejorados -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-end">
+                                        <a href="{% url 'lista_productos' %}" class="btn btn-light btn-lg px-4 border shadow-sm">
+                                            <i class="bi bi-x-circle me-2"></i>Cancelar
+                                        </a>
+                                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm position-relative overflow-hidden">
+                                            <span class="position-relative">
+                                                <i class="bi bi-check-circle me-2"></i>
+                                                {% if form.instance.pk %}Actualizar Producto{% else %}Crear Producto{% endif %}
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tips adicionales -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-info border-0 bg-info bg-opacity-10 text-info-emphasis">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-lightbulb flex-shrink-0 me-3 fs-5"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-1">Consejos útiles</h6>
+                                    <p class="mb-0 small">
+                                        Asegúrate de que el código del producto sea único y fácil de recordar.
+                                        La categoría te ayudará a organizar mejor tu inventario.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

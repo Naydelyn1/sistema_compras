@@ -1,20 +1,175 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Lista de Productos</h2>
+<div class="container-fluid bg-light min-vh-100 py-4">
+    <div class="container">
+        <!-- Header heroico -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="bg-white rounded-4 shadow-sm p-4 p-md-5">
+                    <div class="row align-items-center">
+                        <div class="col-12 col-md-8">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary bg-opacity-15 rounded-3 p-3 me-4">
+                                    <i class="bi bi-box-seam fs-1 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h1 class="display-5 fw-bold text-dark mb-2">Gestión de Productos</h1>
+                                    <p class="text-muted mb-0 fs-5">
+                                        Administra tu inventario de manera eficiente
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Stats rápidas -->
+                            <div class="row g-3 mt-2">
+                                <div class="col-6 col-md-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-success bg-opacity-10 rounded-2 p-2 me-2">
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ productos|length }}</div>
+                                            <small class="text-muted">Producto{{ productos|length|pluralize }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-md-4 text-md-end mt-4 mt-md-0">
+                            <a href="{% url 'crear_producto' %}" class="btn btn-primary btn-lg px-4 shadow-sm">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<a href="{% url 'crear_producto' %}">Nuevo Producto</a>
-
-<ul>
-    {% for producto in productos %}
-        <li>
-            {{ producto.nombre }} ({{ producto.categoria.nombre }}) - Código: {{ producto.codigo }}
-            - 
-            <a href="{% url 'editar_producto' producto.id %}">Editar</a> | 
-            <a href="{% url 'eliminar_producto' producto.id %}">Eliminar</a>
-        </li>
-    {% empty %}
-        <li>No hay productos registrados.</li>
-    {% endfor %}
-</ul>
+        <!-- Contenido principal -->
+        <div class="row">
+            <div class="col-12">
+                {% if productos %}
+                    <!-- Tabla moderna -->
+                    <div class="card border-0 shadow-lg">
+                        <div class="card-header bg-white border-0 py-4">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h5 class="mb-0 text-dark fw-semibold">
+                                        <i class="bi bi-table text-primary me-2"></i>
+                                        Lista de Productos
+                                    </h5>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                                        {{ productos|length }} registro{{ productos|length|pluralize }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-borderless mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th scope="col" class="border-0 py-3 px-4 text-muted fw-semibold">
+                                                <i class="bi bi-box me-2"></i>Producto
+                                            </th>
+                                            <th scope="col" class="border-0 py-3 px-4 text-muted fw-semibold">
+                                                <i class="bi bi-tag me-2"></i>Categoría
+                                            </th>
+                                            <th scope="col" class="border-0 py-3 px-4 text-muted fw-semibold">
+                                                <i class="bi bi-upc me-2"></i>Código
+                                            </th>
+                                            <th scope="col" class="border-0 py-3 px-4 text-center text-muted fw-semibold">
+                                                <i class="bi bi-gear me-2"></i>Acciones
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for producto in productos %}
+                                        <tr class="border-bottom">
+                                            <td class="py-4 px-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary bg-opacity-10 rounded-2 p-2 me-3">
+                                                        <i class="bi bi-box-seam text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold text-dark">{{ producto.nombre }}</div>
+                                                        <small class="text-muted">Producto #{{ forloop.counter }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-4">
+                                                <span class="badge bg-secondary bg-opacity-15 text-secondary-emphasis px-3 py-2 rounded-pill">
+                                                    {{ producto.categoria.nombre }}
+                                                </span>
+                                            </td>
+                                            <td class="py-4 px-4">
+                                                <code class="bg-light px-2 py-1 rounded text-dark">{{ producto.codigo }}</code>
+                                            </td>
+                                            <td class="py-4 px-4 text-center">
+                                                <div class="btn-group shadow-sm" role="group">
+                                                    <a href="{% url 'editar_producto' producto.id %}" 
+                                                       class="btn btn-outline-primary btn-sm px-3"
+                                                       data-bs-toggle="tooltip" 
+                                                       title="Editar producto">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="{% url 'eliminar_producto' producto.id %}" 
+                                                       class="btn btn-outline-danger btn-sm px-3"
+                                                       data-bs-toggle="tooltip" 
+                                                       title="Eliminar producto">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Estado vacío mejorado -->
+                    <div class="card border-0 shadow-lg">
+                        <div class="card-body text-center py-5">
+                            <div class="mb-4">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 120px; height: 120px;">
+                                    <i class="bi bi-inbox display-4 text-primary"></i>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-dark mb-3">¡Aún no hay productos!</h3>
+                            <p class="text-muted mb-4 fs-5">
+                                Comienza creando tu primer producto para gestionar tu inventario
+                            </p>
+                            
+                            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                                <a href="{% url 'crear_producto' %}" class="btn btn-primary btn-lg px-5">
+                                    <i class="bi bi-plus-circle me-2"></i>Crear mi primer producto
+                                </a>
+                            </div>
+                            
+                            <!-- Tips para empezar -->
+                            <div class="row justify-content-center mt-5">
+                                <div class="col-md-8">
+                                    <div class="alert alert-info bg-info bg-opacity-10 border-0 text-info-emphasis">
+                                        <h6 class="alert-heading"><i class="bi bi-lightbulb me-2"></i>Tip</h6>
+                                        <p class="mb-0 small">
+                                            Un buen producto debe tener un nombre descriptivo, una categoría clara y un código único para facilitar su identificación.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,17 +1,117 @@
 {% extends "base.html" %}
-{% block content %}
-<h1>Proveedores</h1>
-<a href="{% url 'crear_proveedor' %}">Crear Nuevo Proveedor</a>
 
-<ul>
-    {% for proveedor in proveedores %}
-    <li>
-        {{ proveedor.razon_social }} - {{ proveedor.ruc }}
-        <a href="{% url 'editar_proveedor' proveedor.id %}">Editar</a>
-        <a href="{% url 'eliminar_proveedor' proveedor.id %}">Eliminar</a>
-    </li>
-    {% empty %}
-    <li>No hay proveedores registrados.</li>
-    {% endfor %}
-</ul>
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header con título y botón -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-6 text-primary fw-bold mb-1">
+                        <i class="bi bi-building-gear me-3"></i>Gestión de Proveedores
+                    </h1>
+                    <p class="text-muted mb-0">Administra y gestiona todos tus proveedores</p>
+                </div>
+                <a href="{% url 'crear_proveedor' %}" class="btn btn-success btn-lg shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Proveedor
+                </a>
+            </div>
+
+            <!-- Estadísticas básicas -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-0">Total Proveedores</h6>
+                                    <h3 class="mb-0">{{ proveedores|length }}</h3>
+                                </div>
+                                <div class="ms-3">
+                                    <i class="bi bi-building display-6 opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card contenedor principal -->
+            <div class="card shadow border-0">
+                <div class="card-header bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 text-dark fw-semibold">
+                            <i class="bi bi-list-ul me-2"></i>Lista de Proveedores
+                        </h5>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    {% if proveedores %}
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                            {% for proveedor in proveedores %}
+                            <div class="col">
+                                <div class="card h-100 border shadow-sm hover-card">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start justify-content-between mb-3">
+                                            <div class="flex-grow-1">
+                                                <h5 class="card-title text-primary mb-2 fw-bold">
+                                                    {{ proveedor.razon_social }}
+                                                </h5>
+                                                <div class="text-muted small mb-3">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <i class="bi bi-card-text me-2 text-primary"></i>
+                                                        <span>RUC: <strong>{{ proveedor.ruc }}</strong></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-light border-0">
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a href="{% url 'editar_proveedor' proveedor.id %}" 
+                                               class="btn btn-outline-primary btn-sm flex-fill flex-md-grow-0">
+                                                <i class="bi bi-pencil-square me-1"></i>Editar
+                                            </a>
+                                            <a href="{% url 'eliminar_proveedor' proveedor.id %}" 
+                                               class="btn btn-outline-danger btn-sm flex-fill flex-md-grow-0">
+                                                <i class="bi bi-trash3 me-1"></i>Eliminar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="bi bi-building-slash display-1 text-muted opacity-50"></i>
+                            </div>
+                            <h3 class="text-muted mb-3">No hay proveedores registrados</h3>
+                            <p class="text-muted mb-4 lead">
+                                Comienza tu gestión agregando el primer proveedor a tu sistema
+                            </p>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                <a href="{% url 'crear_proveedor' %}" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-plus-circle me-2"></i>Crear Primer Proveedor
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.hover-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+</style>
 {% endblock %}
