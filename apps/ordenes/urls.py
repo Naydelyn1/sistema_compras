@@ -2,11 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.lista_ordenes, name='lista_ordenes'),
-    path('nuevo/', views.crear_orden, name='crear_orden'),
-    path('<int:orden_id>/detalle/', views.detalle_orden, name='detalle_orden'),
-    path('<int:orden_id>/agregar-detalle/', views.agregar_detalle_orden, name='agregar_detalle_orden'),
-    path('<int:orden_id>/cambiar-estado/<str:nuevo_estado>/', views.cambiar_estado_orden, name='cambiar_estado_orden'),
-    path('<int:orden_id>/eliminar/', views.eliminar_orden, name='eliminar_orden'),  # Aquí eliminamos la duplicación
-    path('<int:detalle_id>/eliminar-detalle/', views.eliminar_detalle_orden, name='eliminar_detalle_orden'),  # Renombramos para que sea más claro
+    path('', views.lista_requerimientos_aprobados, name='lista_requerimientos_aprobados'),
+    path('requerimiento/<int:requerimiento_id>/detalle/', views.ver_detalle_requerimiento_comprador, name='ver_detalle_requerimiento_comprador'),
+    path('requerimiento/<int:requerimiento_id>/asignar-proveedores/', views.asignar_proveedores, name='asignar_proveedores'),
+    path('requerimiento/<int:requerimiento_id>/generar-orden/', views.generar_orden_compra, name='generar_orden_compra'),
+    path('requerimiento/<int:requerimiento_id>/resumen-ordenes/', views.resumen_ordenes_generadas, name='resumen_ordenes_generadas'),
+    path('mis-ordenes/', views.mis_ordenes_generadas, name='mis_ordenes_generadas'),
+    path('ajax/aplicar-proveedor-categoria/', views.aplicar_proveedor_categoria, name='aplicar_proveedor_categoria'),
 ]

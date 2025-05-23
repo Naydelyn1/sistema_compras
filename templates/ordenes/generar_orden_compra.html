@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Generar Orden de Compra para {{ requerimiento.codigo }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {% for proveedor, items in ordenes_por_proveedor.items %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>Proveedor:</strong> {{ proveedor.razon_social }} (RUC: {{ proveedor.ruc }})
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.detalle.producto.nombre }}</td>
+                        <td>{{ item.detalle.cantidad }}</td>
+                        <td>${{ item.precio_unitario }}</td>
+                        <td>${{ item.precio_unitario|floatformat:2|add:item.detalle.cantidad|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Generar orden de compra</button>
+</form>
+
+<a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary mt-2">Volver</a>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>🧾 Mis Órdenes de Compra Generadas</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Requerimiento</th>
+            <th>Proveedor</th>
+            <th>Fecha</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for orden in ordenes %}
+        <tr>
+            <td>{{ orden.codigo }}</td>
+            <td>{{ orden.requerimiento.codigo }}</td>
+            <td>{{ orden.proveedor.razon_social }}</td>
+            <td>{{ orden.fecha_emision|date:"d/m/Y" }}</td>
+            <td>${{ orden.total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary mt-2">Volver</a>
+{% endblock %}

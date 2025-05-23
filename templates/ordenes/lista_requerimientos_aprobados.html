@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>📦 Requerimientos Aprobados Pendientes de Compra</h2>
+
+<a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-primary mb-3">🧾 Ver mis órdenes generadas</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Departamento</th>
+            <th>Solicitante</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for req in requerimientos %}
+        <tr>
+            <td>{{ req.codigo }}</td>
+            <td>{{ req.departamento.nombre }}</td>
+            <td>{{ req.solicitante.get_full_name }}</td>
+            <td>{{ req.fecha|date:"d/m/Y" }}</td>
+            <td>
+                <a href="{% url 'asignar_proveedores' req.id %}" class="btn btn-sm btn-warning">Agregar proveedor</a>
+                <a href="{% url 'ver_detalle_requerimiento_comprador' req.id %}" class="btn btn-sm btn-info">Ver detalle</a>
+                <a href="{% url 'generar_orden_compra' req.id %}" class="btn btn-sm btn-success">Generar orden</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay requerimientos aprobados pendientes.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

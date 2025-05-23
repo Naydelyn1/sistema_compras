@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Asignar Proveedores - {{ requerimiento.codigo }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {% for categoria, items in productos_por_categoria.items %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>📁 Categoría:</strong> {{ categoria.nombre }}
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>Proveedor para toda la categoría:</label>
+                    <select class="form-select proveedor-categoria" data-categoria-id="{{ categoria.id }}">
+                        <option value="">-- Seleccione --</option>
+                        {% for proveedor in proveedores %}
+                            <option value="{{ proveedor.id }}">{{ proveedor.razon_social }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn btn-secondary btn-aplicar mt-2">Aplicar a todos</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Proveedor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.producto.nombre }}</td>
+                            <td>${{ item.precio_unitario }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>
+                                <select name="proveedor_producto_{{ item.producto.id }}" class="form-select proveedor-individual" data-categoria-id="{{ categoria.id }}">
+                                    <option value="">-- Seleccione --</option>
+                                    {% for proveedor in proveedores %}
+                                        <option value="{{ proveedor.id }}">{{ proveedor.razon_social }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-success">Guardar Asignaciones</button>
+    <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary">Volver al listado</a>
+</form>
+
+<script>
+    document.querySelectorAll('.btn-aplicar').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = btn.closest('.card');
+            const categoriaId = card.querySelector('.proveedor-categoria').dataset.categoriaId;
+            const proveedorId = card.querySelector('.proveedor-categoria').value;
+            if (!proveedorId) return;
+
+            // Aplicar a todos los select del grupo
+            card.querySelectorAll('.proveedor-individual').forEach(select => {
+                if (select.dataset.categoriaId === categoriaId) {
+                    select.value = proveedorId;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
