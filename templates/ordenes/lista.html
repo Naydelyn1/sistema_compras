@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="container-fluid">
     <!-- Header de la página -->
@@ -32,9 +33,7 @@
                 <div class="card-body text-center py-3">
                     <i class="bi bi-pencil text-secondary fs-1"></i>
                     <div class="mt-2">
-                        <h4 class="text-secondary fw-bold mb-0">
-                            {% for orden in ordenes %}{% if orden.estado == 'borrador' %}1{% endif %}{% endfor %}
-                        </h4>
+                        <h4 class="text-secondary fw-bold mb-0">0</h4>
                         <small class="text-secondary">Borradores</small>
                     </div>
                 </div>
@@ -45,9 +44,7 @@
                 <div class="card-body text-center py-3">
                     <i class="bi bi-send text-success fs-1"></i>
                     <div class="mt-2">
-                        <h4 class="text-success fw-bold mb-0">
-                            {% for orden in ordenes %}{% if orden.estado == 'emitida' %}1{% endif %}{% endfor %}
-                        </h4>
+                        <h4 class="text-success fw-bold mb-0">0</h4>
                         <small class="text-success">Emitidas</small>
                     </div>
                 </div>
@@ -58,9 +55,7 @@
                 <div class="card-body text-center py-3">
                     <i class="bi bi-check-circle text-info fs-1"></i>
                     <div class="mt-2">
-                        <h4 class="text-info fw-bold mb-0">
-                            {% for orden in ordenes %}{% if orden.estado == 'completada' %}1{% endif %}{% endfor %}
-                        </h4>
+                        <h4 class="text-info fw-bold mb-0">0</h4>
                         <small class="text-info">Completadas</small>
                     </div>
                 </div>
@@ -148,20 +143,12 @@
                                     <div class="btn-group" role="group">
                                         <a href="{% url 'detalle_orden' orden.id %}" 
                                            class="btn btn-outline-primary btn-sm" 
-                                           data-bs-toggle="tooltip" 
                                            title="Ver detalle completo">
                                             <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="#" 
-                                           class="btn btn-outline-warning btn-sm" 
-                                           data-bs-toggle="tooltip" 
-                                           title="Editar orden">
-                                            <i class="bi bi-pencil"></i>
                                         </a>
                                         {% if orden.estado == 'borrador' %}
                                         <a href="{% url 'eliminar_orden' orden.id %}" 
                                            class="btn btn-outline-danger btn-sm" 
-                                           data-bs-toggle="tooltip" 
                                            title="Eliminar orden">
                                             <i class="bi bi-trash"></i>
                                         </a>
@@ -199,7 +186,6 @@
                         <h6 class="alert-heading text-warning mb-2">Panel Administrativo</h6>
                         <p class="mb-0 text-warning">
                             Como administrador, tienes acceso completo para gestionar todas las órdenes del sistema.
-                            Puedes ver, editar y eliminar órdenes según sea necesario.
                         </p>
                     </div>
                 </div>
@@ -210,14 +196,11 @@
                 <div class="card-body text-center py-3">
                     <small class="text-muted">
                         <i class="bi bi-tools me-1"></i>
-                        Herramientas administrativas disponibles
+                        Herramientas administrativas
                     </small>
                     <div class="mt-2">
-                        <a href="{% url 'crear_orden' %}" class="btn btn-sm btn-outline-primary me-2">
+                        <a href="{% url 'crear_orden' %}" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-plus-circle me-1"></i>Nueva
-                        </a>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-gear me-1"></i>Configurar
                         </a>
                     </div>
                 </div>
@@ -225,13 +208,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Inicializar tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-</script>
-
 {% endblock %}
