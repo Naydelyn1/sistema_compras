@@ -14,6 +14,60 @@
         </a>
     </div>
 
+    <!-- Estadísticas rápidas -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 bg-primary bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-receipt text-primary fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-primary fw-bold mb-0">{{ ordenes|length }}</h4>
+                        <small class="text-primary">Total de Órdenes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-secondary bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-pencil text-secondary fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-secondary fw-bold mb-0">
+                            {% for orden in ordenes %}{% if orden.estado == 'borrador' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
+                        </h4>
+                        <small class="text-secondary">Borradores</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-success bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-send text-success fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-success fw-bold mb-0">
+                            {% for orden in ordenes %}{% if orden.estado == 'emitida' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
+                        </h4>
+                        <small class="text-success">Emitidas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-info bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-check-circle text-info fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-info fw-bold mb-0">
+                            {% for orden in ordenes %}{% if orden.estado == 'completada' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
+                        </h4>
+                        <small class="text-info">Completadas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Card principal con la tabla -->
     <div class="card shadow-sm border-0 rounded-3">
         <div class="card-header bg-white border-0 py-3">
@@ -122,5 +176,52 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-lightbulb text-info me-3 mt-1"></i>
+                    <div>
+                        <h6 class="alert-heading text-info mb-2">Estados de las órdenes</h6>
+                        <div class="row small text-info">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Borrador:</strong> Orden en construcción</p>
+                                <p class="mb-1"><strong>Emitida:</strong> Orden enviada al proveedor</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Recibida:</strong> Productos entregados</p>
+                                <p class="mb-1"><strong>Completada:</strong> Proceso finalizado</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-light bg-opacity-50">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-question-circle me-1"></i>
+                        ¿Necesitas crear una nueva orden?
+                    </small>
+                    <div class="mt-2">
+                        <a href="{% url 'crear_orden' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Nueva Orden
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Inicializar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
 {% endblock %}
