@@ -134,12 +134,16 @@
                                         </td>
                                         {% if orden.estado == 'borrador' %}
                                         <td class="px-4 py-3 text-center">
-                                            <a href="{% url 'eliminar_detalle_orden' detalle.id %}"
-                                               class="btn btn-outline-danger btn-sm rounded-circle" 
-                                               data-bs-toggle="tooltip" 
-                                               title="Eliminar producto">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
+                                            <form method="post" action="{% url 'eliminar_detalle_orden' detalle.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" 
+                                                        class="btn btn-outline-danger btn-sm rounded-circle" 
+                                                        onclick="return confirm('¿Eliminar este producto de la orden?')"
+                                                        data-bs-toggle="tooltip" 
+                                                        title="Eliminar producto">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                         {% endif %}
                                     </tr>
@@ -225,12 +229,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Inicializar tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-</script>
 {% endblock %}
