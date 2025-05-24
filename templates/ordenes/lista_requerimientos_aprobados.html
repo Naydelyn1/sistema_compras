@@ -1,248 +1,34 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid py-4">
-    
-    <!-- Header principal con gradiente -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card border-0 bg-success bg-gradient rounded-4 shadow-lg">
-                <div class="card-body p-5">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-white">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-white bg-opacity-20 rounded-3 p-3 me-3">
-                                    <i class="bi bi-clipboard-check text-white fs-1"></i>
-                                </div>
-                                <div>
-                                    <h1 class="fw-bold mb-2">Requerimientos Aprobados</h1>
-                                    <p class="text-white-50 mb-0 fs-5">Pendientes de conversión a órdenes de compra</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-light btn-lg rounded-3 shadow-lg px-4">
-                                <i class="bi bi-receipt me-2"></i>
-                                <span class="fw-semibold">Ver Mis Órdenes</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<h2>📦 Requerimientos Aprobados Pendientes de Compra</h2>
 
-    <!-- Cards de estadísticas -->
-    <div class="row g-4 mb-5">
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 bg-success bg-opacity-5 rounded-4 h-100">
-                <div class="card-body text-center p-4">
-                    <i class="bi bi-clipboard-check text-success fs-1 mb-3"></i>
-                    <h4 class="text-success fw-bold">{{ requerimientos|length }}</h4>
-                    <p class="text-success mb-0">Requerimientos Pendientes</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 bg-primary bg-opacity-5 rounded-4 h-100">
-                <div class="card-body text-center p-4">
-                    <i class="bi bi-gear text-primary fs-1 mb-3"></i>
-                    <h4 class="text-primary fw-bold">--</h4>
-                    <p class="text-primary mb-0">En Proceso</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 bg-info bg-opacity-5 rounded-4 h-100">
-                <div class="card-body text-center p-4">
-                    <i class="bi bi-check-circle text-info fs-1 mb-3"></i>
-                    <h4 class="text-info fw-bold">--</h4>
-                    <p class="text-info mb-0">Completados Hoy</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-primary mb-3">🧾 Ver mis órdenes generadas</a>
 
-    <!-- Tabla principal -->
-    <div class="card border-0 shadow-lg rounded-4">
-        <div class="card-header bg-light border-0 py-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-table text-primary me-2"></i>
-                    Requerimientos Listos para Procesar
-                </h5>
-                <div class="d-flex align-items-center gap-3">
-                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fs-6">
-                        {{ requerimientos|length }} pendiente{{ requerimientos|length|pluralize:"s" }}
-                    </span>
-                    {% if requerimientos %}
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle rounded-3" 
-                                type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-funnel me-1"></i>Filtrar
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Todos</a></li>
-                            <li><a class="dropdown-item" href="#">Más antiguos</a></li>
-                            <li><a class="dropdown-item" href="#">Más recientes</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Por departamento</a></li>
-                        </ul>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <div class="card-body p-0">
-            {% if requerimientos %}
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="px-4 py-4 fw-bold text-dark border-0">
-                                    <i class="bi bi-hash text-primary me-2"></i>Código
-                                </th>
-                                <th class="px-4 py-4 fw-bold text-dark border-0">
-                                    <i class="bi bi-building text-primary me-2"></i>Departamento
-                                </th>
-                                <th class="px-4 py-4 fw-bold text-dark border-0">
-                                    <i class="bi bi-person text-primary me-2"></i>Solicitante
-                                </th>
-                                <th class="px-4 py-4 fw-bold text-dark border-0">
-                                    <i class="bi bi-calendar3 text-primary me-2"></i>Fecha
-                                </th>
-                                <th class="px-4 py-4 fw-bold text-dark border-0">
-                                    <i class="bi bi-clock text-primary me-2"></i>Días Pendientes
-                                </th>
-                                <th class="px-4 py-4 fw-bold text-dark border-0 text-center">
-                                    <i class="bi bi-gear text-primary me-2"></i>Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for req in requerimientos %}
-                            <tr class="border-bottom border-light">
-                                <td class="px-4 py-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-success bg-opacity-10 rounded-2 p-2 me-3">
-                                            <i class="bi bi-clipboard-check text-success"></i>
-                                        </div>
-                                        <span class="fw-bold text-success">REQ-{{ req.id|stringformat:"04d" }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="bi bi-building text-primary"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold text-dark">{{ req.departamento.nombre }}</div>
-                                            <small class="text-muted">Área solicitante</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="bi bi-person text-warning"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold text-dark">{{ req.solicitante.username }}</div>
-                                            <small class="text-muted">Usuario responsable</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-calendar3 text-muted me-2"></i>
-                                        <div>
-                                            <div class="fw-semibold text-dark">{{ req.fecha|date:"d/m/Y" }}</div>
-                                            <small class="text-muted">{{ req.fecha|date:"l" }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    {% comment %}Calcular días pendientes{% endcomment %}
-                                    <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2">
-                                        <i class="bi bi-clock me-1"></i>
-                                        -- días
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-center">
-                                    <div class="btn-group" role="group">
-                                        <a href="{% url 'ver_detalle_requerimiento_comprador' req.id %}" 
-                                           class="btn btn-outline-info btn-sm rounded-start-3">
-                                            <i class="bi bi-eye me-1"></i>Ver Detalle
-                                        </a>
-                                        <a href="{% url 'generar_orden_compra' req.id %}" 
-                                           class="btn btn-success btn-sm rounded-end-3">
-                                            <i class="bi bi-gear me-1"></i>Generar Orden
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <div class="mb-4">
-                                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-                                            <i class="bi bi-clipboard-x text-muted" style="font-size: 3rem;"></i>
-                                        </div>
-                                    </div>
-                                    <h5 class="text-muted fw-bold mb-3">No hay requerimientos pendientes</h5>
-                                    <p class="text-muted mb-0">Los requerimientos aprobados aparecerán aquí para generar órdenes de compra</p>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <!-- Estado vacío con mejor diseño -->
-                <div class="text-center py-5">
-                    <div class="mb-5">
-                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
-                            <i class="bi bi-clipboard-check text-muted" style="font-size: 4rem;"></i>
-                        </div>
-                    </div>
-                    <h4 class="text-muted fw-bold mb-3">No hay requerimientos aprobados pendientes</h4>
-                    <p class="text-muted mb-5 fs-5">
-                        Cuando los requerimientos sean aprobados por los supervisores, aparecerán aquí listos para convertir en órdenes de compra.
-                    </p>
-                    
-                    <!-- Cards informativos -->
-                    <div class="row g-3 justify-content-center">
-                        <div class="col-md-4">
-                            <div class="card border-0 bg-success bg-opacity-5 rounded-3 h-100">
-                                <div class="card-body p-4 text-center">
-                                    <i class="bi bi-check-circle text-success fs-3 mb-3"></i>
-                                    <h6 class="fw-bold text-success mb-2">Automático</h6>
-                                    <small class="text-success">Los requerimientos aprobados aparecen automáticamente</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card border-0 bg-primary bg-opacity-5 rounded-3 h-100">
-                                <div class="card-body p-4 text-center">
-                                    <i class="bi bi-gear text-primary fs-3 mb-3"></i>
-                                    <h6 class="fw-bold text-primary mb-2">Organizado</h6>
-                                    <small class="text-primary">Se organizan por proveedor al generar órdenes</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card border-0 bg-info bg-opacity-5 rounded-3 h-100">
-                                <div class="card-body p-4 text-center">
-                                    <i class="bi bi-shield-check text-info fs-3 mb-3"></i>
-                                    <h6 class="fw-bold text-info mb-2">Seguro</h6>
-                                    <small class="text-info">Solo requerimientos validados y aprobados</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Departamento</th>
+            <th>Solicitante</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for req in requerimientos %}
+        <tr>
+            <td>REQ-{{ req.id|stringformat:"04d" }}</td>
+            <td>{{ req.departamento.nombre }}</td>
+            <td>{{ req.solicitante.username }}</td> 
+            <td>{{ req.fecha|date:"d/m/Y" }}</td>
+            <td>
+                <a href="{% url 'ver_detalle_requerimiento_comprador' req.id %}" class="btn btn-sm btn-info">Ver detalle</a>
+                <a href="{% url 'generar_orden_compra' req.id %}" class="btn btn-sm btn-success">Generar orden</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay requerimientos aprobados pendientes.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
