@@ -1,66 +1,17 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container-fluid">
     <!-- Header de la página -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="display-6 fw-bold text-primary mb-2">
-                <i class="bi bi-receipt me-3"></i>Administrar Órdenes
+                <i class="bi bi-receipt me-3"></i>Órdenes de Compra
             </h1>
-            <p class="text-muted mb-0">Panel administrativo para gestionar todas las órdenes de compra</p>
+            <p class="text-muted mb-0">Gestiona y consulta todas las órdenes de compra del sistema</p>
         </div>
         <a href="{% url 'crear_orden' %}" class="btn btn-primary btn-lg shadow-sm">
             <i class="bi bi-plus-circle me-2"></i>Nueva Orden
         </a>
-    </div>
-
-    <!-- Estadísticas rápidas -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 bg-primary bg-opacity-10">
-                <div class="card-body text-center py-3">
-                    <i class="bi bi-receipt text-primary fs-1"></i>
-                    <div class="mt-2">
-                        <h4 class="text-primary fw-bold mb-0">{{ ordenes|length }}</h4>
-                        <small class="text-primary">Total de Órdenes</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 bg-secondary bg-opacity-10">
-                <div class="card-body text-center py-3">
-                    <i class="bi bi-pencil text-secondary fs-1"></i>
-                    <div class="mt-2">
-                        <h4 class="text-secondary fw-bold mb-0">0</h4>
-                        <small class="text-secondary">Borradores</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 bg-success bg-opacity-10">
-                <div class="card-body text-center py-3">
-                    <i class="bi bi-send text-success fs-1"></i>
-                    <div class="mt-2">
-                        <h4 class="text-success fw-bold mb-0">0</h4>
-                        <small class="text-success">Emitidas</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 bg-info bg-opacity-10">
-                <div class="card-body text-center py-3">
-                    <i class="bi bi-check-circle text-info fs-1"></i>
-                    <div class="mt-2">
-                        <h4 class="text-info fw-bold mb-0">0</h4>
-                        <small class="text-info">Completadas</small>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Card principal con la tabla -->
@@ -68,10 +19,10 @@
         <div class="card-header bg-white border-0 py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0 text-primary fw-semibold">
-                    <i class="bi bi-table me-2"></i>Panel Administrativo
+                    <i class="bi bi-table me-2"></i>Listado de Órdenes
                 </h5>
-                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">
-                    <i class="bi bi-shield-exclamation me-1"></i>Admin
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                    {{ ordenes|length }} orden{{ ordenes|length|pluralize:"es" }}
                 </span>
             </div>
         </div>
@@ -80,22 +31,22 @@
             {% if ordenes %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="table-dark">
+                        <thead class="table-light">
                             <tr>
-                                <th class="px-4 py-3 fw-semibold text-white">
+                                <th class="px-4 py-3 fw-semibold text-primary">
                                     <i class="bi bi-hash me-2"></i>Código
                                 </th>
-                                <th class="px-4 py-3 fw-semibold text-white">
+                                <th class="px-4 py-3 fw-semibold text-primary">
                                     <i class="bi bi-building me-2"></i>Proveedor
                                 </th>
-                                <th class="px-4 py-3 fw-semibold text-white">
+                                <th class="px-4 py-3 fw-semibold text-primary">
                                     <i class="bi bi-calendar3 me-2"></i>Fecha Emisión
                                 </th>
-                                <th class="px-4 py-3 fw-semibold text-white">
+                                <th class="px-4 py-3 fw-semibold text-primary">
                                     <i class="bi bi-circle-fill me-2"></i>Estado
                                 </th>
-                                <th class="px-4 py-3 fw-semibold text-white text-center">
-                                    <i class="bi bi-gear me-2"></i>Acciones Admin
+                                <th class="px-4 py-3 fw-semibold text-primary text-center">
+                                    <i class="bi bi-gear me-2"></i>Acciones
                                 </th>
                             </tr>
                         </thead>
@@ -103,10 +54,7 @@
                             {% for orden in ordenes %}
                             <tr class="border-bottom">
                                 <td class="px-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-receipt text-primary me-2"></i>
-                                        <span class="fw-bold text-dark">{{ orden.codigo }}</span>
-                                    </div>
+                                    <span class="fw-bold text-dark">{{ orden.codigo }}</span>
                                 </td>
                                 <td class="px-4 py-3">
                                     <div>
@@ -115,10 +63,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-calendar3 text-secondary me-2"></i>
-                                        <span class="text-secondary">{{ orden.fecha_emision|date:"d/m/Y" }}</span>
-                                    </div>
+                                    <span class="text-secondary">{{ orden.fecha_emision|date:"d/m/Y" }}</span>
                                 </td>
                                 <td class="px-4 py-3">
                                     {% if orden.estado == 'borrador' %}
@@ -142,13 +87,15 @@
                                 <td class="px-4 py-3 text-center">
                                     <div class="btn-group" role="group">
                                         <a href="{% url 'detalle_orden' orden.id %}" 
-                                           class="btn btn-outline-primary btn-sm" 
-                                           title="Ver detalle completo">
+                                           class="btn btn-outline-primary btn-sm rounded-start" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Ver detalle de la orden">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         {% if orden.estado == 'borrador' %}
                                         <a href="{% url 'eliminar_orden' orden.id %}" 
-                                           class="btn btn-outline-danger btn-sm" 
+                                           class="btn btn-outline-danger btn-sm rounded-end" 
+                                           data-bs-toggle="tooltip" 
                                            title="Eliminar orden">
                                             <i class="bi bi-trash"></i>
                                         </a>
@@ -167,44 +114,12 @@
                         <i class="bi bi-receipt text-muted" style="font-size: 4rem;"></i>
                     </div>
                     <h4 class="text-muted mb-3">No hay órdenes registradas</h4>
-                    <p class="text-muted mb-4">Como administrador, puedes crear la primera orden del sistema</p>
+                    <p class="text-muted mb-4">Comienza creando tu primera orden de compra</p>
                     <a href="{% url 'crear_orden' %}" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-2"></i>Crear Primera Orden
                     </a>
                 </div>
             {% endif %}
-        </div>
-    </div>
-
-    <!-- Panel de control administrativo -->
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <div class="alert alert-warning border-0 bg-warning bg-opacity-10 rounded-3">
-                <div class="d-flex align-items-start">
-                    <i class="bi bi-shield-exclamation text-warning me-3 mt-1 fs-4"></i>
-                    <div>
-                        <h6 class="alert-heading text-warning mb-2">Panel Administrativo</h6>
-                        <p class="mb-0 text-warning">
-                            Como administrador, tienes acceso completo para gestionar todas las órdenes del sistema.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 bg-light bg-opacity-50">
-                <div class="card-body text-center py-3">
-                    <small class="text-muted">
-                        <i class="bi bi-tools me-1"></i>
-                        Herramientas administrativas
-                    </small>
-                    <div class="mt-2">
-                        <a href="{% url 'crear_orden' %}" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-plus-circle me-1"></i>Nueva
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

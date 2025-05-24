@@ -116,7 +116,7 @@
 
                 <!-- Panel lateral con detalles actuales -->
                 <div class="col-lg-5">
-                    <div class="card shadow-sm border-0 rounded-3 position-sticky" style="top: 2rem;">
+                    <div class="card shadow-sm border-0 rounded-3 sticky-top" style="top: 2rem;">
                         <div class="card-header bg-success bg-opacity-5 border-0 py-3">
                             <h5 class="card-title mb-0 text-success fw-semibold">
                                 <i class="bi bi-list-check me-2"></i>Productos Actuales
@@ -160,7 +160,10 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="fw-bold text-dark">Total Actual:</span>
                                         <span class="h5 text-success fw-bold mb-0">
-                                            S/. {{ total|floatformat:2 }}
+                                            S/. {% widthratio orden.detalles.all|length 1 orden.detalles.all|length as total_productos %}
+                                            {% for detalle in orden.detalles.all %}
+                                                {% if forloop.first %}{{ detalle.subtotal|add:0|floatformat:2 }}{% endif %}
+                                            {% endfor %}
                                         </span>
                                     </div>
                                 </div>
@@ -249,5 +252,4 @@
         });
     });
 </script>
-
 {% endblock %}
