@@ -12,12 +12,20 @@ from apps.requerimientos.models import Requerimiento, DetalleRequerimiento
 from apps.proveedores.models import Proveedor
 from apps.productos.models import Producto, Categoria
 
-# --- Lista de Ordenes ---
 @login_required
 @permission_required('ordenes.view_ordencompra', raise_exception=True)
 def lista_ordenes(request):
     ordenes = OrdenCompra.objects.all()
-    return render(request, 'ordenes/lista_ordenes.html', {'ordenes': ordenes})
+    
+    # Sumar los totales
+    total_general = sum([orden.total for orden in ordenes if orden.total])
+
+    return render(request, 'ordenes/mis_ordenes_generadas.html', {
+        'ordenes': ordenes,
+        'total_general': total_general,
+        'es_admin': True  
+    })
+
 
 # ================== COMPRADOR ==================
 
@@ -31,6 +39,7 @@ def lista_requerimientos_aprobados(request):
     
     return render(request, 'ordenes/lista_requerimientos_aprobados.html', {
         'requerimientos': requerimientos
+       
     })
 
 @login_required
@@ -186,9 +195,16 @@ def mis_ordenes_generadas(request):
     ordenes = OrdenCompra.objects.filter(
         usuario_emisor=request.user
     ).select_related('requerimiento', 'proveedor').order_by('-fecha_emision')
+    
+    # Calcular el total general
+    total_general = sum([orden.total for orden in ordenes if orden.total])
+
     return render(request, 'ordenes/mis_ordenes_generadas.html', {
-        'ordenes': ordenes
+        'ordenes': ordenes,
+        'total_general': total_general,
+        'es_admin': False
     })
+
 
 @login_required
 def aplicar_proveedor_categoria(request):
