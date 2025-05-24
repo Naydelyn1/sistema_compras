@@ -6,23 +6,93 @@ from .forms import UsuarioForm, UsuarioCreacionForm  # UsuarioCreationForm es tu
 from apps.departamentos.models import Departamento
 from .models import Usuario
 from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 User = get_user_model()
 
 @login_required
 @permission_required('usuarios.view_usuario', raise_exception=True)
 def lista_usuarios(request):
-    # Solo mostrar usuarios activos
-    usuarios = User.objects.filter(is_active=True)
-    return render(request, 'usuarios/lista.html', {'usuarios': usuarios})
+    # Obtener usuarios activos
+    usuarios_list = User.objects.filter(is_active=True).order_by('username')
+    
+    # Búsqueda opcional
+    search_query = request.GET.get('search')
+    if search_query:
+        usuarios_list = usuarios_list.filter(
+            Q(username__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(groups__name__icontains=search_query)
+        ).distinct()
+    
+    # Configurar paginación (10 usuarios por página)
+    paginator = Paginator(usuarios_list, 10)
+    page = request.GET.get('page')
+    
+    try:
+        usuarios = paginator.page(page)
+    except PageNotAnInteger:
+        # Si page no es un entero, mostrar la primera página
+        usuarios = paginator.page(1)
+    except EmptyPage:
+        # Si page está fuera de rango, mostrar la última página
+        usuarios = paginator.page(paginator.num_pages)
+    
+    # Total de usuarios activos (para estadísticas)
+    total_usuarios = User.objects.filter(is_active=True).count()
+    
+    context = {
+        'usuarios': usuarios,
+        'total_usuarios': total_usuarios,
+        'search_query': search_query,
+    }
+    
+    return render(request, 'usuarios/lista.html', context)
 
 
 @login_required
 @permission_required('usuarios.view_usuario', raise_exception=True)
 def lista_usuarios_inactivos(request):
     """Vista para ver solo usuarios inactivos"""
-    usuarios = User.objects.filter(is_active=False).order_by('username')
-    return render(request, 'usuarios/lista_inactivos.html', {'usuarios': usuarios})
+    usuarios_list = User.objects.filter(is_active=False).order_by('username')
+    
+    # Búsqueda opcional
+    search_query = request.GET.get('search')
+    if search_query:
+        usuarios_list = usuarios_list.filter(
+            Q(username__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(groups__name__icontains=search_query)
+        ).distinct()
+    
+    # Configurar paginación (10 usuarios por página)
+    paginator = Paginator(usuarios_list, 10)
+    page = request.GET.get('page')
+    
+    try:
+        usuarios = paginator.page(page)
+    except PageNotAnInteger:
+        # Si page no es un entero, mostrar la primera página
+        usuarios = paginator.page(1)
+    except EmptyPage:
+        # Si page está fuera de rango, mostrar la última página
+        usuarios = paginator.page(paginator.num_pages)
+    
+    # Total de usuarios inactivos (para estadísticas)
+    total_usuarios = User.objects.filter(is_active=False).count()
+    
+    context = {
+        'usuarios': usuarios,
+        'total_usuarios': total_usuarios,
+        'search_query': search_query,
+    }
+    
+    return render(request, 'usuarios/lista_inactivos.html', context)
 
 
 @login_required
