@@ -1,28 +1,268 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>🧾 Mis Órdenes de Compra Generadas</h2>
+<div class="container-fluid">
+    <!-- Header de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold text-primary mb-2">
+                <i class="bi bi-receipt me-3"></i>Mis Órdenes de Compra
+            </h1>
+            <p class="text-muted mb-0">Órdenes de compra que has generado</p>
+        </div>
+        <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver a Requerimientos
+        </a>
+    </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Requerimiento</th>
-            <th>Proveedor</th>
-            <th>Fecha</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for orden in ordenes %}
-        <tr>
-            <td>{{ orden.codigo }}</td>
-            <td>{{ orden.requerimiento.nombre }}</td>
-            <td>{{ orden.proveedor.razon_social }}</td>
-            <td>{{ orden.fecha_emision|date:"d/m/Y" }}</td>
-            <td>${{ orden.total }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary mt-2">Volver</a>
+    <!-- Estadísticas rápidas -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 bg-primary bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-receipt text-primary fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-primary fw-bold mb-0">{{ ordenes|length }}</h4>
+                        <small class="text-primary">Orden{{ ordenes|length|pluralize:"es" }} Generada{{ ordenes|length|pluralize:"s" }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-success bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-check-circle text-success fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-success fw-bold mb-0">-</h4>
+                        <small class="text-success">Órdenes Confirmadas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-warning bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-clock text-warning fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-warning fw-bold mb-0">-</h4>
+                        <small class="text-warning">Órdenes Pendientes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-info bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-currency-dollar text-info fs-1"></i>
+                    <div class="mt-2">
+                        <h4 class="text-info fw-bold mb-0">
+                            ${% for orden in ordenes %}{{ orden.total|add:0 }}{% if not forloop.last %} + {% endif %}{% endfor %}
+                        </h4>
+                        <small class="text-info">Total Acumulado</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card principal con la tabla -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 text-primary fw-semibold">
+                    <i class="bi bi-table me-2"></i>Listado de Órdenes
+                </h5>
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                    {{ ordenes|length }} orden{{ ordenes|length|pluralize:"es" }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
+            {% if ordenes %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-hash me-2"></i>Código
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-clipboard-check me-2"></i>Requerimiento
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-building me-2"></i>Proveedor
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-calendar3 me-2"></i>Fecha
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary text-end">
+                                    <i class="bi bi-currency-dollar me-2"></i>Total
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary text-center">
+                                    <i class="bi bi-gear me-2"></i>Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for orden in ordenes %}
+                            <tr class="border-bottom">
+                                <td class="px-4 py-3">
+                                    <span class="fw-bold text-primary">{{ orden.codigo }}</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-clipboard-check text-secondary me-2"></i>
+                                        <div>
+                                            <div class="fw-semibold">{{ orden.requerimiento.codigo }}</div>
+                                            <small class="text-muted">{{ orden.requerimiento.departamento.nombre }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-truck text-secondary me-2"></i>
+                                        <div>
+                                            <div class="fw-semibold">{{ orden.proveedor.razon_social }}</div>
+                                            <small class="text-muted">RUC: {{ orden.proveedor.ruc }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="text-secondary">{{ orden.fecha_emision|date:"d/m/Y" }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-end">
+                                    <span class="fw-bold text-success fs-6">${{ orden.total }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button type="button" 
+                                            class="btn btn-outline-primary btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#detalleModal{{ orden.id }}"
+                                            title="Ver detalles de la orden">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Modal para ver detalles -->
+                            <div class="modal fade" id="detalleModal{{ orden.id }}" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-primary text-white">
+                                            <h5 class="modal-title">
+                                                <i class="bi bi-receipt me-2"></i>
+                                                Detalles de Orden: {{ orden.codigo }}
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Información general -->
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <strong>Proveedor:</strong><br>
+                                                    {{ orden.proveedor.razon_social }}<br>
+                                                    <small class="text-muted">RUC: {{ orden.proveedor.ruc }}</small>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Requerimiento:</strong><br>
+                                                    {{ orden.requerimiento.codigo }}<br>
+                                                    <small class="text-muted">{{ orden.requerimiento.departamento.nombre }}</small>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row mb-4">
+                                                <div class="col-md-6">
+                                                    <strong>Fecha de Emisión:</strong><br>
+                                                    {{ orden.fecha_emision|date:"d/m/Y" }}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Estado:</strong><br>
+                                                    <span class="badge bg-primary">{{ orden.estado|default:"Emitida" }}</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Productos -->
+                                            <h6 class="border-bottom pb-2">Productos en la Orden:</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Producto</th>
+                                                            <th class="text-center">Cantidad</th>
+                                                            <th class="text-end">Precio Unit.</th>
+                                                            <th class="text-end">Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for detalle in orden.detalles.all %}
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>{{ detalle.producto.nombre }}</strong><br>
+                                                                    <small class="text-muted">{{ detalle.producto.categoria.nombre }}</small>
+                                                                </td>
+                                                                <td class="text-center">{{ detalle.cantidad }}</td>
+                                                                <td class="text-end">${{ detalle.precio_unitario|floatformat:2 }}</td>
+                                                                <td class="text-end">
+                                                                    <strong>${{ detalle.subtotal|floatformat:2 }}</strong>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                    <tfoot class="table-light">
+                                                        <tr>
+                                                            <th colspan="3" class="text-end">Total:</th>
+                                                            <th class="text-end">
+                                                                <span class="text-success fs-5">
+                                                                    ${{ orden.total|floatformat:2 }}
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Cerrar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <!-- Estado vacío -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-receipt text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No has generado órdenes de compra</h4>
+                    <p class="text-muted mb-4">Cuando generes órdenes desde los requerimientos aprobados, aparecerán aquí</p>
+                    <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-primary">
+                        <i class="bi bi-clipboard-check me-2"></i>Ver Requerimientos Pendientes
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navegación rápida -->
+    <div class="text-center mt-4">
+        <div class="card border-0 bg-transparent">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-center gap-4 flex-wrap">
+                    <a href="{% url 'lista_requerimientos_aprobados' %}" class="text-decoration-none small">
+                        <i class="bi bi-clipboard-check me-1"></i>Requerimientos Pendientes
+                    </a>
+                    <a href="{% url 'lista_ordenes' %}" class="text-decoration-none small">
+                        <i class="bi bi-list me-1"></i>Todas las Órdenes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
