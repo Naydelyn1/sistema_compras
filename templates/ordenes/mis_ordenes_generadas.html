@@ -16,7 +16,7 @@
         {% for orden in ordenes %}
         <tr>
             <td>{{ orden.codigo }}</td>
-            <td>{{ orden.requerimiento.codigo }}</td>
+            <td>{{ orden.requerimiento.nombre }}</td>
             <td>{{ orden.proveedor.razon_social }}</td>
             <td>{{ orden.fecha_emision|date:"d/m/Y" }}</td>
             <td>${{ orden.total }}</td>
