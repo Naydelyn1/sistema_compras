@@ -10,7 +10,10 @@
             <p class="text-muted mb-0">Órdenes de compra que he generado desde requerimientos</p>
         </div>
         <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Volver
+            {% if not es_admin %}
+                <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary">← Volver</a>
+            {% endif %}
+
         </a>
     </div>
 
@@ -82,18 +85,10 @@
                         </tbody>
                         <tfoot class="table-light">
                             <tr>
-                                <th colspan="4" class="px-4 py-3 text-end fw-bold">Total General:</th>
-                                <th class="px-4 py-3 text-end">
-                                    {% for orden in ordenes %}
-                                        {% if forloop.first %}
-                                            <span class="h5 text-success fw-bold mb-0">
-                                                S/. {% widthratio ordenes|length 1 ordenes|length as total_ordenes %}
-                                                {{ orden.total|add:0|floatformat:2 }}
-                                            </span>
-                                        {% endif %}
-                                    {% endfor %}
-                                </th>
+                                <td colspan="6" class="text-end"><strong>Total General:</strong></td>
+                                <td><strong class="text-success">S/. {{ total_general|floatformat:2 }}</strong></td>
                             </tr>
+
                         </tfoot>
                     </table>
                 </div>
