@@ -131,6 +131,7 @@
                                     <th><i class="bi bi-calendar me-1"></i>Fecha</th>
                                     <th><i class="bi bi-flag me-1"></i>Prioridad</th>
                                     <th><i class="bi bi-info-circle me-1"></i>Estado</th>
+                                    <th><i class="bi bi-chat-left-text me-1"></i>Observaciones</th>
                                     <th width="150"><i class="bi bi-gear me-1"></i>Acciones</th>
                                 </tr>
                             </thead>
@@ -143,9 +144,6 @@
                                     <td>
                                         <div>
                                             <strong>{{ req.nombre }}</strong>
-                                            {% if req.descripcion %}
-                                                <br><small class="text-muted">{{ req.descripcion|truncatechars:50 }}</small>
-                                            {% endif %}
                                         </div>
                                     </td>
                                     <td>
@@ -182,6 +180,32 @@
                                             {% if req.estado == 'pendiente' %}<i class="bi bi-clock me-1"></i>{% endif %}
                                             {{ req.estado|title }}
                                         </span>
+                                    </td>
+                                    <td>
+                                        {% with historial=req.historial_aprobaciones.first %}
+                                            {% if historial and historial.observacion %}
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-chat-left-text text-primary me-2"></i>
+                                                    <span class="text-truncate" style="max-width: 200px;" 
+                                                          data-bs-toggle="tooltip" 
+                                                          data-bs-placement="top" 
+                                                          title="{{ historial.observacion }}">
+                                                        {{ historial.observacion|truncatechars:30 }}
+                                                    </span>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-info ms-2" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#observacionModal{{ req.id }}"
+                                                            title="Ver observación completa">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted fst-italic">
+                                                    <i class="bi bi-dash-circle me-1"></i>Sin observaciones
+                                                </span>
+                                            {% endif %}
+                                        {% endwith %}
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
@@ -221,8 +245,8 @@
                         <i class="bi bi-clipboard-x display-1 text-muted"></i>
                         <h4 class="text-muted mt-3">No tienes requerimientos</h4>
                         <p class="text-muted">Aún no has creado ningún requerimiento.</p>
-                        <a href="{% url 'crear_requerimiento_solicitante' %}" class="btn btn-primary"> Crear Mi Primer Requerimiento</a>
-                            <i class="bi bi-plus-lg me-1"> </i>
+                        <a href="{% url 'crear_requerimiento_solicitante' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i>Crear Mi Primer Requerimiento
                         </a>
                     </div>
                 {% endif %}
@@ -230,6 +254,68 @@
         </div>
     </div>
 </div>
+
+<!-- Modales de observación para cada requerimiento -->
+{% for req in requerimientos %}
+{% with historial=req.historial_aprobaciones.first %}
+{% if historial and historial.observacion %}
+<div class="modal fade" id="observacionModal{{ req.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title">
+                    <i class="bi bi-chat-left-text text-primary me-2"></i>
+                    Observación del Requerimiento #{{ req.id }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card border-0 bg-light">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="rounded-circle p-2 me-3 
+                                {% if historial.accion == 'aprobado' %}bg-success{% elif historial.accion == 'rechazado' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if historial.accion == 'aprobado' %}
+                                    <i class="bi bi-check-circle-fill text-white"></i>
+                                {% elif historial.accion == 'rechazado' %}
+                                    <i class="bi bi-x-circle-fill text-white"></i>
+                                {% else %}
+                                    <i class="bi bi-clock-fill text-white"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h6 class="mb-1">
+                                    {% if historial.accion == 'aprobado' %}
+                                        Observación de Aprobación
+                                    {% elif historial.accion == 'rechazado' %}
+                                        Observación de Rechazo
+                                    {% else %}
+                                        Observación
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">
+                                    Por: {{ historial.usuario }} | {{ historial.fecha|date:"d/m/Y H:i" }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded p-3 border-start border-4 
+                            {% if historial.accion == 'aprobado' %}border-success{% elif historial.accion == 'rechazado' %}border-danger{% else %}border-secondary{% endif %}">
+                            <p class="mb-0 text-dark">{{ historial.observacion }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+{% endfor %}
 
 <!-- Modales de detalle para cada requerimiento -->
 {% for req in requerimientos %}
@@ -272,14 +358,47 @@
                     </div>
                 </div>
                 
-                {% if req.descripcion %}
+                <!-- Mostrar productos solicitados -->
                 <div class="mt-3">
-                    <h6><i class="bi bi-text-paragraph me-2"></i>Descripción</h6>
-                    <p class="text-muted">{{ req.descripcion }}</p>
+                    <h6><i class="bi bi-box-seam me-2"></i>Productos Solicitados</h6>
+                    {% if req.detalles.all %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detalle in req.detalles.all %}
+                                    <tr>
+                                        <td>{{ detalle.producto.nombre }}</td>
+                                        <td>{{ detalle.cantidad }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No hay productos asociados</p>
+                    {% endif %}
+                </div>
+                
+                {% with historial=req.historial_aprobaciones.first %}
+                {% if historial and historial.observacion %}
+                <div class="mt-3">
+                    <h6><i class="bi bi-chat-left-text me-2"></i>Observaciones</h6>
+                    <div class="bg-light rounded p-3 border-start border-4 
+                        {% if historial.accion == 'aprobado' %}border-success{% elif historial.accion == 'rechazado' %}border-danger{% else %}border-secondary{% endif %}">
+                        <p class="mb-2 text-dark">{{ historial.observacion }}</p>
+                        <small class="text-muted">
+                            Por: {{ historial.usuario }} - {{ historial.fecha|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
                 </div>
                 {% endif %}
-                
-                <!-- Aquí puedes agregar más detalles como productos solicitados, etc. -->
+                {% endwith %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -431,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ejecutar animación después de un breve delay
     setTimeout(animateCounters, 500);
     
-    // Añadir tooltips a los botones de acción
+    // Inicializar tooltips de Bootstrap
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
@@ -451,24 +570,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Función para exportar datos (opcional)
+// Función para exportar datos (incluye observaciones)
 function exportToCSV() {
     const table = document.getElementById('requerimientos-table');
     if (!table) return;
     
-    let csv = 'ID,Nombre,Departamento,Fecha,Prioridad,Estado\n';
+    let csv = 'ID,Nombre,Departamento,Fecha,Prioridad,Estado,Observaciones\n';
     
     const rows = table.querySelectorAll('tbody tr');
     rows.forEach(row => {
         if (row.style.display !== 'none') {
             const cells = row.querySelectorAll('td');
+            const observacion = cells[6].textContent.trim().replace(/\n/g, ' ').replace(/"/g, '""');
             const rowData = [
                 cells[0].textContent.trim(),
                 cells[1].textContent.trim(),
                 cells[2].textContent.trim(),
                 cells[3].textContent.trim(),
                 cells[4].textContent.trim(),
-                cells[5].textContent.trim()
+                cells[5].textContent.trim(),
+                observacion
             ];
             csv += rowData.map(field => `"${field}"`).join(',') + '\n';
         }
