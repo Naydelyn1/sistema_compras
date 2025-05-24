@@ -1,98 +1,130 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid py-4">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <!-- Card principal de confirmación -->
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-danger bg-opacity-10 border-0 py-4 text-center">
-                    <div class="mb-3">
-                        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+        <div class="col-xl-6 col-lg-8 col-md-10">
+            <!-- Card principal con diseño moderno -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                
+                <!-- Header con gradiente de peligro -->
+                <div class="card-header border-0 bg-danger bg-gradient text-center py-5">
+                    <div class="mb-4">
+                        <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+                        </div>
                     </div>
-                    <h3 class="card-title text-danger fw-bold mb-2">
-                        Confirmar Eliminación
-                    </h3>
-                    <p class="text-muted mb-0">Esta acción no se puede deshacer</p>
+                    <h2 class="text-white fw-bold mb-2">Eliminar Orden</h2>
+                    <p class="text-white-50 mb-0 fs-6">Esta acción es permanente e irreversible</p>
                 </div>
                 
-                <div class="card-body p-4 text-center">
-                    <div class="mb-4">
-                        <h5 class="text-dark mb-3">
-                            ¿Deseas eliminar la orden de compra?
-                        </h5>
-                        
-                        <!-- Información de la orden a eliminar -->
-                        <div class="alert alert-light border rounded-3 p-3">
+                <!-- Contenido principal -->
+                <div class="card-body p-5">
+                    
+                    <!-- Pregunta principal -->
+                    <div class="text-center mb-5">
+                        <h4 class="text-dark fw-semibold mb-4">
+                            ¿Confirmas eliminar esta orden de compra?
+                        </h4>
+                    </div>
+                    
+                    <!-- Información de la orden con diseño mejorado -->
+                    <div class="card bg-light border-0 rounded-3 mb-4">
+                        <div class="card-body p-4">
                             <div class="row align-items-center">
-                                <div class="col-12">
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-receipt text-primary me-3 fs-2"></i>
-                                        <div class="text-start">
-                                            <div class="fw-bold text-primary fs-4">{{ orden.codigo }}</div>
-                                            <div class="text-muted">
-                                                <i class="bi bi-building me-1"></i>
-                                                {{ orden.proveedor.razon_social }}
-                                            </div>
-                                            <div class="text-muted small">
-                                                <i class="bi bi-calendar3 me-1"></i>
-                                                {{ orden.fecha_emision|date:"d/m/Y" }}
-                                            </div>
+                                <div class="col-auto">
+                                    <div class="bg-primary bg-gradient rounded-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-receipt text-white fs-3"></i>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <h5 class="fw-bold text-primary mb-2">{{ orden.codigo }}</h5>
+                                    
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-building text-muted me-2"></i>
+                                        <span class="text-dark fw-semibold">{{ orden.proveedor.razon_social }}</span>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-calendar3 text-muted me-2"></i>
+                                        <small class="text-muted">Fecha: {{ orden.fecha_emision|date:"d/m/Y" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Alertas de seguridad -->
+                    <div class="alert alert-danger border-0 rounded-3 mb-5">
+                        <div class="d-flex">
+                            <i class="bi bi-shield-exclamation fs-4 text-danger me-3 mt-1"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="alert-heading text-danger mb-3 fw-bold">¡Atención! Acción Irreversible</h6>
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-x-circle text-danger me-2 mt-1"></i>
+                                            <small class="text-danger">Se eliminará la orden y todos sus productos</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-x-circle text-danger me-2 mt-1"></i>
+                                            <small class="text-danger">Esta acción no se puede deshacer</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-x-circle text-danger me-2 mt-1"></i>
+                                            <small class="text-danger">Solo órdenes en estado "Borrador" pueden eliminarse</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Advertencia -->
-                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 rounded-3">
-                            <div class="d-flex align-items-start">
-                                <i class="bi bi-exclamation-triangle text-warning me-3 mt-1"></i>
-                                <div class="text-start">
-                                    <h6 class="alert-heading text-warning mb-2">¡Atención!</h6>
-                                    <ul class="mb-0 text-warning small">
-                                        <li>Se eliminará la orden y todos sus productos asociados</li>
-                                        <li>Esta acción es permanente e irreversible</li>
-                                        <li>Solo se pueden eliminar órdenes en estado "Borrador"</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Botones de acción -->
-                    <form method="post" class="d-inline">
+                    <!-- Botones de acción con mejor diseño -->
+                    <form method="post">
                         {% csrf_token %}
-                        <div class="d-flex justify-content-center gap-3 flex-wrap">
-                            <a href="{% url 'lista_ordenes' %}" 
-                               class="btn btn-outline-secondary btn-lg px-4">
-                                <i class="bi bi-arrow-left me-2"></i>No, Cancelar
-                            </a>
-                            
-                            <button type="submit" 
-                                    class="btn btn-danger btn-lg px-4">
-                                <i class="bi bi-trash me-2"></i>Sí, Eliminar Orden
-                            </button>
+                        <div class="d-grid gap-3">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <a href="{% url 'lista_ordenes' %}" 
+                                       class="btn btn-light btn-lg w-100 rounded-3 border-2">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        <span class="fw-semibold">Cancelar</span>
+                                    </a>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button type="submit" 
+                                            class="btn btn-danger btn-lg w-100 rounded-3 fw-semibold">
+                                        <i class="bi bi-trash me-2"></i>
+                                        Eliminar Orden
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
                 
                 <!-- Footer informativo -->
-                <div class="card-footer bg-light border-0 text-center py-3">
-                    <small class="text-muted">
-                        <i class="bi bi-info-circle me-1"></i>
-                        También puedes regresar al listado sin realizar cambios
-                    </small>
+                <div class="card-footer bg-light border-0 text-center py-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="bi bi-info-circle text-primary me-2"></i>
+                        <small class="text-muted">Puedes volver al listado sin realizar cambios</small>
+                    </div>
                 </div>
             </div>
 
-            <!-- Información adicional -->
-            <div class="text-center mt-4">
-                <div class="card border-0 bg-transparent">
-                    <div class="card-body py-2">
-                        <small class="text-muted">
-                            <i class="bi bi-shield-check me-1"></i>
-                            Las órdenes emitidas, recibidas o completadas no pueden eliminarse por seguridad
-                        </small>
+            <!-- Información de seguridad adicional -->
+            <div class="mt-4">
+                <div class="alert alert-info border-0 rounded-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-shield-check text-info fs-4 me-3"></i>
+                        <div>
+                            <h6 class="text-info mb-1 fw-semibold">Política de Seguridad</h6>
+                            <small class="text-info">Las órdenes emitidas, recibidas o completadas están protegidas y no pueden eliminarse</small>
+                        </div>
                     </div>
                 </div>
             </div>
