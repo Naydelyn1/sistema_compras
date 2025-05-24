@@ -1,34 +1,128 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>📦 Requerimientos Aprobados Pendientes de Compra</h2>
+<div class="container-fluid">
+    <!-- Header de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold text-primary mb-2">
+                <i class="bi bi-check-circle me-3"></i>Requerimientos Aprobados
+            </h1>
+            <p class="text-muted mb-0">Requerimientos pendientes de generar órdenes de compra</p>
+        </div>
+        <a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-success btn-lg shadow-sm">
+            <i class="bi bi-receipt me-2"></i>Ver Mis Órdenes Generadas
+        </a>
+    </div>
 
-<a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-primary mb-3">🧾 Ver mis órdenes generadas</a>
+    <!-- Card principal con la tabla -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 text-primary fw-semibold">
+                    <i class="bi bi-table me-2"></i>Listado de Requerimientos
+                </h5>
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                    {{ requerimientos|length }} requerimiento{{ requerimientos|length|pluralize:"s" }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
+            {% if requerimientos %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-hash me-2"></i>Código
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-building me-2"></i>Departamento
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-person me-2"></i>Solicitante
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-calendar3 me-2"></i>Fecha
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary text-center">
+                                    <i class="bi bi-gear me-2"></i>Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requerimientos %}
+                            <tr class="border-bottom">
+                                <td class="px-4 py-3">
+                                    <span class="fw-bold text-primary">REQ-{{ req.id|stringformat:"04d" }}</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-building text-warning me-2"></i>
+                                        <span class="fw-semibold">{{ req.departamento.nombre }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-circle text-secondary me-2"></i>
+                                        <div>
+                                            <div class="fw-semibold">{{ req.solicitante.get_full_name|default:req.solicitante.username }}</div>
+                                            <small class="text-muted">{{ req.solicitante.username }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="text-secondary">{{ req.fecha|date:"d/m/Y" }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'ver_detalle_requerimiento_comprador' req.id %}" 
+                                           class="btn btn-outline-info btn-sm rounded-start" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Ver detalle del requerimiento">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'generar_orden_compra' req.id %}" 
+                                           class="btn btn-success btn-sm rounded-end" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Generar orden de compra">
+                                            <i class="bi bi-plus-circle"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <!-- Estado vacío -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No hay requerimientos aprobados pendientes</h4>
+                    <p class="text-muted mb-4">Todos los requerimientos aprobados ya tienen órdenes de compra generadas</p>
+                    <a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-primary">
+                        <i class="bi bi-receipt me-2"></i>Ver Órdenes Generadas
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Departamento</th>
-            <th>Solicitante</th>
-            <th>Fecha</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for req in requerimientos %}
-        <tr>
-            <td>REQ-{{ req.id|stringformat:"04d" }}</td>
-            <td>{{ req.departamento.nombre }}</td>
-            <td>{{ req.solicitante.username }}</td> 
-            <td>{{ req.fecha|date:"d/m/Y" }}</td>
-            <td>
-                <a href="{% url 'ver_detalle_requerimiento_comprador' req.id %}" class="btn btn-sm btn-info">Ver detalle</a>
-                <a href="{% url 'generar_orden_compra' req.id %}" class="btn btn-sm btn-success">Generar orden</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5">No hay requerimientos aprobados pendientes.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 bg-light bg-opacity-50">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Los requerimientos mostrados están aprobados y listos para generar órdenes de compra
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

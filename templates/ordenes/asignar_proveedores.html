@@ -1,58 +1,134 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Asignar Proveedores - {{ requerimiento.codigo }}</h2>
-
-<form method="post">
-    {% csrf_token %}
-    {% for categoria, items in productos_por_categoria.items %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <strong>📁 Categoría:</strong> {{ categoria.nombre }}
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label>Proveedor para toda la categoría:</label>
-                    <select class="form-select proveedor-categoria" data-categoria-id="{{ categoria.id }}">
-                        <option value="">-- Seleccione --</option>
-                        {% for proveedor in proveedores %}
-                            <option value="{{ proveedor.id }}">{{ proveedor.razon_social }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="button" class="btn btn-secondary btn-aplicar mt-2">Aplicar a todos</button>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h1 class="display-6 fw-bold text-primary mb-2">
+                        <i class="bi bi-truck me-3"></i>Asignar Proveedores
+                    </h1>
+                    <p class="text-muted mb-0">Asignación de proveedores para {{ requerimiento.codigo }}</p>
                 </div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Precio Unitario</th>
-                            <th>Cantidad</th>
-                            <th>Proveedor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in items %}
-                        <tr>
-                            <td>{{ item.producto.nombre }}</td>
-                            <td>${{ item.precio_unitario }}</td>
-                            <td>{{ item.cantidad }}</td>
-                            <td>
-                                <select name="proveedor_producto_{{ item.producto.id }}" class="form-select proveedor-individual" data-categoria-id="{{ categoria.id }}">
-                                    <option value="">-- Seleccione --</option>
-                                    {% for proveedor in proveedores %}
-                                        <option value="{{ proveedor.id }}">{{ proveedor.razon_social }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Volver al Listado
+                </a>
             </div>
         </div>
-    {% endfor %}
-    <button type="submit" class="btn btn-success">Guardar Asignaciones</button>
-    <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary">Volver al listado</a>
-</form>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for categoria, items in productos_por_categoria.items %}
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+            <div class="card-header bg-primary bg-opacity-5 border-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 text-primary fw-semibold">
+                        <i class="bi bi-folder me-2"></i>Categoría: {{ categoria.nombre }}
+                    </h5>
+                    <span class="badge bg-primary bg-opacity-15 text-primary rounded-pill px-3 py-2">
+                        {{ items|length }} producto{{ items|length|pluralize:"s" }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- Selector para toda la categoría -->
+                <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3 mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold text-info mb-2">
+                                <i class="bi bi-lightning me-2"></i>Asignación rápida para toda la categoría:
+                            </label>
+                            <select class="form-select form-select-lg border-2 proveedor-categoria" data-categoria-id="{{ categoria.id }}">
+                                <option value="">-- Seleccione un proveedor --</option>
+                                {% for proveedor in proveedores %}
+                                    <option value="{{ proveedor.id }}">{{ proveedor.razon_social }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-info btn-lg w-100 btn-aplicar">
+                                <i class="bi bi-check-all me-2"></i>Aplicar a Todos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de productos -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-box me-2"></i>Producto
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary text-end">
+                                    <i class="bi bi-currency-dollar me-2"></i>Precio Unitario
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary text-center">
+                                    <i class="bi bi-123 me-2"></i>Cantidad
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-building me-2"></i>Proveedor
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr class="border-bottom">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-box-seam text-primary me-2"></i>
+                                        <span class="fw-semibold">{{ item.producto.nombre }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-end">
+                                    <span class="fw-bold text-success">S/. {{ item.precio_unitario }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                        {{ item.cantidad }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <select name="proveedor_producto_{{ item.producto.id }}" 
+                                            class="form-select form-select-lg border-2 proveedor-individual" 
+                                            data-categoria-id="{{ categoria.id }}" 
+                                            required>
+                                        <option value="">-- Seleccione un proveedor --</option>
+                                        {% for proveedor in proveedores %}
+                                            <option value="{{ proveedor.id }}">{{ proveedor.razon_social }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Botones de acción -->
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                    </a>
+                    
+                    <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                        <i class="bi bi-check-circle me-2"></i>Guardar Asignaciones
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 <script>
     document.querySelectorAll('.btn-aplicar').forEach(btn => {
@@ -60,14 +136,36 @@
             const card = btn.closest('.card');
             const categoriaId = card.querySelector('.proveedor-categoria').dataset.categoriaId;
             const proveedorId = card.querySelector('.proveedor-categoria').value;
-            if (!proveedorId) return;
+            
+            if (!proveedorId) {
+                alert('Por favor seleccione un proveedor primero');
+                return;
+            }
 
-            // Aplicar a todos los select del grupo
+            // Aplicar a todos los select del grupo con efecto visual
             card.querySelectorAll('.proveedor-individual').forEach(select => {
                 if (select.dataset.categoriaId === categoriaId) {
                     select.value = proveedorId;
+                    select.classList.add('border-success');
+                    setTimeout(() => {
+                        select.classList.remove('border-success');
+                    }, 1000);
                 }
             });
+
+            // Mostrar mensaje de confirmación
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+            alertDiv.innerHTML = `
+                <i class="bi bi-check-circle me-2"></i>
+                Proveedor asignado a todos los productos de la categoría
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            card.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
         });
     });
 </script>

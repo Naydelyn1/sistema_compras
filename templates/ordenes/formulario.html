@@ -4,78 +4,149 @@
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
             <!-- Header -->
-            <div class="text-center mb-4">
-                <h1 class="display-6 fw-bold text-primary mb-2">
-                    <i class="bi bi-plus-circle me-3"></i>Nueva Orden de Compra
+            <div class="text-center mb-5">
+                <div class="mb-4">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="bi bi-plus-circle text-primary" style="font-size: 2.5rem;"></i>
+                    </div>
+                </div>
+                <h1 class="display-6 fw-bold text-primary mb-3">
+                    Nueva Orden de Compra
                 </h1>
-                <p class="text-muted">Complete los datos para crear una nueva orden de compra</p>
+                <p class="text-muted fs-5">Complete los datos para crear una nueva orden de compra</p>
+                <div class="bg-light rounded-pill d-inline-block px-4 py-2">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Paso 1 de 2: Información básica
+                    </small>
+                </div>
             </div>
 
             <!-- Card principal del formulario -->
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-header bg-primary bg-opacity-5 border-0 py-4">
-                    <h5 class="card-title mb-0 text-primary fw-semibold">
-                        <i class="bi bi-form-text me-2"></i>Información de la Orden
-                    </h5>
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%); border-radius: 1rem 1rem 0 0 !important;">
+                    <div class="d-flex align-items-center py-2">
+                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <i class="bi bi-form-text text-white fs-5"></i>
+                        </div>
+                        <h5 class="card-title mb-0 text-white fw-semibold">
+                            Información de la Orden
+                        </h5>
+                    </div>
                 </div>
                 
-                <div class="card-body p-4">
-                    <form method="post">
+                <div class="card-body p-5">
+                    <form method="post" id="ordenForm">
                         {% csrf_token %}
                         
                         <div class="row g-4">
                             <!-- Requerimiento -->
                             <div class="col-md-6">
-                                <label for="requerimiento" class="form-label fw-semibold text-dark">
-                                    <i class="bi bi-clipboard-check text-primary me-2"></i>Requerimiento
+                                <label for="requerimiento" class="form-label fw-bold text-dark mb-3">
+                                    <i class="bi bi-clipboard-check text-primary me-2 fs-5"></i>Requerimiento de Origen
                                     <span class="text-danger">*</span>
                                 </label>
-                                <select name="requerimiento" id="requerimiento" class="form-select form-select-lg border-2" required>
-                                    <option value="" disabled selected>Seleccione un requerimiento</option>
-                                    {% for req in requerimientos %}
-                                    <option value="{{ req.id }}">
-                                        <strong>#{{ req.id }}</strong> - {{ req.solicitante }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                <div class="form-text">
-                                    <i class="bi bi-info-circle me-1"></i>
+                                <div class="position-relative">
+                                    <select name="requerimiento" id="requerimiento" class="form-select form-select-lg border-2 shadow-sm" required style="padding-left: 3rem;">
+                                        <option value="" disabled selected>🔍 Seleccione un requerimiento</option>
+                                        {% for req in requerimientos %}
+                                        <option value="{{ req.id }}" data-info="{{ req.solicitante.get_full_name|default:req.solicitante.username }} - {{ req.departamento.nombre }}">
+                                            REQ-{{ req.id|stringformat:"04d" }} - {{ req.solicitante.get_full_name|default:req.solicitante.username }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <i class="bi bi-clipboard-data position-absolute text-primary" style="left: 1rem; top: 50%; transform: translateY(-50%);"></i>
+                                </div>
+                                <div class="form-text mt-2">
+                                    <i class="bi bi-info-circle me-1 text-info"></i>
                                     Seleccione el requerimiento que originará esta orden
                                 </div>
+                                <div id="requerimientoInfo" class="mt-2"></div>
                             </div>
 
                             <!-- Proveedor -->
                             <div class="col-md-6">
-                                <label for="proveedor" class="form-label fw-semibold text-dark">
-                                    <i class="bi bi-building text-primary me-2"></i>Proveedor
+                                <label for="proveedor" class="form-label fw-bold text-dark mb-3">
+                                    <i class="bi bi-building text-primary me-2 fs-5"></i>Proveedor
                                     <span class="text-danger">*</span>
                                 </label>
-                                <select name="proveedor" id="proveedor" class="form-select form-select-lg border-2" required>
-                                    <option value="" disabled selected>Seleccione un proveedor</option>
-                                    {% for prov in proveedores %}
-                                    <option value="{{ prov.id }}">{{ prov.razon_social }}</option>
-                                    {% endfor %}
-                                </select>
-                                <div class="form-text">
-                                    <i class="bi bi-info-circle me-1"></i>
+                                <div class="position-relative">
+                                    <select name="proveedor" id="proveedor" class="form-select form-select-lg border-2 shadow-sm" required style="padding-left: 3rem;">
+                                        <option value="" disabled selected>🏢 Seleccione un proveedor</option>
+                                        {% for prov in proveedores %}
+                                        <option value="{{ prov.id }}" data-ruc="{{ prov.ruc }}" data-info="{{ prov.razon_social }}">
+                                            {{ prov.razon_social }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <i class="bi bi-building position-absolute text-primary" style="left: 1rem; top: 50%; transform: translateY(-50%);"></i>
+                                </div>
+                                <div class="form-text mt-2">
+                                    <i class="bi bi-info-circle me-1 text-info"></i>
                                     Proveedor que suministrará los productos
+                                </div>
+                                <div id="proveedorInfo" class="mt-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Vista previa de la selección -->
+                        <div id="vistaPrevia" class="mt-5" style="display: none;">
+                            <div class="alert alert-primary border-0 rounded-3" style="background: linear-gradient(135deg, #cfe2ff 0%, #e7f3ff 100%);">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-primary bg-opacity-15 rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="width: 35px; height: 35px;">
+                                        <i class="bi bi-eye text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="alert-heading text-primary mb-3">👀 Vista Previa de la Orden</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="bi bi-clipboard-check text-primary me-2"></i>
+                                                    <div>
+                                                        <small class="text-muted d-block">Requerimiento:</small>
+                                                        <span id="previewRequerimiento" class="fw-bold text-primary"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="bi bi-building text-primary me-2"></i>
+                                                    <div>
+                                                        <small class="text-muted d-block">Proveedor:</small>
+                                                        <span id="previewProveedor" class="fw-bold text-primary"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Información adicional -->
-                        <div class="row mt-4">
+                        <div class="row mt-5">
                             <div class="col-12">
-                                <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3">
+                                <div class="alert alert-info border-0 rounded-3" style="background: linear-gradient(135deg, #d1ecf1 0%, #e8f4f8 100%);">
                                     <div class="d-flex align-items-start">
-                                        <i class="bi bi-lightbulb text-info me-3 mt-1 fs-5"></i>
+                                        <div class="bg-info bg-opacity-15 rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="width: 40px; height: 40px;">
+                                            <i class="bi bi-lightbulb text-info fs-5"></i>
+                                        </div>
                                         <div>
-                                            <h6 class="alert-heading text-info mb-2">Información importante</h6>
-                                            <ul class="mb-0 text-info">
-                                                <li>La orden se creará en estado <strong>"Borrador"</strong></li>
-                                                <li>Podrá agregar productos después de crear la orden</li>
-                                                <li>Una vez completada, podrá emitir la orden al proveedor</li>
-                                            </ul>
+                                            <h6 class="alert-heading text-info mb-3">💡 Información importante</h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <ul class="mb-0 text-info">
+                                                        <li>La orden se creará en estado <strong>"Borrador"</strong></li>
+                                                        <li>Podrá agregar productos después de crear la orden</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <ul class="mb-0 text-info">
+                                                        <li>Una vez completada, podrá emitir la orden al proveedor</li>
+                                                        <li>Todos los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -83,29 +154,180 @@
                         </div>
 
                         <!-- Botones de acción -->
-                        <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
-                            <a href="{% url 'lista_ordenes' %}" class="btn btn-outline-secondary btn-lg">
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                            <a href="{% url 'lista_ordenes' %}" class="btn btn-outline-secondary btn-lg px-4">
                                 <i class="bi bi-arrow-left me-2"></i>Volver al Listado
                             </a>
                             
-                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
-                                <i class="bi bi-check-circle me-2"></i>Crear Orden
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm position-relative" id="submitBtn">
+                                <span class="btn-content">
+                                    <i class="bi bi-check-circle me-2"></i>Crear Orden de Compra
+                                </span>
+                                <span class="btn-loading" style="display: none;">
+                                    <i class="bi bi-hourglass-split me-2"></i>Creando...
+                                </span>
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Card de ayuda -->
-            <div class="card mt-4 border-0 bg-light bg-opacity-50">
-                <div class="card-body text-center py-3">
-                    <small class="text-muted">
-                        <i class="bi bi-question-circle me-1"></i>
-                        ¿Necesitas ayuda? Los campos marcados con <span class="text-danger">*</span> son obligatorios.
-                    </small>
+            <!-- Pasos siguientes -->
+            <div class="card mt-4 border-0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                <div class="card-body text-center py-4">
+                    <h6 class="text-secondary mb-3">
+                        <i class="bi bi-list-ol me-2"></i>Pasos siguientes después de crear la orden:
+                    </h6>
+                    <div class="d-flex justify-content-center gap-4 flex-wrap">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary rounded-circle me-2" style="width: 25px; height: 25px; line-height: 25px;">1</span>
+                            <small class="text-muted">Agregar productos</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary rounded-circle me-2" style="width: 25px; height: 25px; line-height: 25px;">2</span>
+                            <small class="text-muted">Revisar detalles</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success rounded-circle me-2" style="width: 25px; height: 25px; line-height: 25px;">3</span>
+                            <small class="text-muted">Emitir al proveedor</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Scripts mejorados -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const requerimientoSelect = document.getElementById('requerimiento');
+    const proveedorSelect = document.getElementById('proveedor');
+    const vistaPrevia = document.getElementById('vistaPrevia');
+    const previewRequerimiento = document.getElementById('previewRequerimiento');
+    const previewProveedor = document.getElementById('previewProveedor');
+    const form = document.getElementById('ordenForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Función para mostrar información del requerimiento
+    requerimientoSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const info = selectedOption.dataset.info;
+        
+        if (info) {
+            document.getElementById('requerimientoInfo').innerHTML = `
+                <div class="alert alert-success alert-sm border-0 bg-success bg-opacity-10 rounded-2 py-2">
+                    <small class="text-success">
+                        <i class="bi bi-check-circle me-1"></i>
+                        <strong>Solicitante:</strong> ${info}
+                    </small>
+                </div>
+            `;
+        }
+        
+        updateVistaPrevia();
+        
+        // Efecto visual
+        this.classList.add('border-success');
+        setTimeout(() => {
+            this.classList.remove('border-success');
+        }, 1000);
+    });
+
+    // Función para mostrar información del proveedor
+    proveedorSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const ruc = selectedOption.dataset.ruc;
+        
+        if (ruc) {
+            document.getElementById('proveedorInfo').innerHTML = `
+                <div class="alert alert-success alert-sm border-0 bg-success bg-opacity-10 rounded-2 py-2">
+                    <small class="text-success">
+                        <i class="bi bi-check-circle me-1"></i>
+                        <strong>RUC:</strong> ${ruc}
+                    </small>
+                </div>
+            `;
+        }
+        
+        updateVistaPrevia();
+        
+        // Efecto visual
+        this.classList.add('border-success');
+        setTimeout(() => {
+            this.classList.remove('border-success');
+        }, 1000);
+    });
+
+    // Función para actualizar vista previa
+    function updateVistaPrevia() {
+        const reqText = requerimientoSelect.options[requerimientoSelect.selectedIndex]?.text;
+        const provText = proveedorSelect.options[proveedorSelect.selectedIndex]?.text;
+        
+        if (reqText && provText && requerimientoSelect.value && proveedorSelect.value) {
+            previewRequerimiento.textContent = reqText;
+            previewProveedor.textContent = provText;
+            
+            vistaPrevia.style.display = 'block';
+            vistaPrevia.style.opacity = '0';
+            setTimeout(() => {
+                vistaPrevia.style.transition = 'opacity 0.3s ease';
+                vistaPrevia.style.opacity = '1';
+            }, 50);
+        } else {
+            vistaPrevia.style.display = 'none';
+        }
+    }
+
+    // Manejar envío del formulario
+    form.addEventListener('submit', function(e) {
+        const btnContent = submitBtn.querySelector('.btn-content');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+        
+        btnContent.style.display = 'none';
+        btnLoading.style.display = 'inline';
+        submitBtn.disabled = true;
+        
+        // Simular proceso de creación
+        setTimeout(() => {
+            // El formulario se enviará normalmente
+        }, 500);
+    });
+
+    // Validación en tiempo real
+    const requiredFields = [requerimientoSelect, proveedorSelect];
+    requiredFields.forEach(field => {
+        field.addEventListener('change', function() {
+            validateForm();
+        });
+    });
+
+    function validateForm() {
+        const allFilled = requiredFields.every(field => field.value !== '');
+        submitBtn.disabled = !allFilled;
+        
+        if (allFilled) {
+            submitBtn.classList.remove('btn-outline-primary');
+            submitBtn.classList.add('btn-primary');
+        } else {
+            submitBtn.classList.remove('btn-primary');
+            submitBtn.classList.add('btn-outline-primary');
+        }
+    }
+
+    // Inicializar validación
+    validateForm();
+
+    // Efecto de entrada para el formulario
+    const card = document.querySelector('.card');
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    
+    setTimeout(() => {
+        card.style.transition = 'all 0.5s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    }, 200);
+});
+</script>
 {% endblock %}

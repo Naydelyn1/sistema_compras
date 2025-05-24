@@ -7,35 +7,76 @@
             <div class="card shadow-lg border-0 rounded-3">
                 <div class="card-header bg-danger bg-opacity-10 border-0 py-4 text-center">
                     <div class="mb-3">
-                        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                        <div class="bg-danger bg-opacity-15 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2.5rem;"></i>
+                        </div>
                     </div>
                     <h3 class="card-title text-danger fw-bold mb-2">
-                        Confirmar Eliminación
+                        ⚠️ Confirmar Eliminación
                     </h3>
-                    <p class="text-muted mb-0">Esta acción no se puede deshacer</p>
+                    <p class="text-muted mb-0">Esta acción es permanente e irreversible</p>
                 </div>
                 
                 <div class="card-body p-4 text-center">
                     <div class="mb-4">
-                        <h5 class="text-dark mb-3">
-                            ¿Deseas eliminar la orden de compra?
+                        <h5 class="text-dark mb-4">
+                            ¿Estás seguro de eliminar esta orden de compra?
                         </h5>
                         
                         <!-- Información de la orden a eliminar -->
-                        <div class="alert alert-light border rounded-3 p-3">
+                        <div class="alert alert-light border-2 rounded-3 p-4 mb-4">
                             <div class="row align-items-center">
                                 <div class="col-12">
                                     <div class="d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-receipt text-primary me-3 fs-2"></i>
+                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 70px; height: 70px;">
+                                            <i class="bi bi-receipt text-primary" style="font-size: 2rem;"></i>
+                                        </div>
                                         <div class="text-start">
-                                            <div class="fw-bold text-primary fs-4">{{ orden.codigo }}</div>
-                                            <div class="text-muted">
-                                                <i class="bi bi-building me-1"></i>
-                                                {{ orden.proveedor.razon_social }}
+                                            <div class="fw-bold text-primary fs-3 mb-2">{{ orden.codigo }}</div>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-building text-secondary me-2"></i>
+                                                        <div>
+                                                            <small class="text-muted d-block">Proveedor:</small>
+                                                            <span class="fw-semibold">{{ orden.proveedor.razon_social }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-calendar3 text-secondary me-2"></i>
+                                                        <div>
+                                                            <small class="text-muted d-block">Fecha:</small>
+                                                            <span class="fw-semibold">{{ orden.fecha_emision|date:"d/m/Y" }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="text-muted small">
-                                                <i class="bi bi-calendar3 me-1"></i>
-                                                {{ orden.fecha_emision|date:"d/m/Y" }}
+                                            <div class="mt-3 pt-3 border-top">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <i class="bi bi-circle-fill text-secondary me-2"></i>
+                                                    <div>
+                                                        <small class="text-muted">Estado actual:</small>
+                                                        {% if orden.estado == 'borrador' %}
+                                                            <span class="badge bg-secondary bg-opacity-15 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2 ms-2">
+                                                                <i class="bi bi-pencil me-1"></i>Borrador
+                                                            </span>
+                                                        {% elif orden.estado == 'emitida' %}
+                                                            <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 ms-2">
+                                                                <i class="bi bi-send me-1"></i>Emitida
+                                                            </span>
+                                                        {% elif orden.estado == 'recibida' %}
+                                                            <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 ms-2">
+                                                                <i class="bi bi-box me-1"></i>Recibida
+                                                            </span>
+                                                        {% elif orden.estado == 'completada' %}
+                                                            <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 ms-2">
+                                                                <i class="bi bi-check-circle me-1"></i>Completada
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -43,60 +84,132 @@
                             </div>
                         </div>
                         
-                        <!-- Advertencia -->
-                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 rounded-3">
+                        <!-- Información crítica -->
+                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 rounded-3 mb-4">
                             <div class="d-flex align-items-start">
-                                <i class="bi bi-exclamation-triangle text-warning me-3 mt-1"></i>
+                                <div class="bg-danger bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="width: 35px; height: 35px;">
+                                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                                </div>
                                 <div class="text-start">
-                                    <h6 class="alert-heading text-warning mb-2">¡Atención!</h6>
-                                    <ul class="mb-0 text-warning small">
-                                        <li>Se eliminará la orden y todos sus productos asociados</li>
-                                        <li>Esta acción es permanente e irreversible</li>
-                                        <li>Solo se pueden eliminar órdenes en estado "Borrador"</li>
+                                    <h6 class="alert-heading text-danger mb-2">🚨 ¡ATENCIÓN! Acción Irreversible</h6>
+                                    <ul class="mb-0 text-danger small">
+                                        <li><strong>Se eliminará la orden completa</strong> y todos sus productos asociados</li>
+                                        <li>Esta acción es <strong>permanente e irreversible</strong></li>
+                                        <li>Solo se pueden eliminar órdenes en estado <strong>"Borrador"</strong></li>
+                                        <li>Se perderán todos los datos de productos y cantidades</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Restricciones de seguridad -->
+                        {% if orden.estado != 'borrador' %}
+                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 rounded-3 mb-4">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-shield-exclamation text-warning me-3 fs-4"></i>
+                                <div class="text-warning">
+                                    <h6 class="mb-1">Orden Protegida</h6>
+                                    <small>No se puede eliminar una orden que ya ha sido {{ orden.estado }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
 
                     <!-- Botones de acción -->
-                    <form method="post" class="d-inline">
+                    {% if orden.estado == 'borrador' %}
+                    <form method="post" class="d-inline" id="deleteForm">
                         {% csrf_token %}
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
                             <a href="{% url 'lista_ordenes' %}" 
                                class="btn btn-outline-secondary btn-lg px-4">
-                                <i class="bi bi-arrow-left me-2"></i>No, Cancelar
+                                <i class="bi bi-arrow-left me-2"></i>No, Mantener Orden
                             </a>
                             
-                            <button type="submit" 
-                                    class="btn btn-danger btn-lg px-4">
-                                <i class="bi bi-trash me-2"></i>Sí, Eliminar Orden
+                            <button type="button" 
+                                    class="btn btn-danger btn-lg px-4 shadow-sm"
+                                    onclick="confirmarEliminacion()">
+                                <i class="bi bi-trash me-2"></i>Sí, Eliminar Definitivamente
                             </button>
                         </div>
                     </form>
+                    {% else %}
+                    <div class="d-flex justify-content-center">
+                        <a href="{% url 'lista_ordenes' %}" 
+                           class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-arrow-left me-2"></i>Volver al Listado
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <!-- Footer informativo -->
                 <div class="card-footer bg-light border-0 text-center py-3">
                     <small class="text-muted">
-                        <i class="bi bi-info-circle me-1"></i>
-                        También puedes regresar al listado sin realizar cambios
+                        <i class="bi bi-shield-check me-1"></i>
+                        {% if orden.estado == 'borrador' %}
+                            Las órdenes emitidas, recibidas o completadas están protegidas contra eliminación
+                        {% else %}
+                            Esta orden está protegida por su estado actual: {{ orden.estado }}
+                        {% endif %}
                     </small>
                 </div>
             </div>
 
-            <!-- Información adicional -->
+            <!-- Navegación rápida -->
             <div class="text-center mt-4">
                 <div class="card border-0 bg-transparent">
                     <div class="card-body py-2">
-                        <small class="text-muted">
-                            <i class="bi bi-shield-check me-1"></i>
-                            Las órdenes emitidas, recibidas o completadas no pueden eliminarse por seguridad
-                        </small>
+                        <div class="d-flex justify-content-center gap-4 flex-wrap">
+                            <a href="{% url 'detalle_orden' orden.id %}" class="text-decoration-none small">
+                                <i class="bi bi-eye me-1"></i>Ver Orden Completa
+                            </a>
+                            <a href="{% url 'lista_ordenes' %}" class="text-decoration-none small">
+                                <i class="bi bi-list me-1"></i>Todas las Órdenes
+                            </a>
+                            {% if orden.estado == 'borrador' %}
+                            <a href="{% url 'agregar_detalle_orden' orden.id %}" class="text-decoration-none small">
+                                <i class="bi bi-plus-circle me-1"></i>Agregar Productos
+                            </a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Script para confirmación adicional -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar animación al cargar
+    const card = document.querySelector('.card');
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    }, 100);
+});
+
+function confirmarEliminacion() {
+    // Primera confirmación
+    if (confirm('🚨 ¿Estás COMPLETAMENTE SEGURO de eliminar esta orden?\n\n⚠️ Esta acción NO SE PUEDE DESHACER\n\n✅ Presiona OK para continuar\n❌ Presiona Cancelar para mantener la orden')) {
+        // Segunda confirmación más específica
+        const ordenCodigo = '{{ orden.codigo }}';
+        if (confirm(`🔴 CONFIRMACIÓN FINAL\n\nVas a eliminar PERMANENTEMENTE la orden: ${ordenCodigo}\n\n📝 Se perderán todos los productos asociados\n🚫 Esta acción es IRREVERSIBLE\n\n¿Proceder con la eliminación?`)) {
+            // Mostrar indicador de carga
+            const btn = event.target;
+            btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Eliminando...';
+            btn.disabled = true;
+            
+            // Enviar formulario
+            document.getElementById('deleteForm').submit();
+        }
+    }
+}
+</script>
 {% endblock %}
