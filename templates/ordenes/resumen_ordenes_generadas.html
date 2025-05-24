@@ -1,43 +1,186 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>🧾 Resumen de Órdenes Generadas - {{ requerimiento.codigo }}</h2>
-<p><strong>Área Solicitante:</strong> {{ requerimiento.departamento.nombre }}</p>
-<p><strong>Solicitado por:</strong> {{ requerimiento.solicitante.get_full_name }}</p>
-<p><strong>Fecha:</strong> {{ requerimiento.fecha|date:"d/m/Y" }}</p>
-
-{% for orden in ordenes %}
-<div class="card mb-4">
-    <div class="card-header">
-        <strong>Orden:</strong> {{ orden.codigo }}<br>
-        <strong>Proveedor:</strong> {{ orden.proveedor.razon_social }} (RUC: {{ orden.proveedor.ruc }})<br>
-        <strong>Fecha de emisión:</strong> {{ orden.fecha_emision|date:"d/m/Y" }}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h1 class="display-6 fw-bold text-primary mb-2">
+                        <i class="bi bi-clipboard-check me-3"></i>Resumen de Órdenes Generadas
+                    </h1>
+                    <p class="text-muted mb-0">Órdenes generadas para {{ requerimiento.codigo }}</p>
+                </div>
+                <a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Volver al Listado
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="card-body">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for detalle in orden.detalles.all %}
-                <tr>
-                    <td>{{ detalle.producto.nombre }}</td>
-                    <td>{{ detalle.cantidad }}</td>
-                    <td>${{ detalle.precio_unitario }}</td>
-                    <td>${{ detalle.subtotal }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <strong>Total acumulado: ${{ orden.total }}</strong>
+    <!-- Información del requerimiento -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-header bg-info bg-opacity-5 border-0 py-3">
+            <h5 class="card-title mb-0 text-info fw-semibold">
+                <i class="bi bi-info-circle me-2"></i>Información del Requerimiento
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-building text-primary me-2"></i>
+                        <div>
+                            <small class="text-muted">Área Solicitante:</small>
+                            <div class="fw-bold">{{ requerimiento.departamento.nombre }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-person text-primary me-2"></i>
+                        <div>
+                            <small class="text-muted">Solicitado por:</small>
+                            <div class="fw-bold">{{ requerimiento.solicitante.get_full_name }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-calendar3 text-primary me-2"></i>
+                        <div>
+                            <small class="text-muted">Fecha:</small>
+                            <div class="fw-bold">{{ requerimiento.fecha|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Órdenes generadas -->
+    {% for orden in ordenes %}
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-header bg-primary bg-opacity-5 border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1 text-primary fw-semibold">
+                        <i class="bi bi-receipt me-2"></i>{{ orden.codigo }}
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Proveedor:</small>
+                            <div class="fw-semibold">{{ orden.proveedor.razon_social }}</div>
+                            <small class="text-muted">RUC: {{ orden.proveedor.ruc }}</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Fecha de emisión:</small>
+                            <div class="fw-semibold">{{ orden.fecha_emision|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <span class="badge bg-primary bg-opacity-15 text-primary rounded-pill px-3 py-2">
+                    {{ orden.detalles.all|length }} producto{{ orden.detalles.all|length|pluralize:"s" }}
+                </span>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3 fw-semibold text-primary">
+                                <i class="bi bi-box me-2"></i>Producto
+                            </th>
+                            <th class="px-4 py-3 fw-semibold text-primary text-center">
+                                <i class="bi bi-123 me-2"></i>Cantidad
+                            </th>
+                            <th class="px-4 py-3 fw-semibold text-primary text-end">
+                                <i class="bi bi-currency-dollar me-2"></i>Precio Unitario
+                            </th>
+                            <th class="px-4 py-3 fw-semibold text-primary text-end">
+                                <i class="bi bi-calculator me-2"></i>Subtotal
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in orden.detalles.all %}
+                        <tr class="border-bottom">
+                            <td class="px-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-box-seam text-primary me-2"></i>
+                                    <span class="fw-semibold">{{ detalle.producto.nombre }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                    {{ detalle.cantidad }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-end">
+                                <span class="text-secondary">S/. {{ detalle.precio_unitario|floatformat:2 }}</span>
+                            </td>
+                            <td class="px-4 py-3 text-end">
+                                <span class="fw-bold text-success">S/. {{ detalle.subtotal|floatformat:2 }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th colspan="3" class="px-4 py-3 text-end fw-bold">Total de esta Orden:</th>
+                            <th class="px-4 py-3 text-end">
+                                <span class="h6 text-success fw-bold mb-0">S/. {{ orden.total|floatformat:2 }}</span>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Resumen final -->
+    <div class="card shadow-sm border-0 rounded-3 bg-success bg-opacity-5">
+        <div class="card-body text-center py-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="text-success mb-2">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        Órdenes Generadas Exitosamente
+                    </h5>
+                    <p class="text-success mb-0">
+                        Se han generado {{ ordenes|length }} orden{{ ordenes|length|pluralize:"es" }} de compra
+                        para el requerimiento {{ requerimiento.codigo }}
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <div class="border-start border-success border-2 ps-3">
+                        <small class="text-muted d-block">Total General:</small>
+                        <span class="h4 text-success fw-bold mb-0">
+                            S/. {% for orden in ordenes %}{% if forloop.first %}{{ orden.total|add:0|floatformat:2 }}{% endif %}{% endfor %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegación -->
+    <div class="text-center mt-4">
+        <div class="card border-0 bg-transparent">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-center gap-4 flex-wrap">
+                    <a href="{% url 'mis_ordenes_generadas' %}" class="text-decoration-none">
+                        <i class="bi bi-list me-1"></i>Ver Todas Mis Órdenes
+                    </a>
+                    <a href="{% url 'lista_requerimientos_aprobados' %}" class="text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Volver a Requerimientos
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-{% endfor %}
-
-<a href="{% url 'mis_ordenes_generadas' %}" class="btn btn-secondary">Volver al listado de órdenes</a>
 {% endblock %}

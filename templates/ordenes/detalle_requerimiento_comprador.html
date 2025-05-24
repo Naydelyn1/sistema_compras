@@ -1,31 +1,172 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>📋 Detalle del Requerimiento - {{ requerimiento.codigo }}</h2>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h1 class="display-6 fw-bold text-primary mb-2">
+                        <i class="bi bi-clipboard-data me-3"></i>Detalle del Requerimiento
+                    </h1>
+                    <p class="text-muted mb-0">Información completa del requerimiento {{ requerimiento.codigo }}</p>
+                </div>
+                <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
 
-<p><strong>Área Solicitante:</strong> {{ requerimiento.departamento.nombre }}</p>
-<p><strong>Solicitado por:</strong> {{ requerimiento.solicitante.get_full_name }}</p>
-<p><strong>Fecha de solicitud:</strong> {{ requerimiento.fecha|date:"d/m/Y" }}</p>
+    <div class="row g-4">
+        <!-- Información del requerimiento -->
+        <div class="col-lg-4">
+            <div class="card h-100 shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary bg-opacity-5 border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary fw-semibold">
+                        <i class="bi bi-info-circle me-2"></i>Información General
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small">ÁREA SOLICITANTE</label>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-building text-primary me-2"></i>
+                            <div>
+                                <div class="fw-bold">{{ requerimiento.departamento.nombre }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small">SOLICITADO POR</label>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person text-primary me-2"></i>
+                            <div>
+                                <div class="fw-bold">{{ requerimiento.solicitante.get_full_name }}</div>
+                                <small class="text-muted">{{ requerimiento.solicitante.username }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small">FECHA DE SOLICITUD</label>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-calendar3 text-primary me-2"></i>
+                            <span class="fw-semibold">{{ requerimiento.fecha|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
 
-<table class="table table-striped mt-3">
-    <thead>
-        <tr>
-            <th>Categoría</th>
-            <th>Producto</th>
-            <th>Precio Referencial</th>
-            <th>Cantidad</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for detalle in detalles %}
-        <tr>
-            <td>{{ detalle.producto.categoria.nombre }}</td>
-            <td>{{ detalle.producto.nombre }}</td>
-            <td>${{ detalle.producto.precio_referencial }}</td>
-            <td>{{ detalle.cantidad }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                    <div class="border-top pt-3 mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-dark">Total de Productos:</span>
+                            <span class="h5 text-primary fw-bold mb-0">{{ detalles|length }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary mt-3">Volver al listado</a>
+        <!-- Productos del requerimiento -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary fw-semibold">
+                        <i class="bi bi-box me-2"></i>Productos Solicitados
+                    </h5>
+                </div>
+                
+                <div class="card-body p-0">
+                    {% if detalles %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="px-4 py-3 fw-semibold text-primary">
+                                            <i class="bi bi-tag me-2"></i>Categoría
+                                        </th>
+                                        <th class="px-4 py-3 fw-semibold text-primary">
+                                            <i class="bi bi-box me-2"></i>Producto
+                                        </th>
+                                        <th class="px-4 py-3 fw-semibold text-primary text-end">
+                                            <i class="bi bi-currency-dollar me-2"></i>Precio Referencial
+                                        </th>
+                                        <th class="px-4 py-3 fw-semibold text-primary text-center">
+                                            <i class="bi bi-123 me-2"></i>Cantidad
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detalle in detalles %}
+                                    <tr class="border-bottom">
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-folder text-warning me-2"></i>
+                                                <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2">
+                                                    {{ detalle.producto.categoria.nombre }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-box-seam text-primary me-2"></i>
+                                                <span class="fw-semibold">{{ detalle.producto.nombre }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-end">
+                                            <span class="fw-bold text-success">S/. {{ detalle.producto.precio_referencial }}</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                                {{ detalle.cantidad }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-box text-muted mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted mb-3">No hay productos en este requerimiento</h5>
+                            <p class="text-muted">Este requerimiento no tiene productos asociados.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Acciones disponibles -->
+            <div class="card shadow-sm border-0 rounded-3 mt-4">
+                <div class="card-header bg-success bg-opacity-5 border-0 py-3">
+                    <h5 class="card-title mb-0 text-success fw-semibold">
+                        <i class="bi bi-gear me-2"></i>Acciones Disponibles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-list me-2"></i>
+                                <div>
+                                    <div class="fw-semibold">Ver Todos</div>
+                                    <small class="text-muted">Ir al listado completo</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="#" class="btn btn-success w-100 py-3" onclick="window.print()">
+                                <i class="bi bi-printer me-2"></i>
+                                <div>
+                                    <div class="fw-semibold">Imprimir</div>
+                                    <small class="text-white opacity-75">Generar reporte</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

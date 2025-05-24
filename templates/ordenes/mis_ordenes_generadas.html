@@ -1,28 +1,140 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>🧾 Mis Órdenes de Compra Generadas</h2>
+<div class="container-fluid">
+    <!-- Header de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold text-primary mb-2">
+                <i class="bi bi-receipt-cutoff me-3"></i>Mis Órdenes Generadas
+            </h1>
+            <p class="text-muted mb-0">Órdenes de compra que he generado desde requerimientos</p>
+        </div>
+        <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </a>
+    </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Requerimiento</th>
-            <th>Proveedor</th>
-            <th>Fecha</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for orden in ordenes %}
-        <tr>
-            <td>{{ orden.codigo }}</td>
-            <td>{{ orden.requerimiento.nombre }}</td>
-            <td>{{ orden.proveedor.razon_social }}</td>
-            <td>{{ orden.fecha_emision|date:"d/m/Y" }}</td>
-            <td>${{ orden.total }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-secondary mt-2">Volver</a>
+    <!-- Card principal con la tabla -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 text-primary fw-semibold">
+                    <i class="bi bi-table me-2"></i>Historial de Órdenes
+                </h5>
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                    {{ ordenes|length }} orden{{ ordenes|length|pluralize:"es" }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
+            {% if ordenes %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-hash me-2"></i>Código Orden
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-clipboard-check me-2"></i>Requerimiento
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-building me-2"></i>Proveedor
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary">
+                                    <i class="bi bi-calendar3 me-2"></i>Fecha Emisión
+                                </th>
+                                <th class="px-4 py-3 fw-semibold text-primary text-end">
+                                    <i class="bi bi-currency-dollar me-2"></i>Total
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for orden in ordenes %}
+                            <tr class="border-bottom">
+                                <td class="px-4 py-3">
+                                    <span class="fw-bold text-primary">{{ orden.codigo }}</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-clipboard-data text-info me-2"></i>
+                                        <div>
+                                            <div class="fw-semibold">{{ orden.requerimiento.nombre }}</div>
+                                            <small class="text-muted">REQ-{{ orden.requerimiento.id|stringformat:"04d" }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div>
+                                        <div class="fw-semibold">{{ orden.proveedor.razon_social }}</div>
+                                        <small class="text-muted">RUC: {{ orden.proveedor.ruc }}</small>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="text-secondary">{{ orden.fecha_emision|date:"d/m/Y" }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-end">
+                                    <span class="fw-bold text-success h6 mb-0">S/. {{ orden.total|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th colspan="4" class="px-4 py-3 text-end fw-bold">Total General:</th>
+                                <th class="px-4 py-3 text-end">
+                                    {% for orden in ordenes %}
+                                        {% if forloop.first %}
+                                            <span class="h5 text-success fw-bold mb-0">
+                                                S/. {% widthratio ordenes|length 1 ordenes|length as total_ordenes %}
+                                                {{ orden.total|add:0|floatformat:2 }}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% else %}
+                <!-- Estado vacío -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-receipt text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No has generado órdenes aún</h4>
+                    <p class="text-muted mb-4">Comienza generando órdenes desde los requerimientos aprobados</p>
+                    <a href="{% url 'lista_requerimientos_aprobados' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Generar Primera Orden
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card border-0 bg-success bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-check-circle text-success me-2"></i>
+                    <small class="text-success fw-semibold">
+                        Órdenes completadas exitosamente
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 bg-info bg-opacity-10">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-info-circle text-info me-2"></i>
+                    <small class="text-info">
+                        Puedes hacer seguimiento desde el módulo principal
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -7,10 +7,12 @@
             <div class="card shadow-lg border-0 rounded-3">
                 <div class="card-header bg-warning bg-opacity-10 border-0 py-4 text-center">
                     <div class="mb-3">
-                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                        <div class="bg-warning bg-opacity-15 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2.5rem;"></i>
+                        </div>
                     </div>
                     <h3 class="card-title text-warning fw-bold mb-2">
-                        Eliminar Producto
+                        Confirmar Eliminación
                     </h3>
                     <p class="text-muted mb-0">Confirma la eliminación del producto de la orden</p>
                 </div>
@@ -18,32 +20,49 @@
                 <div class="card-body p-4 text-center">
                     <div class="mb-4">
                         <h5 class="text-dark mb-4">
-                            ¿Deseas eliminar este producto de la orden?
+                            ¿Estás seguro de eliminar este producto?
                         </h5>
                         
                         <!-- Información del detalle a eliminar -->
-                        <div class="alert alert-light border rounded-3 p-4 mb-4">
+                        <div class="alert alert-light border-2 rounded-3 p-4 mb-4">
                             <div class="row align-items-center">
                                 <div class="col-12">
                                     <div class="d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-box-seam text-primary me-3" style="font-size: 2.5rem;"></i>
+                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                            <i class="bi bi-box-seam text-primary" style="font-size: 1.8rem;"></i>
+                                        </div>
                                         <div class="text-start">
-                                            <div class="fw-bold text-primary fs-5 mb-1">{{ detalle.producto.nombre }}</div>
-                                            <div class="row text-sm">
+                                            <div class="fw-bold text-primary fs-5 mb-2">{{ detalle.producto.nombre }}</div>
+                                            <div class="row text-sm g-3">
                                                 <div class="col-6">
-                                                    <small class="text-muted">Cantidad:</small><br>
-                                                    <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-3 py-2">
-                                                        {{ detalle.cantidad }} unidades
-                                                    </span>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-123 text-secondary me-2"></i>
+                                                        <div>
+                                                            <small class="text-muted d-block">Cantidad:</small>
+                                                            <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-3 py-2">
+                                                                {{ detalle.cantidad }} unidades
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="col-6">
-                                                    <small class="text-muted">Precio Unit:</small><br>
-                                                    <span class="fw-semibold text-secondary">S/. {{ detalle.precio_unitario|floatformat:2 }}</span>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-currency-dollar text-secondary me-2"></i>
+                                                        <div>
+                                                            <small class="text-muted d-block">Precio Unit:</small>
+                                                            <span class="fw-semibold text-secondary">S/. {{ detalle.precio_unitario|floatformat:2 }}</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="mt-2 pt-2 border-top">
-                                                <small class="text-muted">Subtotal:</small>
-                                                <span class="fw-bold text-success ms-2">S/. {{ detalle.subtotal|floatformat:2 }}</span>
+                                            <div class="mt-3 pt-3 border-top">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <i class="bi bi-calculator text-success me-2"></i>
+                                                    <div>
+                                                        <small class="text-muted">Subtotal a eliminar:</small>
+                                                        <span class="fw-bold text-success ms-2 fs-5">S/. {{ detalle.subtotal|floatformat:2 }}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -54,11 +73,24 @@
                         <!-- Información de la orden -->
                         <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3 mb-4">
                             <div class="d-flex align-items-center justify-content-center">
-                                <i class="bi bi-receipt text-info me-3"></i>
+                                <i class="bi bi-receipt text-info me-3 fs-4"></i>
                                 <div class="text-info">
-                                    <strong>Orden:</strong> {{ orden.codigo }} 
-                                    <span class="mx-2">|</span>
-                                    <i class="bi bi-building me-1"></i>{{ orden.proveedor.razon_social }}
+                                    <div class="d-flex align-items-center flex-wrap justify-content-center gap-3">
+                                        <div>
+                                            <small class="d-block">Orden:</small>
+                                            <strong>{{ orden.codigo }}</strong>
+                                        </div>
+                                        <div class="vr"></div>
+                                        <div>
+                                            <small class="d-block">Proveedor:</small>
+                                            <strong>{{ orden.proveedor.razon_social|truncatechars:20 }}</strong>
+                                        </div>
+                                        <div class="vr"></div>
+                                        <div>
+                                            <small class="d-block">Estado:</small>
+                                            <span class="badge bg-info bg-opacity-20 text-info">{{ orden.estado|title }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -66,13 +98,16 @@
                         <!-- Advertencia -->
                         <div class="alert alert-warning border-0 bg-warning bg-opacity-10 rounded-3">
                             <div class="d-flex align-items-start">
-                                <i class="bi bi-info-circle text-warning me-3 mt-1"></i>
+                                <div class="bg-warning bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center me-3 mt-1" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-info-circle text-warning"></i>
+                                </div>
                                 <div class="text-start">
-                                    <h6 class="alert-heading text-warning mb-2">Información importante</h6>
+                                    <h6 class="alert-heading text-warning mb-2">⚠️ Información importante</h6>
                                     <ul class="mb-0 text-warning small">
-                                        <li>El producto se eliminará completamente de la orden</li>
-                                        <li>El total de la orden se recalculará automáticamente</li>
-                                        <li>Esta acción no se puede deshacer</li>
+                                        <li>El producto se eliminará <strong>completamente</strong> de la orden</li>
+                                        <li>El total de la orden se <strong>recalculará automáticamente</strong></li>
+                                        <li>Esta acción <strong>no se puede deshacer</strong></li>
+                                        <li>Podrás agregar productos nuevamente si es necesario</li>
                                     </ul>
                                 </div>
                             </div>
@@ -85,11 +120,11 @@
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
                             <a href="{% url 'detalle_orden' orden.id %}" 
                                class="btn btn-outline-secondary btn-lg px-4">
-                                <i class="bi bi-arrow-left me-2"></i>No, Volver
+                                <i class="bi bi-arrow-left me-2"></i>No, Mantener Producto
                             </a>
                             
                             <button type="submit" 
-                                    class="btn btn-warning btn-lg px-4">
+                                    class="btn btn-warning btn-lg px-4 shadow-sm">
                                 <i class="bi bi-trash me-2"></i>Sí, Eliminar Producto
                             </button>
                         </div>
@@ -100,7 +135,7 @@
                 <div class="card-footer bg-light border-0 text-center py-3">
                     <small class="text-muted">
                         <i class="bi bi-lightbulb me-1"></i>
-                        Puedes agregar más productos desde el detalle de la orden
+                        Recuerda: Puedes agregar más productos desde el detalle de la orden
                     </small>
                 </div>
             </div>
@@ -116,6 +151,9 @@
                             <a href="{% url 'lista_ordenes' %}" class="text-decoration-none small">
                                 <i class="bi bi-list me-1"></i>Todas las Órdenes
                             </a>
+                            <a href="{% url 'agregar_detalle_orden' orden.id %}" class="text-decoration-none small">
+                                <i class="bi bi-plus-circle me-1"></i>Agregar Otro Producto
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -123,4 +161,28 @@
         </div>
     </div>
 </div>
+
+<!-- Script para mejorar la experiencia -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar animación al cargar
+    const card = document.querySelector('.card');
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Confirmación adicional en el botón de eliminar
+    const deleteBtn = document.querySelector('button[type="submit"]');
+    deleteBtn.addEventListener('click', function(e) {
+        if (!confirm('⚠️ ¿Estás completamente seguro de eliminar este producto? Esta acción no se puede deshacer.')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
 {% endblock %}

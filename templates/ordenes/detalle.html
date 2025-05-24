@@ -1,19 +1,28 @@
+
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid">
     <!-- Header con información básica -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div>
                     <h1 class="display-6 fw-bold text-primary mb-2">
                         <i class="bi bi-receipt me-3"></i>Orden #{{ orden.codigo }}
                     </h1>
                     <p class="text-muted mb-0">Detalle completo de la orden de compra</p>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar3 me-1"></i>Creada el {{ orden.fecha_emision|date:"d/m/Y" }}
+                    </small>
                 </div>
-                <a href="{% url 'lista_ordenes' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Volver al Listado
-                </a>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer me-2"></i>Imprimir
+                    </button>
+                    <a href="{% url 'lista_ordenes' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Volver al Listado
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -21,59 +30,110 @@
     <div class="row g-4">
         <!-- Información de la orden -->
         <div class="col-lg-4">
-            <div class="card h-100 shadow-sm border-0 rounded-3">
-                <div class="card-header bg-primary bg-opacity-5 border-0 py-3">
-                    <h5 class="card-title mb-0 text-primary fw-semibold">
-                        <i class="bi bi-info-circle me-2"></i>Información General
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary small">PROVEEDOR</label>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-building text-primary me-2"></i>
-                            <div>
-                                <div class="fw-bold">{{ orden.proveedor.razon_social }}</div>
-                                <small class="text-muted">RUC: {{ orden.proveedor.ruc }}</small>
+            <div class="sticky-top" style="top: 2rem;">
+                <!-- Información General -->
+                <div class="card h-auto shadow-sm border-0 rounded-3 mb-4">
+                    <div class="card-header bg-primary bg-opacity-5 border-0 py-3">
+                        <h5 class="card-title mb-0 text-primary fw-semibold">
+                            <i class="bi bi-info-circle me-2"></i>Información General
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">PROVEEDOR</label>
+                            <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-building text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ orden.proveedor.razon_social }}</div>
+                                    <small class="text-muted">RUC: {{ orden.proveedor.ruc }}</small>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary small">FECHA DE EMISIÓN</label>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-calendar3 text-primary me-2"></i>
-                            <span>{{ orden.fecha_emision|date:"d/m/Y" }}</span>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">FECHA DE EMISIÓN</label>
+                            <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-calendar3 text-info"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ orden.fecha_emision|date:"d/m/Y" }}</div>
+                                    <small class="text-muted">{{ orden.fecha_emision|date:"l" }}</small>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary small">ESTADO ACTUAL</label>
-                        <div>
-                            {% if orden.estado == 'borrador' %}
-                                <span class="badge bg-secondary bg-opacity-15 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2">
-                                    <i class="bi bi-pencil me-1"></i>Borrador
-                                </span>
-                            {% elif orden.estado == 'emitida' %}
-                                <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2">
-                                    <i class="bi bi-send me-1"></i>Emitida
-                                </span>
-                            {% elif orden.estado == 'recibida' %}
-                                <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2">
-                                    <i class="bi bi-box me-1"></i>Recibida
-                                </span>
-                            {% elif orden.estado == 'completada' %}
-                                <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 rounded-pill px-3 py-2">
-                                    <i class="bi bi-check-circle me-1"></i>Completada
-                                </span>
-                            {% endif %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">ESTADO ACTUAL</label>
+                            <div class="p-3 bg-light rounded-3">
+                                {% if orden.estado == 'borrador' %}
+                                    <span class="badge bg-secondary bg-opacity-15 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2 fs-6">
+                                        <i class="bi bi-pencil me-1"></i>Borrador
+                                    </span>
+                                    <small class="d-block text-muted mt-1">La orden puede ser modificada</small>
+                                {% elif orden.estado == 'emitida' %}
+                                    <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fs-6">
+                                        <i class="bi bi-send me-1"></i>Emitida
+                                    </span>
+                                    <small class="d-block text-muted mt-1">Enviada al proveedor</small>
+                                {% elif orden.estado == 'recibida' %}
+                                    <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 fs-6">
+                                        <i class="bi bi-box me-1"></i>Recibida
+                                    </span>
+                                    <small class="d-block text-muted mt-1">Productos recibidos</small>
+                                {% elif orden.estado == 'completada' %}
+                                    <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fs-6">
+                                        <i class="bi bi-check-circle me-1"></i>Completada
+                                    </span>
+                                    <small class="d-block text-muted mt-1">Proceso finalizado</small>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="border-top pt-3 mt-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-dark">Total de la Orden:</span>
-                            <span class="h5 text-primary fw-bold mb-0">S/. {{ total|floatformat:2 }}</span>
+                        <div class="border-top pt-3 mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="fw-bold text-dark">Total de la Orden:</span>
+                                <span class="h4 text-primary fw-bold mb-0">S/. {{ total|floatformat:2 }}</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                {% if orden.estado == 'borrador' %}
+                                    <div class="progress-bar bg-secondary" style="width: 25%"></div>
+                                {% elif orden.estado == 'emitida' %}
+                                    <div class="progress-bar bg-primary" style="width: 50%"></div>
+                                {% elif orden.estado == 'recibida' %}
+                                    <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                {% elif orden.estado == 'completada' %}
+                                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">Progreso de la orden</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas rápidas -->
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-success bg-opacity-5 border-0 py-3">
+                        <h6 class="card-title mb-0 text-success fw-semibold">
+                            <i class="bi bi-graph-up me-2"></i>Resumen
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <div class="h5 text-primary mb-1">{{ detalles|length }}</div>
+                                    <small class="text-muted">Producto{{ detalles|length|pluralize:"s" }}</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="h5 text-success mb-1">
+                                    {% for detalle in detalles %}{{ detalle.cantidad|add:0 }}{% if not forloop.last %}+{% endif %}{% endfor %}
+                                </div>
+                                <small class="text-muted">Unidades</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,12 +145,12 @@
             <!-- Productos -->
             <div class="card shadow-sm border-0 rounded-3 mb-4">
                 <div class="card-header bg-white border-0 py-3">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h5 class="card-title mb-0 text-primary fw-semibold">
                             <i class="bi bi-box me-2"></i>Productos en la Orden
                         </h5>
                         {% if orden.estado == 'borrador' %}
-                        <a href="{% url 'agregar_detalle_orden' orden.id %}" class="btn btn-primary btn-sm">
+                        <a href="{% url 'agregar_detalle_orden' orden.id %}" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-1"></i>Agregar Producto
                         </a>
                         {% endif %}
@@ -117,12 +177,20 @@
                                     <tr class="border-bottom">
                                         <td class="px-4 py-3">
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-box-seam text-primary me-2"></i>
-                                                <span class="fw-semibold">{{ detalle.producto.nombre }}</span>
+                                                <div class="bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                                                    <i class="bi bi-box-seam text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="fw-semibold">{{ detalle.producto.nombre }}</span>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-tag me-1"></i>{{ detalle.producto.categoria.nombre|default:"Sin categoría" }}
+                                                    </small>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="px-4 py-3 text-center">
-                                            <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                            <span class="badge bg-light text-dark border rounded-pill px-3 py-2 fs-6">
                                                 {{ detalle.cantidad }}
                                             </span>
                                         </td>
@@ -134,30 +202,43 @@
                                         </td>
                                         {% if orden.estado == 'borrador' %}
                                         <td class="px-4 py-3 text-center">
-                                            <form method="post" action="{% url 'eliminar_detalle_orden' detalle.id %}" class="d-inline">
-                                                {% csrf_token %}
-                                                <button type="submit" 
-                                                        class="btn btn-outline-danger btn-sm rounded-circle" 
-                                                        onclick="return confirm('¿Eliminar este producto de la orden?')"
-                                                        data-bs-toggle="tooltip" 
-                                                        title="Eliminar producto">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
+                                            <a href="{% url 'eliminar_detalle_orden' detalle.id %}" 
+                                               class="btn btn-outline-danger btn-sm rounded-circle" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Eliminar producto">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
                                         </td>
                                         {% endif %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <th colspan="{% if orden.estado == 'borrador' %}4{% else %}3{% endif %}" class="px-4 py-3 text-end">
+                                            <span class="h6 mb-0">TOTAL:</span>
+                                        </th>
+                                        <th class="px-4 py-3 text-end">
+                                            <span class="h5 text-success fw-bold mb-0">S/. {{ total|floatformat:2 }}</span>
+                                        </th>
+                                        {% if orden.estado == 'borrador' %}
+                                        <th class="px-4 py-3"></th>
+                                        {% endif %}
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     {% else %}
                         <div class="text-center py-5">
-                            <i class="bi bi-box text-muted mb-3" style="font-size: 3rem;"></i>
+                            <div class="mb-4">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-box text-muted" style="font-size: 2.5rem;"></i>
+                                </div>
+                            </div>
                             <h5 class="text-muted mb-3">No hay productos agregados</h5>
                             <p class="text-muted mb-4">Comience agregando productos a esta orden</p>
                             {% if orden.estado == 'borrador' %}
-                            <a href="{% url 'agregar_detalle_orden' orden.id %}" class="btn btn-primary">
+                            <a href="{% url 'agregar_detalle_orden' orden.id %}" class="btn btn-primary btn-lg">
                                 <i class="bi bi-plus-circle me-2"></i>Agregar Primer Producto
                             </a>
                             {% endif %}
@@ -177,8 +258,8 @@
                     <div class="row g-3">
                         {% if orden.estado == 'borrador' %}
                             <div class="col-md-6">
-                                <a href="{% url 'agregar_detalle_orden' orden.id %}" class="btn btn-outline-primary w-100 py-3">
-                                    <i class="bi bi-plus-circle me-2"></i>
+                                <a href="{% url 'agregar_detalle_orden' orden.id %}" class="btn btn-outline-primary w-100 py-3 border-2">
+                                    <i class="bi bi-plus-circle me-2 fs-5"></i>
                                     <div>
                                         <div class="fw-semibold">Agregar Producto</div>
                                         <small class="text-muted">Añadir más items a la orden</small>
@@ -186,28 +267,9 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a href="{% url 'cambiar_estado_orden' orden.id 'emitida' %}" class="btn btn-success w-100 py-3">
-                                    <i class="bi bi-send me-2"></i>
-                                    <div>
-                                        <div class="fw-semibold">Emitir Orden</div>
-                                        <small class="text-white opacity-75">Enviar al proveedor</small>
-                                    </div>
-                                </a>
-                            </div>
-                        {% elif orden.estado == 'emitida' %}
-                            <div class="col-12">
-                                <a href="{% url 'cambiar_estado_orden' orden.id 'recibida' %}" class="btn btn-warning w-100 py-3">
-                                    <i class="bi bi-box me-2"></i>
-                                    <div>
-                                        <div class="fw-semibold">Marcar como Recibida</div>
-                                        <small class="text-white opacity-75">Los productos han llegado</small>
-                                    </div>
-                                </a>
-                            </div>
-                        {% elif orden.estado == 'recibida' %}
-                            <div class="col-12">
-                                <a href="{% url 'cambiar_estado_orden' orden.id 'completada' %}" class="btn btn-success w-100 py-3">
-                                    <i class="bi bi-check-circle me-2"></i>
+                                {% if detalles %}
+                                <a href="{% url 'cambiar_estado_orden' orden.id 'completada' %}" class="btn btn-success w-100 py-3 border-2">
+                                    <i class="bi bi-check-circle me-2 fs-5"></i>
                                     <div>
                                         <div class="fw-semibold">Completar Orden</div>
                                         <small class="text-white opacity-75">Finalizar proceso</small>
@@ -216,17 +278,156 @@
                             </div>
                         {% else %}
                             <div class="col-12">
-                                <div class="alert alert-success border-0 bg-success bg-opacity-10 rounded-3 text-center">
-                                    <i class="bi bi-check-circle-fill text-success me-2 fs-4"></i>
-                                    <h6 class="text-success mb-1">Orden Completada</h6>
+                                <div class="alert alert-success border-0 bg-success bg-opacity-10 rounded-3 text-center py-4">
+                                    <div class="mb-3">
+                                        <div class="bg-success bg-opacity-15 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                            <i class="bi bi-check-circle-fill text-success fs-3"></i>
+                                        </div>
+                                    </div>
+                                    <h6 class="text-success mb-2 fw-bold">🎉 Orden Completada</h6>
                                     <p class="text-success mb-0">Esta orden ha sido finalizada exitosamente.</p>
+                                    <small class="text-muted d-block mt-2">
+                                        Completada el {{ orden.fecha_emision|date:"d/m/Y" }}
+                                    </small>
                                 </div>
                             </div>
                         {% endif %}
+                    </div>
+
+                    <!-- Acciones adicionales -->
+                    {% if orden.estado == 'borrador' %}
+                    <div class="border-top pt-3 mt-4">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <a href="{% url 'eliminar_orden' orden.id %}" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-trash me-2"></i>Eliminar Orden
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-outline-secondary w-100" onclick="window.print()">
+                                    <i class="bi bi-printer me-2"></i>Imprimir Vista Previa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline de estados (solo visible si la orden ha progresado) -->
+    {% if orden.estado != 'borrador' %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-info bg-opacity-5 border-0 py-3">
+                    <h6 class="card-title mb-0 text-info fw-semibold">
+                        <i class="bi bi-clock-history me-2"></i>Historial de Estados
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Borrador -->
+                        <div class="text-center">
+                            <div class="bg-secondary bg-opacity-15 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                                <i class="bi bi-pencil text-secondary"></i>
+                            </div>
+                            <div>
+                                <small class="fw-semibold d-block">Borrador</small>
+                                <small class="text-muted">Creación</small>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-grow-1 mx-3">
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar bg-secondary" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Emitida -->
+                        <div class="text-center">
+                            <div class="bg-{% if orden.estado == 'emitida' or orden.estado == 'recibida' or orden.estado == 'completada' %}primary{% else %}light{% endif %} bg-opacity-15 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                                <i class="bi bi-send text-{% if orden.estado == 'emitida' or orden.estado == 'recibida' or orden.estado == 'completada' %}primary{% else %}muted{% endif %}"></i>
+                            </div>
+                            <div>
+                                <small class="fw-semibold d-block">Emitida</small>
+                                <small class="text-muted">Enviada</small>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow-1 mx-3">
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar bg-{% if orden.estado == 'recibida' or orden.estado == 'completada' %}primary{% else %}light{% endif %}" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Recibida -->
+                        <div class="text-center">
+                            <div class="bg-{% if orden.estado == 'recibida' or orden.estado == 'completada' %}warning{% else %}light{% endif %} bg-opacity-15 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                                <i class="bi bi-box text-{% if orden.estado == 'recibida' or orden.estado == 'completada' %}warning{% else %}muted{% endif %}"></i>
+                            </div>
+                            <div>
+                                <small class="fw-semibold d-block">Recibida</small>
+                                <small class="text-muted">Entregada</small>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow-1 mx-3">
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar bg-{% if orden.estado == 'completada' %}success{% else %}light{% endif %}" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Completada -->
+                        <div class="text-center">
+                            <div class="bg-{% if orden.estado == 'completada' %}success{% else %}light{% endif %} bg-opacity-15 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                                <i class="bi bi-check-circle text-{% if orden.estado == 'completada' %}success{% else %}muted{% endif %}"></i>
+                            </div>
+                            <div>
+                                <small class="fw-semibold d-block">Completada</small>
+                                <small class="text-muted">Finalizada</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
+
+<!-- Script para tooltips y efectos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Efecto de entrada para las cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Confirmación para acciones críticas
+    const deleteLinks = document.querySelectorAll('a[href*="eliminar"]');
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!confirm('¿Estás seguro de realizar esta acción?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
