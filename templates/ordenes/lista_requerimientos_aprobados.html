@@ -17,9 +17,9 @@
     <tbody>
         {% for req in requerimientos %}
         <tr>
-            <td>{{ req.codigo }}</td>
+            <td>REQ-{{ req.id|stringformat:"04d" }}</td>
             <td>{{ req.departamento.nombre }}</td>
-            <td>{{ req.solicitante.get_full_name }}</td>
+            <td>{{ req.solicitante.username }}</td> 
             <td>{{ req.fecha|date:"d/m/Y" }}</td>
             <td>
                 <a href="{% url 'ver_detalle_requerimiento_comprador' req.id %}" class="btn btn-sm btn-info">Ver detalle</a>
