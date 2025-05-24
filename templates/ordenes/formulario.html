@@ -1,97 +1,80 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container-fluid py-4">
+<div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
-            
-            <!-- Header moderno con gradiente -->
-            <div class="card border-0 bg-primary bg-gradient rounded-4 shadow-lg mb-5">
-                <div class="card-body text-center p-5">
-                    <div class="mb-4">
-                        <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-                            <i class="bi bi-plus-circle text-white" style="font-size: 3rem;"></i>
-                        </div>
-                    </div>
-                    <h1 class="text-white fw-bold mb-3">Nueva Orden de Compra</h1>
-                    <p class="text-white-50 mb-0 fs-5">Complete la información necesaria para crear una nueva orden</p>
-                </div>
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold text-primary mb-2">
+                    <i class="bi bi-plus-circle me-3"></i>Nueva Orden de Compra
+                </h1>
+                <p class="text-muted">Complete los datos para crear una nueva orden de compra</p>
             </div>
 
-            <!-- Formulario principal -->
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="card-header bg-light border-0 py-4">
-                    <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-form-text text-primary me-2"></i>
-                        Datos de la Orden
+            <!-- Card principal del formulario -->
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary bg-opacity-5 border-0 py-4">
+                    <h5 class="card-title mb-0 text-primary fw-semibold">
+                        <i class="bi bi-form-text me-2"></i>Información de la Orden
                     </h5>
                 </div>
                 
-                <div class="card-body p-5">
+                <div class="card-body p-4">
                     <form method="post">
                         {% csrf_token %}
                         
                         <div class="row g-4">
-                            
                             <!-- Requerimiento -->
-                            <div class="col-lg-6">
-                                <div class="form-floating mb-3">
-                                    <select name="requerimiento" id="requerimiento" 
-                                            class="form-select form-select-lg border-2 rounded-3" required>
-                                        <option value="" disabled selected>Seleccione un requerimiento</option>
-                                        {% for req in requerimientos %}
-                                        <option value="{{ req.id }}">
-                                            REQ-{{ req.id|stringformat:"04d" }} - {{ req.solicitante }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                    <label for="requerimiento" class="fw-semibold">
-                                        <i class="bi bi-clipboard-check text-primary me-2"></i>
-                                        Requerimiento Origen *
-                                    </label>
-                                </div>
-                                
-                                <!-- Info del requerimiento -->
-                                <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3">
-                                    <div class="d-flex align-items-start">
-                                        <i class="bi bi-info-circle text-info me-2 mt-1"></i>
-                                        <div>
-                                            <h6 class="text-info fw-bold mb-2">Sobre el Requerimiento</h6>
-                                            <ul class="text-info small mb-0 ps-3">
-                                                <li>Debe estar en estado "Aprobado"</li>
-                                                <li>Contiene los productos a solicitar</li>
-                                                <li>Define las cantidades necesarias</li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                            <div class="col-md-6">
+                                <label for="requerimiento" class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-clipboard-check text-primary me-2"></i>Requerimiento
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="requerimiento" id="requerimiento" class="form-select form-select-lg border-2" required>
+                                    <option value="" disabled selected>Seleccione un requerimiento</option>
+                                    {% for req in requerimientos %}
+                                    <option value="{{ req.id }}">
+                                        <strong>#{{ req.id }}</strong> - {{ req.solicitante }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Seleccione el requerimiento que originará esta orden
                                 </div>
                             </div>
 
                             <!-- Proveedor -->
-                            <div class="col-lg-6">
-                                <div class="form-floating mb-3">
-                                    <select name="proveedor" id="proveedor" 
-                                            class="form-select form-select-lg border-2 rounded-3" required>
-                                        <option value="" disabled selected>Seleccione un proveedor</option>
-                                        {% for prov in proveedores %}
-                                        <option value="{{ prov.id }}">{{ prov.razon_social }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <label for="proveedor" class="fw-semibold">
-                                        <i class="bi bi-building text-primary me-2"></i>
-                                        Proveedor de Suministro *
-                                    </label>
+                            <div class="col-md-6">
+                                <label for="proveedor" class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-building text-primary me-2"></i>Proveedor
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="proveedor" id="proveedor" class="form-select form-select-lg border-2" required>
+                                    <option value="" disabled selected>Seleccione un proveedor</option>
+                                    {% for prov in proveedores %}
+                                    <option value="{{ prov.id }}">{{ prov.razon_social }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Proveedor que suministrará los productos
                                 </div>
-                                
-                                <!-- Info del proveedor -->
-                                <div class="alert alert-success border-0 bg-success bg-opacity-10 rounded-3">
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3">
                                     <div class="d-flex align-items-start">
-                                        <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                        <i class="bi bi-lightbulb text-info me-3 mt-1 fs-5"></i>
                                         <div>
-                                            <h6 class="text-success fw-bold mb-2">Sobre el Proveedor</h6>
-                                            <ul class="text-success small mb-0 ps-3">
-                                                <li>Empresa autorizada y registrada</li>
-                                                <li>Suministrará los productos solicitados</li>
-                                                <li>Recibirá la orden una vez emitida</li>
+                                            <h6 class="alert-heading text-info mb-2">Información importante</h6>
+                                            <ul class="mb-0 text-info">
+                                                <li>La orden se creará en estado <strong>"Borrador"</strong></li>
+                                                <li>Podrá agregar productos después de crear la orden</li>
+                                                <li>Una vez completada, podrá emitir la orden al proveedor</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -99,86 +82,27 @@
                             </div>
                         </div>
 
-                        <!-- Información del proceso -->
-                        <div class="row mt-5">
-                            <div class="col-12">
-                                <div class="card border-2 border-primary border-opacity-25 bg-primary bg-opacity-5 rounded-4">
-                                    <div class="card-body p-4">
-                                        <div class="d-flex align-items-start">
-                                            <div class="bg-primary rounded-3 p-3 me-4">
-                                                <i class="bi bi-lightbulb text-white fs-4"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="text-primary fw-bold mb-3">Proceso de Creación</h6>
-                                                <div class="row g-3">
-                                                    <div class="col-md-4">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="bg-primary bg-opacity-20 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                                <span class="text-primary fw-bold">1</span>
-                                                            </div>
-                                                            <div>
-                                                                <div class="fw-semibold text-primary small">Se crea en borrador</div>
-                                                                <small class="text-primary opacity-75">Estado inicial editable</small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="bg-primary bg-opacity-20 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                                <span class="text-primary fw-bold">2</span>
-                                                            </div>
-                                                            <div>
-                                                                <div class="fw-semibold text-primary small">Agregar productos</div>
-                                                                <small class="text-primary opacity-75">Personalizar la orden</small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="bg-primary bg-opacity-20 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                                <span class="text-primary fw-bold">3</span>
-                                                            </div>
-                                                            <div>
-                                                                <div class="fw-semibold text-primary small">Emitir al proveedor</div>
-                                                                <small class="text-primary opacity-75">Envío oficial</small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Botones de acción con mejor diseño -->
-                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
-                            <a href="{% url 'lista_ordenes' %}" class="btn btn-light btn-lg border-2 rounded-3">
-                                <i class="bi bi-arrow-left me-2"></i>
-                                <span class="fw-semibold">Volver al Listado</span>
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                            <a href="{% url 'lista_ordenes' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i>Volver al Listado
                             </a>
                             
-                            <button type="submit" class="btn btn-primary btn-lg shadow-lg rounded-3 px-5">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="fw-semibold">Crear Orden</span>
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-check-circle me-2"></i>Crear Orden
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Ayuda y tips -->
-            <div class="mt-4">
-                <div class="card border-0 bg-light bg-opacity-50 rounded-3">
-                    <div class="card-body text-center py-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <i class="bi bi-question-circle text-muted me-2"></i>
-                            <small class="text-muted">
-                                ¿Necesitas ayuda? Los campos marcados con <span class="text-danger fw-bold">*</span> son obligatorios para crear la orden.
-                            </small>
-                        </div>
-                    </div>
+            <!-- Card de ayuda -->
+            <div class="card mt-4 border-0 bg-light bg-opacity-50">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-question-circle me-1"></i>
+                        ¿Necesitas ayuda? Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+                    </small>
                 </div>
             </div>
         </div>
