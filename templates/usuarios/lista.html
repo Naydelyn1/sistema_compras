@@ -32,7 +32,7 @@
                                 <i class="bi bi-people fs-1"></i>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <div class="fw-bold fs-4">{{ usuarios|length }}</div>
+                                <div class="fw-bold fs-4">{{ total_usuarios }}</div>
                                 <div class="small">Usuarios Activos</div>
                             </div>
                         </div>
@@ -176,13 +176,87 @@
                     </div>
                 {% endif %}
             </div>
-            {% if usuarios %}
-            <div class="card-footer bg-light text-muted">
-                <small>
-                    <i class="bi bi-info-circle me-1"></i>
-                    Mostrando {{ usuarios|length }} usuario{{ usuarios|length|pluralize }} activo{{ usuarios|length|pluralize }}
-                </small>
+            
+            <!-- Paginación -->
+            {% if usuarios.has_other_pages %}
+            <div class="card-footer bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted">
+                        <small>
+                            <i class="bi bi-info-circle me-1"></i>
+                            Mostrando {{ usuarios.start_index }} - {{ usuarios.end_index }} de {{ usuarios.paginator.count }} usuarios
+                        </small>
+                    </div>
+                    <nav aria-label="Paginación de usuarios">
+                        <ul class="pagination pagination-sm mb-0">
+                            <!-- Botón Anterior -->
+                            {% if usuarios.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" title="Primera página">
+                                        <i class="bi bi-chevron-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ usuarios.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" title="Página anterior">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-double-left"></i></span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+                                </li>
+                            {% endif %}
+                            
+                            <!-- Números de página -->
+                            {% for num in usuarios.paginator.page_range %}
+                                {% if usuarios.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > usuarios.number|add:'-3' and num < usuarios.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <!-- Botón Siguiente -->
+                            {% if usuarios.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ usuarios.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" title="Página siguiente">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ usuarios.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" title="Última página">
+                                        <i class="bi bi-chevron-double-right"></i>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-double-right"></i></span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
             </div>
+            {% else %}
+                <!-- Footer sin paginación -->
+                {% if usuarios %}
+                <div class="card-footer bg-light text-muted">
+                    <small>
+                        <i class="bi bi-info-circle me-1"></i>
+                        Mostrando {{ usuarios|length }} usuario{{ usuarios|length|pluralize }} activo{{ usuarios|length|pluralize }}
+                    </small>
+                </div>
+                {% endif %}
             {% endif %}
         </div>
     </div>
