@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from apps.usuarios.models import Usuario  # Ejemplo, cambia según necesidad
+from apps.usuarios.models import Usuario  
 
 class Command(BaseCommand):
     help = 'Crea grupos y asigna permisos básicos para roles del sistema'

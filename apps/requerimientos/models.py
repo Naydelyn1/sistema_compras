@@ -18,7 +18,7 @@ class Requerimiento(models.Model):
         ('emitida', 'Emitida'),
         ('recibida', 'Recibida'),
         ('completa', 'Completa'),
-        ('pendiente', 'Pendiente'),  # Puedes mantener el que ya tenías si quieres
+        ('pendiente', 'Pendiente'),  
     ]
 
     nombre = models.CharField(max_length=150, null=False, blank=False)
@@ -59,15 +59,14 @@ class HistorialAprobacion(models.Model):
 class RequerimientoSolicitanteForm(forms.ModelForm):
     class Meta:
         model = Requerimiento
-        fields = ['prioridad']  # Solo el campo que puede elegir el solicitante
+        fields = ['prioridad']  
 
-    # Opcional: Si quieres mostrar prioridad con select personalizado
+   
     prioridad = forms.ChoiceField(
         choices=Requerimiento.PRIORIDAD_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-# Create your models here.
-# Agregar este modelo al final de tu models.py si no lo tienes
+
 
 class HistorialAprobacion(models.Model):
     requerimiento = models.ForeignKey(Requerimiento, on_delete=models.CASCADE)

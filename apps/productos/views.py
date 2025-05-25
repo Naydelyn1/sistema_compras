@@ -23,6 +23,7 @@ def crear_categoria(request):
         form = CategoriaForm()
     return render(request, 'categorias/formulario.html', {'form': form})
 
+
 @login_required
 @permission_required('app.change_categoria', raise_exception=True)
 def editar_categoria(request, categoria_id):
@@ -44,6 +45,7 @@ def eliminar_categoria(request, categoria_id):
         categoria.delete()
         return redirect('lista_categorias')
     return render(request, 'categorias/confirmar_eliminacion.html', {'categoria': categoria})
+
 
 # --- Productos ---
 
