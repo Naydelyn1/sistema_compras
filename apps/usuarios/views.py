@@ -14,10 +14,8 @@ User = get_user_model()
 @login_required
 @permission_required('usuarios.view_usuario', raise_exception=True)
 def lista_usuarios(request):
-    # Obtener usuarios activos
     usuarios_list = User.objects.filter(is_active=True).order_by('username')
     
-    # Búsqueda opcional
     search_query = request.GET.get('search')
     if search_query:
         usuarios_list = usuarios_list.filter(
@@ -35,10 +33,8 @@ def lista_usuarios(request):
     try:
         usuarios = paginator.page(page)
     except PageNotAnInteger:
-        # Si page no es un entero, mostrar la primera página
         usuarios = paginator.page(1)
     except EmptyPage:
-        # Si page está fuera de rango, mostrar la última página
         usuarios = paginator.page(paginator.num_pages)
     
     # Total de usuarios activos (para estadísticas)
@@ -77,10 +73,8 @@ def lista_usuarios_inactivos(request):
     try:
         usuarios = paginator.page(page)
     except PageNotAnInteger:
-        # Si page no es un entero, mostrar la primera página
         usuarios = paginator.page(1)
     except EmptyPage:
-        # Si page está fuera de rango, mostrar la última página
         usuarios = paginator.page(paginator.num_pages)
     
     # Total de usuarios inactivos (para estadísticas)
@@ -98,14 +92,12 @@ def lista_usuarios_inactivos(request):
 @login_required
 @permission_required('usuarios.add_usuario', raise_exception=True)
 def crear_usuario(request):
-    departamentos = Departamento.objects.all()  # Traemos todos los departamentos
+    departamentos = Departamento.objects.all()  
 
     if request.method == 'POST':
         form = UsuarioCreacionForm(request.POST)
         if form.is_valid():
             usuario = form.save(commit=False)
-
-            # Asignar departamento si se envió y es válido
             departamento_id = request.POST.get('departamento')
             if departamento_id:
                 try:
@@ -115,7 +107,6 @@ def crear_usuario(request):
                     usuario.departamento = None
 
             usuario.save()
-            # Importante: guardar M2M para los grupos
             form.save_m2m()
 
             messages.success(request, 'Usuario creado correctamente.')
@@ -135,7 +126,6 @@ def editar_usuario(request, usuario_id):
     if request.method == 'POST':
         form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
-            # Guardamos el usuario, commit=True para que guarde y actualice grupos
             form.save()
             messages.success(request, f'Usuario {usuario.username} actualizado correctamente.')
             return redirect('lista_usuarios')
@@ -149,7 +139,6 @@ def editar_usuario(request, usuario_id):
 def eliminar_usuario(request, usuario_id):
     usuario = get_object_or_404(User, pk=usuario_id)
     if request.method == 'POST':
-        # En lugar de eliminar, cambiar el estado is_active
         if usuario.is_active:
             usuario.is_active = False
             messages.success(request, f'Usuario {usuario.username} desactivado correctamente.')

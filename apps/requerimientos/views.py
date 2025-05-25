@@ -179,7 +179,7 @@ def lista_requerimientos_solicitante(request):
     requerimientos = Requerimiento.objects.filter(solicitante=usuario, activo=True).order_by('-fecha')
     return render(request, 'requerimientos/mis_requerimientos.html', {'requerimientos': requerimientos})
 
-# API para obtener productos por categoría
+#------- API para obtener productos por categoría----------
 def productos_por_categoria(request, categoria_id):
     productos = Producto.objects.filter(categoria_id=categoria_id, activo=True)
     data = [{'id': p.id, 'nombre': p.nombre} for p in productos]
@@ -225,8 +225,8 @@ def crear_requerimiento_solicitante(request):
     categorias = Categoria.objects.filter(activo=True)
     return render(request, 'requerimientos/formulario_solicitante.html', {
     'categorias': categorias,
-    'detalle_productos': [],  # <- NECESARIO para evitar errores con JSON.parse
-    'modo': 'crear'           # <- NECESARIO para mostrar correctamente el título, etc.
+    'detalle_productos': [],  
+    'modo': 'crear'           
     })
 
 @login_required
@@ -240,12 +240,12 @@ def editar_requerimiento_solicitante(request, requerimiento_id):
         return redirect('lista_requerimientos_solicitante')
 
     if request.method == 'POST':
-        # Guardar cambios al requerimiento
+       
         requerimiento.nombre = request.POST.get('nombre')
         requerimiento.prioridad = request.POST.get('prioridad')
         requerimiento.save()
 
-        # Limpiar detalles antiguos y guardar nuevos
+        
         requerimiento.detalles.all().delete()
 
         productos_ids = request.POST.getlist('productos[]')
@@ -262,7 +262,7 @@ def editar_requerimiento_solicitante(request, requerimiento_id):
         return redirect('lista_requerimientos_solicitante')
 
     else:
-        # Preparar detalles para pre-cargar en el JS del template
+       
         detalle_productos = []
         for detalle in requerimiento.detalles.all():
             detalle_productos.append({
@@ -329,10 +329,9 @@ def ver_detalle_requerimiento(request, requerimiento_id):
     """Vista para ver el detalle completo de un requerimiento"""
     requerimiento = get_object_or_404(Requerimiento, pk=requerimiento_id, activo=True)
     
-    # Obtener los detalles (productos) del requerimiento
     detalles = DetalleRequerimiento.objects.filter(requerimiento=requerimiento)
     
-    # Obtener el historial de aprobaciones si existe
+   
     historial = []
     if hasattr(requerimiento, 'historialaprobacion_set'):
         historial = requerimiento.historialaprobacion_set.all().order_by('-fecha')
@@ -350,19 +349,18 @@ def aprobar_requerimiento(request, requerimiento_id):
     """Vista para aprobar un requerimiento"""
     requerimiento = get_object_or_404(Requerimiento, pk=requerimiento_id, activo=True)
     
-    # Verificar que el requerimiento esté pendiente
+    
     if requerimiento.estado != 'pendiente':
         messages.error(request, "Este requerimiento ya ha sido procesado.")
         return redirect('ver_detalle_requerimiento', requerimiento_id=requerimiento.id)
     
     if request.method == 'POST':
         observacion = request.POST.get('observacion', '')
-        
-        # Cambiar el estado del requerimiento
+       
         requerimiento.estado = 'aprobado'
         requerimiento.save()
         
-        # Crear registro en el historial si tienes ese modelo
+       
         try:
             HistorialAprobacion.objects.create(
                 requerimiento=requerimiento,
@@ -372,7 +370,7 @@ def aprobar_requerimiento(request, requerimiento_id):
                 fecha=timezone.now()
             )
         except:
-            # Si no tienes el modelo HistorialAprobacion, omite esta parte
+           
             pass
         
         messages.success(request, f"Requerimiento #{requerimiento.id} aprobado correctamente.")
@@ -390,19 +388,15 @@ def rechazar_requerimiento(request, requerimiento_id):
     """Vista para rechazar un requerimiento"""
     requerimiento = get_object_or_404(Requerimiento, pk=requerimiento_id, activo=True)
     
-    # Verificar que el requerimiento esté pendiente
     if requerimiento.estado != 'pendiente':
         messages.error(request, "Este requerimiento ya ha sido procesado.")
         return redirect('ver_detalle_requerimiento', requerimiento_id=requerimiento.id)
     
     if request.method == 'POST':
         observacion = request.POST.get('observacion', '')
-        
-        # Cambiar el estado del requerimiento
         requerimiento.estado = 'rechazado'
         requerimiento.save()
         
-        # Crear registro en el historial si tienes ese modelo
         try:
             HistorialAprobacion.objects.create(
                 requerimiento=requerimiento,
@@ -412,7 +406,6 @@ def rechazar_requerimiento(request, requerimiento_id):
                 fecha=timezone.now()
             )
         except:
-            # Si no tienes el modelo HistorialAprobacion, omite esta parte
             pass
         
         messages.success(request, f"Requerimiento #{requerimiento.id} rechazado correctamente.")

@@ -47,18 +47,17 @@ class UsuarioCreacionForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        # Asignar valores de nombre y apellido a first_name y last_name también
+       
         user.first_name = self.cleaned_data.get('nombre', '')
         user.last_name = self.cleaned_data.get('apellido', '')
         
         if commit:
             user.save()
-            self.save_m2m()  # Guardar relaciones many-to-many
+            self.save_m2m()  
         return user
 
 
 class UsuarioForm(forms.ModelForm):
-    # Incluir el campo departamento en el formulario
     departamento = forms.ModelChoiceField(
         queryset=Departamento.objects.all(),
         required=False,
@@ -68,15 +67,11 @@ class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = ['username', 'email', 'first_name', 'last_name', 'groups', 'departamento']
-        # Removido 'is_active' para que no aparezca en edición
-        # Eliminé 'password' porque no deberías editar la contraseña aquí
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Ahora sí podemos acceder al campo departamento porque está en fields
-        self.fields['departamento'].required = False
         
-        # Hacer algunos campos más amigables
+        self.fields['departamento'].required = False
         self.fields['username'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
@@ -86,13 +81,12 @@ class UsuarioForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        # Sincronizar campos nombre/apellido con first_name/last_name
         user.nombre = user.first_name
         user.apellido = user.last_name
         
         if commit:
             user.save()
-            self.save_m2m()  # Guardar relaciones many-to-many
+            self.save_m2m()  
         return user
 
 
